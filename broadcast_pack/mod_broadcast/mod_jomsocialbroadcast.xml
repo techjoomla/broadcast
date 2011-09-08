@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="1.6.0" method="upgrade">
+    <name>Jomosocial Broadcast Module</name>
+    <author>Tekdi Web Solutions</author>
+    <version>1.6.0</version>
+    <description>Jomosocial Broadcast Module to connect facebook,twitter,linkedin</description>
+    <files>
+        <filename module="mod_jomsocialbroadcast">mod_jomsocialbroadcast.php</filename>
+        <filename>mod_jomsocialbroadcast.css</filename>
+        <filename>index.html</filename>
+        <folder>tmpl</folder>
+        <folder>images</folder>
+    </files>
+    <config>
+		<fields name="params">			
+			<fieldset name="basic">
+				<field name="show_horizontal" type="radio" default="1" label="Module Orientation" description="">
+					<option value="1">Horizontal</option>
+					<option value="0">Vertical</option>
+				</field>
+				<field name="pretext" type="textarea" default="" rows="2" cols="40" label="Pre text" description="Pretext for module" />
+				<field name="posttext" type="textarea" default="" rows="2" cols="40" label="Post text" description="Postext for module" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>
+
