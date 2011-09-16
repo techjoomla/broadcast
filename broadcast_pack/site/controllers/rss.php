@@ -21,7 +21,7 @@ class BroadcastControllerrss extends JController
 	{	
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 		$pkey = JRequest::getVar('pkey', '');
-		if($pkey!=$config['private_key_cronjob'])
+		if($pkey!=$broadcast_config['private_key_cronjob'])
 		{
 			echo "This Private Cron Key Doesnot Exist";
 			return;
@@ -50,7 +50,7 @@ class BroadcastControllerrss extends JController
 				
 			if(empty($link) || $link=='')
 			    continue;
-			
+			jimport( 'joomla.html.parameter' );
 			$params = new JParameter('');
 			$params->set('rssurl', trim($link));
 			try{
@@ -73,7 +73,7 @@ class BroadcastControllerrss extends JController
 						 	{
 						 	$str_title_link	= "<a href=".$currItem->get_link()." target='_blank'>".$currItem->get_description()."</a>";
 						 	
-						 	if($config['status_via'])
+						 	if($broadcast_config['status_via'])
 						   $str_title_link	.= " (via RSS)";
 						 							 	
 							echo $str_title_link."<br>";

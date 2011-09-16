@@ -21,7 +21,7 @@ class combroadcastHelper
 		$uaccess = $db->loadObject();		
 
 		//////////////////////Facebook Connection//////////////
-		if($config['facebook_page'] or $config['facebook_profile'])
+		if($broadcast_config['facebook_page'] or $broadcast_config['facebook_profile'])
 		{	
 			$facebook = new Facebook(array(
 				'appId'  => $bconfig->fb_api,
@@ -41,11 +41,10 @@ class combroadcastHelper
 				$remove_link_fb = JRoute::_('index.php?option=com_broadcast&controller=facebook&task=remove');
 			else 
 			{
-					if($config['facebook_page'])
-						$loginUrl_fb = $facebook->getLoginUrl( array('req_perms' => 													'offline_access,publish_stream,user_status,status_update,manage_pages'),$bconfig->callback_url_facebook);
+					if($broadcast_config['facebook_page'])
+						$loginUrl_fb = $facebook->getLoginUrl( array('req_perms' => 'offline_access,publish_stream,user_status,status_update,manage_pages'),$bconfig->callback_url_facebook);
 					else
-						$loginUrl_fb = $facebook->getLoginUrl( array('req_perms' =>'offline_access,publish_stream,user_status,status_update'),
-						$bconfig->callback_url_facebook);				
+						$loginUrl_fb = $facebook->getLoginUrl( array('req_perms' =>'offline_access,publish_stream,user_status,status_update'),$bconfig->callback_url_facebook);				
 			}
 				$data['status_fb']		= $status_fb;		
 				$data['remove_link_fb']	= $remove_link_fb;
@@ -55,7 +54,7 @@ class combroadcastHelper
 	
 	
 		/////////////////////////////////////Twitter start//////////////////////////////////////
-		if($config['twitter'])
+		if($broadcast_config['twitter'])
 		{	
 			$request_link_twitter ='';
 			if (combroadcastHelper::validate($uaccess, 'twitter'))
@@ -82,7 +81,7 @@ class combroadcastHelper
 		/////////////////////////////////////Twitter End////////////////////////////////////////
 	
 		/////////////////////////////////////Linkedin start//////////////////////////////////////
-		if($config['linkedin'])
+		if($broadcast_config['linkedin'])
 		{		
 			$request_link_linkedin='';
 	

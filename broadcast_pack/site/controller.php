@@ -10,11 +10,11 @@ class BroadcastController extends JController
 		
 	function save() 
 	{	 
-		$model				= $this->getModel( 'config' );
+		$model	= $this->getModel( 'config' );
 		if($model->save())
-			$msg = JText::_( 'Configuration Saved.' );
+			$msg = JText::_( 'CONFIG_SAV' );
 		else
-			$msg = JText::_( 'Error In  Saving Configuration.' );
+			$msg = JText::_( 'ERR_CONFIG_SAV' );
 			
 		$this->setRedirect( JURI::base()."index.php?option=com_broadcast&view=config", $msg );
 	}

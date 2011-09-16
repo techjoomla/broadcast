@@ -66,7 +66,7 @@ class BroadcastControllerbroadcast extends JController
 
 			$bchepler	= new combroadcastHelper();
 			if($bchepler->validate($this->uaccess, 'twitter'))		
-				$this->store(trim($new_status2[0]),'twitter');
+				$this->store(trim($new_status_twit),'twitter');
 	   }
 		catch (Exception $e) {
 			// error log code can be written here
@@ -87,7 +87,7 @@ class BroadcastControllerbroadcast extends JController
 			
 			$bchepler	= new combroadcastHelper();
 			if($bchepler->validate($this->uaccess, 'linkedin'))		
-				$this->store(trim($new_status2[0]),'linkedin');
+				$this->store(trim($new_status_link),'linkedin');
 				
 			BroadcastHelperLog::simpleLog("JStoL\n ");		
 			BroadcastHelperLog::simpleLog("[Linkedin Response]:\n  " . JArrayHelper::toString(array($new_status)));
@@ -121,6 +121,9 @@ class BroadcastControllerbroadcast extends JController
 						);
 				$facebook->api('/me/feed','POST', $attachment,$this->uaccess->facbook_uid);
 			}
+			$bchepler	= new combroadcastHelper();
+			if($bchepler->validate($this->uaccess, 'facebook'))		
+				$this->store(trim($new_status),'facebook');
 			
 			 BroadcastHelperLog::simpleLog("JStoFPG \n  ");			
 			 BroadcastHelperLog::simpleLog("[Facebook page Response]:\n  " . JArrayHelper::toString(array($new_status)));
@@ -149,6 +152,9 @@ class BroadcastControllerbroadcast extends JController
 		$params['callback'] = '';
 		$result = $facebook->api($params);
 		
+		$bchepler	= new combroadcastHelper();
+		if($bchepler->validate($this->uaccess, 'facebook'))		
+			$this->store(trim($new_status),'facebook');
 		BroadcastHelperLog::simpleLog("JStoFPR \n ");		
 		BroadcastHelperLog::simpleLog("[Facebook profile Response]:\n  " . JArrayHelper::toString(array($new_status)));
 		

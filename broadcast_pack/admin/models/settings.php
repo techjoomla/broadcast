@@ -7,14 +7,15 @@ class broadcastModelSettings extends JModel
 {
 	function store()
 	{
-		$app = JFactory::getApplication();
+		global $mainframe;	
+		$mainframe = JFactory::getApplication();
 		$config	= JRequest::getVar('data', '', 'post', 'array', JREQUEST_ALLOWRAW );
 		$file = 	JPATH_SITE.DS."administrator".DS."components".DS."com_broadcast".DS."config".DS."config.php";
 
 		if ($config)
 		{
 			$file_contents="<?php \n\n";
-			$file_contents.="\$config=array(\n".$this->row2text($config)."\n);\n";
+			$file_contents.="\$broadcast_config=array(\n".$this->row2text($config)."\n);\n";
 			$file_contents.="\n?>";
 			$img_path = 'img src=\"'.JURI::root(); 
 	    $file_contents=str_replace( 'img src=\"', $img_path, $file_contents );
@@ -36,12 +37,12 @@ class broadcastModelSettings extends JModel
 			$img_path = 'img src=\"'.JURI::root(); 
 	    $file_contents=str_replace( 'img src=\"', $img_path, $file_contents );
 			if (JFile::write($file, $file_contents)) 
-				$msg = JText::_('CONFIG_SAVED');
+				return true;
 			else
-				$msg = JText::_('CONFIG_SAVE_PROBLEM');
+				return false;
 		}
-		
-		$app->redirect('index.php?option=com_broadcast&view=settings', $msg);
+		return false;
+		//$mainframe->redirect('index.php?option=com_broadcast&view=settings', $msg);
 	}//store() ends
 
 	function row2text($row,$dvars=array())

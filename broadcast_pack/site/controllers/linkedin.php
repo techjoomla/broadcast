@@ -54,7 +54,7 @@ class BroadcastControllerlinkedin extends JController
 	    $mylogobj	= new BroadcastHelperLogs();
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 		$pkey = JRequest::getVar('pkey', '');
-		if($pkey!=$config['private_key_cronjob'])		
+		if($pkey!=$broadcast_config['private_key_cronjob'])		
 		{
 			echo "This Private Cron Key Doesnot Exist";
 			return;
@@ -69,7 +69,7 @@ class BroadcastControllerlinkedin extends JController
 		$this->uaccess = $database->loadObjectlist();		
 		$log = array();
 		
-		if($config['linkedin'])
+		if($broadcast_config['linkedin'])
 		{
 			foreach($this->uaccess as $k=>$v)
 			{
@@ -92,7 +92,7 @@ class BroadcastControllerlinkedin extends JController
 					if($xml['current-status']) 
 						$log[] = 'Status: ' . $xml['current-status'];
 					
-					if($config['show_name'])
+					if($broadcast_config['show_name'])
 						$actor='{actor} ';
 					else
 						$actor='';
@@ -100,15 +100,15 @@ class BroadcastControllerlinkedin extends JController
 					$statusdata[$k]['actor']			= $userid;
 					$statusdata[$k]['target']			= $userid;
 					
-					if($config['status_skip'])
+					if($broadcast_config['status_skip'])
 					{
-						$search=explode(',', $config['status_skip']);
+						$search=explode(',', $broadcast_config['status_skip']);
 						$statusup=str_replace($search, '', $xml['current-status']);
 					}
 					else
 						$statusup=$xml['current-status'];
 					
-					if($config['status_via'])
+					if($broadcast_config['status_via'])
 						$statusdata[$k]['title']			= $actor.$statusup.' (via Linkedin)';
 					else
 						$statusdata[$k]['title']			= $actor.$statusup. ' <img src='.JURI::base().'modules/mod_jomsocialbroadcast/images/linkedin.png height=19>';
@@ -152,14 +152,15 @@ class BroadcastControllerlinkedin extends JController
 		if($session->get('statuslinkedinlog') != $data['status_linkedin'])
 		{
 			$session->set('statuslinkedinlog', $data['status_linkedin']); 
-			$app =& JFactory::getApplication();  
-			$sitename=$app->getCfg('sitename');
+			global $mainframe;
+			$mainframe =& JFactory::getApplication();  
+			$sitename=$mainframe->getCfg('sitename');
 			if($data['status_linkedin'])
 				$msg=$user->name." has connected with linkedin through $sitename";
 		}		
 		
-	    $app	= JFactory::getApplication();
+	    $mainframe	= JFactory::getApplication();
 	    $currentMenu = $session->get('currentMenu');
-	    $app->redirect($currentMenu, $msg);
+	    $mainframe->redirect($currentMenu, $msg);
 	}
 }

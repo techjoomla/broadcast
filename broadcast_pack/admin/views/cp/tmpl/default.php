@@ -63,19 +63,27 @@ foreach($xml->document->_children as $var)
 				<div class="icon">
 				<a href="index.php?option=com_broadcast&view=settings">
 				<img src="<?php echo JURI::base()?>components/com_broadcast/images/process.png" alt="Settings"/>
-				<span><?php echo JText::_("SETTINGS");?></span>
+				<span><?php echo JText::_("BC_SETTINGS");?></span>
 				</a>
 				</div>	
-			</div>			
-			</div>	
+			</div>
+			<div style="float: left;">
+				<div class="icon">
+				<a href="index.php?option=com_broadcast&view=cp&layout=queue">
+				<img src="<?php echo JURI::base()?>components/com_broadcast/images/queue.png" alt="Queue"/>
+				<span><?php echo JText::_("BC_QUEUE");?></span>
+				</a>
+				</div>	
+			</div>					
+		</div>	
 		<div id="cp2" class="cp2" style="float: left; width: 50%;">
 		<?php
 		echo $pane->startPane( 'pane' );
 		echo $pane->startPanel( JText::_('ABOUT'), 'panel1' );?>
 		<h1 style="color:#0B55C4;"><?php echo JText::_('ABOUT1');?></h1>
-		<h3><!--b><?php echo JText::_('ABOUT2');?>--></b></h3>
+		<h3><b><?php echo JText::_('ABOUT2');?></b></h3>
 		<b><?php echo JText::_('ABOUT3');?></b>
-		<p><?php echo JText::_('ABOUT4');?></p-->  
+		<p><?php echo JText::_('ABOUT4');?></p> 
 		<fieldset>
 		<div onclick="vercheck();"><span style = "border:1px solid;float:left;padding: 5px;cursor: pointer;" class="latestbutton" ><?php echo JText::_('CHECK');?></span></div>
 <div id="NewVersion" style="display:none;padding-top:5px;color:#000000;font-weight:bold;padding-left:5px;float:left!important;">

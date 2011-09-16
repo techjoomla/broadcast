@@ -45,8 +45,10 @@ class BroadcastModelrss extends JModel
 		
 		function checkexist($status,$uid)
 		{
-			$newstatus	=mysql_real_escape_string($status);
-			$db	 			= &$this->getDBO();	
+			$status		= explode('(via',$status);		
+			$newstatus	= trim($status[0]);
+			$db	 	= &$this->getDBO();
+			$newstatus	=$db->getEscaped($newstatus);
 			$query 			= "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid} and status LIKE '{$newstatus}' AND type='rss' ";
 			$db->setQuery($query);	
 			$result 			=$db->loadObjectList();

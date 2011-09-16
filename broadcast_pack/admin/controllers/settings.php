@@ -15,19 +15,20 @@ class broadcastControllerSettings extends broadcastController
 		$post	= JRequest::get('post');
 		$model->setState( 'request', $post );	
 
-		if ($model->store()) 
-			$msg = JText::_( 'C_SAVE_M_S' );
-		else 
-			$msg = JText::_( 'C_SAVE_M_NS' );
 		
-	    switch ( $this->_task ) 
+		
+	    switch (JRequest::getCmd('task') ) 
 		{
 			case 'cancel':
-			$cancelmsg = JText::_( 'FIELD_CANCEL_MSG' );
-			$this->setRedirect( 'index.php?option=com_broadcast', $msg );
+				$this->setRedirect( 'index.php?option=com_broadcast');
 			break;
 			case 'save':
-			$this->setRedirect( "index.php?option=com_broadcast&view=settings", $msg );
+			
+				if ($model->store()) 
+					$msg = JText::_('CONFIG_SAVED');
+				else 
+					$msg = JText::_('CONFIG_SAVE_PROBLEM');
+				$this->setRedirect( "index.php?option=com_broadcast&view=settings", $msg );
 			break;
 		}
 			

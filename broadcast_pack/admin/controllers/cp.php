@@ -10,12 +10,23 @@ class broadcastControllercp extends broadcastController
 	
 	function save()
 	{
-		$app	= JFactory::getApplication();
-		if($this->getModel('cp')->store(JRequest::get('post')))
+		switch (JRequest::getCmd('task') ) 
 		{
-			$app->redirect('index.php?option=com_broadcast&view=cp&layout=queue');
+			case 'cancel':
+				$this->setRedirect( 'index.php?option=com_broadcast');
+			break;
+			case 'save':
+				if($this->getModel('cp')->store(JRequest::get('post')))
+					$msg = JText::_('QUEUE_SAVED');
+				else 
+					$msg = JText::_('QUEUE_SAVE_PROBLEM');			
+				$this->setRedirect( "index.php?option=com_broadcast&view=cp&layout=queue", $msg );
+			break;
 		}
 	}
-	
+	function cancel()
+	{
+	$this->setRedirect( 'index.php?option=com_broadcast');
+	}
 }
 ?>

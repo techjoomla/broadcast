@@ -36,9 +36,9 @@ class broadcastController extends JController
 			$queue	= true;
 		}	
 
-		JSubMenuHelper::addEntry(JText::_('CP'), 'index.php?option=com_broadcast&view=cp',$cp);
-		JSubMenuHelper::addEntry(JText::_('SETTINGS'), 'index.php?option=com_broadcast&view=settings',$settings);
-		JSubMenuHelper::addEntry(JText::_('QUEUE'), 'index.php?option=com_broadcast&view=cp&layout=queue',$queue);			
+		JSubMenuHelper::addEntry(JText::_('BC_CP'), 'index.php?option=com_broadcast&view=cp',$cp);
+		JSubMenuHelper::addEntry(JText::_('BC_SETTINGS'), 'index.php?option=com_broadcast&view=settings',$settings);
+		JSubMenuHelper::addEntry(JText::_('BC_QUEUE'), 'index.php?option=com_broadcast&view=cp&layout=queue',$queue);			
 		switch ($vName)
 		{
 			case 'cp':

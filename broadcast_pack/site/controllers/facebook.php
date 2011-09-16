@@ -83,10 +83,10 @@ class BroadcastControllerfacebook extends JController
 			$page=null;
 
 			////////start facebook page/////////////////
-/*		
-			if($config['facebook_page'])
+		
+			if($broadcast_config['facebook_page'])
 			{  
-					$facebook_page_limit=$config['facebook_page_limit'];
+					$facebook_page_limit=$broadcast_config['facebook_page_limit'];
 					if(!$facebook_page_limit)
 					$facebook_page_limit=10;
 					
@@ -125,7 +125,7 @@ class BroadcastControllerfacebook extends JController
 								$flag='true';
 								$statusdatapage[$m]['actor'] = $userid;
 								$statusdatapage[$m]['target'] = $userid;
-								if($config['status_via'])
+								if($broadcast_config['status_via'])
 								{
 									$statusdatapage[$m]['title'] = $statuspage.' (via '.$pagename.' on facebook)';
 								}
@@ -185,15 +185,15 @@ class BroadcastControllerfacebook extends JController
 			}
 		 
 	  }
-	  */
+	  
 	  ////////end facebook page/////////////////
 
 	 ////////start facebook profile/////////////////
-		if($config['facebook_profile'])
+		if($broadcast_config['facebook_profile'])
 		{
 			try
 			{
-				$facebook_profile_limit=$config['facebook_profile_limit'];
+				$facebook_profile_limit=$broadcast_config['facebook_profile_limit'];
 				if(!$facebook_profile_limit)
 				$facebook_profile_limit=10;
 				$url="https://graph.facebook.com/".$v->facbook_uid."/statuses?since={$today}&limit=".$facebook_profile_limit."&access_token=".$v->facebook_secret;
@@ -221,16 +221,16 @@ class BroadcastControllerfacebook extends JController
 							$statusdata[$k]['actor'] = $userid;
 							$statusdata[$k]['target'] = $userid;
 						
-							if($config['status_skip'])
+							if($broadcast_config['status_skip'])
 							{
-								$search=explode(',', $config['status_skip']);
+								$search=explode(',', $broadcast_config['status_skip']);
 								$statusup=str_replace($search, '', $status[$i]['status']);
 							}
 							else
 							{
 								$statusup=$status[$i]['status'];
 							}
-							if($config['status_via'])
+							if($broadcast_config['status_via'])
 							{
 								$statusdata[$k]['title'] = $statusup.' (via facebook)';
 							}
@@ -264,7 +264,7 @@ class BroadcastControllerfacebook extends JController
 		 }
 	  ////////end facebook profile/////////////////  
 	
-		}
+		}//for each
 	echo implode('<br />', $log);
 	$model = $this->getModel('facebook');
 	$model->fbdeletetmpactivity();
@@ -280,14 +280,15 @@ class BroadcastControllerfacebook extends JController
 		if($session->get('statusfblog') != $data['status_fb'])
 		{
 			$session->set('statusfblog', $data['status_fb']); 		
-			$app =& JFactory::getApplication();  
-			$sitename=$app->getCfg('sitename');
+			global $mainframe;
+			$mainframe =& JFactory::getApplication();  
+			$sitename=$mainframe->getCfg('sitename');
 			if($data['status_fb'])
 			$msg=$user->name." has connected with facebook through $sitename";
 		}
-		$app	= JFactory::getApplication();
+		$mainframe	= JFactory::getApplication();
 		$currentMenu = $session->get('currentMenu');
-		$app->redirect($currentMenu,  $msg);
+		$mainframe->redirect($currentMenu,  $msg);
 	}
 	
 	function redirect_authorise()

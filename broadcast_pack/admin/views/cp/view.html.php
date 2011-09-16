@@ -18,12 +18,12 @@ class broadcastViewcp extends JView
 		$document =& JFactory::getDocument();
 		$document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css'); 
 		$bar =& JToolBar::getInstance('toolbar');
-		JToolBarHelper::title( JText::_( 'Social Broadcast' ), 'icon-48-social.png' );
+		JToolBarHelper::title( JText::_( 'BC_SOCIAL' ), 'icon-48-social.png' );
 		
 		if(JRequest::getVar('layout'))
 		{
-			JToolBarHelper::save();
-			JToolBarHelper::cancel( 'cancel', 'Close' );
+			JToolBarHelper::save('save',JText::_('BC_SAVE') );
+			JToolBarHelper::cancel( 'cancel', JText::_('BC_CLOSE') );
 		}	
 	}
 }

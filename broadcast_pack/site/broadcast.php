@@ -13,7 +13,7 @@ if($controller = JRequest::getWord('controller')) {
 }
 $classname	= 'BroadcastController'.$controller;
 $controller = new $classname();
-JRequest::getVar('task');
+
 // Perform the Request task
 $controller->execute(JRequest::getVar('task'));
 

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install type="module" version="1.5" client ="site" method="upgrade">
+	<name>Jomosocial Broadcast Module</name>
+	<author>Techjoomla</author>
+	<creationDate>Sep 2011</creationDate>
+	<copyright>Techjoomla. All Rights Reserved.</copyright>
+	<authorEmail>extensions@techjoomla.com</authorEmail>
+	<authorUrl>http://www.techjoomla.com</authorUrl>
+	<version>1.0.0</version>
+	<description>Jomosocial Broadcast Module to connect facebook,twitter,linkedin</description>
+  <files>
+      <filename module="mod_jomsocialbroadcast">mod_jomsocialbroadcast.php</filename>
+      <filename>mod_jomsocialbroadcast.css</filename>
+      <filename>index.html</filename>
+      <folder>tmpl</folder>
+      <folder>images</folder>
+  </files>
+  <languages folder="language">
+  	<language tag="en-GB">en-GB/en-GB.mod_jomsocialbroadcast.ini</language>
+  </languages>   
+	<!-- parameters for Joomla 1.5.x -->
+	<params>
+		<param name="show_horizontal" type="radio" default="0" label="MOD_ORIENT" description="MOD_ORIENT_DESC">
+			<option value="1">MOD_ORIENT_HR</option>
+			<option value="0">MOD_ORIENT_VR</option>
+		</param>
+		<param name="pretext" type="textarea" default="" rows="2" cols="40" label="MOD_PRE_TEXT" description="MOD_PRE_TEXT_DESC" />
+		<param name="posttext" type="textarea" default="" rows="2" cols="40" label="MOD_POS_TEXT" description="MOD_POS_TEXT_DESC" />
+	</params>
+	<!-- Fields for Joomla 1.6.x and onwards -->
+	<config>
+	<fields name="params">			
+		<fieldset name="basic">
+			<field name="show_horizontal" type="radio" default="0" label="MOD_ORIENT" description="MOD_ORIENT_DESC">
+				<option value="1">MOD_ORIENT_HR</option>
+				<option value="0">MOD_ORIENT_VR</option>
+			</field>
+			<field name="pretext" type="textarea" default="" rows="2" cols="40" label="MOD_PRE_TEXT" description="MOD_PRE_TEXT_DESC" />
+			<field name="posttext" type="textarea" default="" rows="2" cols="40" label="MOD_POS_TEXT" description="MOD_POS_TEXT_DESC" />
+		</fieldset>
+	</fields>
+	</config>
+</install>
+

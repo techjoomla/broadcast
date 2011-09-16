@@ -1,33 +1,75 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip');
-//JHTML::_( 'behavior.mootools' );
-?>
+JHTML::_('behavior.formvalidation');
 
-<form name="adminForm" method="post" id="queue" action="">
+
+?>
+<?php
+$document =& JFactory::getDocument();
+if(JVERSION >= '1.6.0')
+	$js_key="
+	Joomla.submitbutton = function(task){ ";
+else
+	$js_key="
+	function submitbutton( task ){";
+
+	$js_key.="
+		if (task == 'cancel')
+		{";
+	        if(JVERSION >= '1.6.0')
+				$js_key.="Joomla.submitform(task);";
+			else		
+				$js_key.="document.adminForm.submit();";
+	    $js_key.="
+	    }else{	
+			var validateflag = document.formvalidator.isValid(document.adminForm);
+			if(validateflag){";
+				if(JVERSION >= '1.6.0'){
+					$js_key.="
+				Joomla.submitform(task);";
+				}else{		
+					$js_key.="
+				document.adminForm.submit();";
+				}
+			$js_key.="
+			}else{
+				return false;
+			}
+		}
+	}
+	function checkforinverval(el)
+	{
+		if(el.value<3600){
+			alert('".JText::_('INTERVAL_INV')." 3600 ".JText::_('BC_SECS')."'); 
+			el.value = '';
+			
+		}
+	}
+";
+
+	$document->addScriptDeclaration($js_key);	
+?>
+<form name="adminForm" method="post" id="queue" class="form-validate" action="">
 	<div class="width-50 fltlft">
 		<fieldset class="queue">
 			<legend><?php echo JText::_('QUEUE_FORM_MESSAGE') ?></legend>
 			<table width="100%">
 				<tr>
-					<td><?php echo JText::_('USER') ?></td>
-					<td><input type="text" name="userid" value="" id="userid" size="30" />
-					<?php echo JHTML::tooltip(JText::_('TOOLTIPUSER'), 'User Id', 'tooltip.png', '',  'http://techjoomla.com'); ?></td>
+					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPUSER'), JText::_('USER'), '', JText::_('USER'));?></td>
+					<td><input type="text" class="inputbox required validate-numeric" name="userid" value="" id="userid" size="30" /></td>
 				</tr>
 				<tr>
-					<td><?php echo JText::_('STATUS') ?></td>
-					<td><textarea name="status" id="status" cols="25"></textarea>
-					<?php echo JHTML::tooltip(JText::_('TOOLTIPSTATUS'), 'Status', 'tooltip.png', '',  'http://techjoomla.com'); ?></td>
+					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPSTATUS'), JText::_('STATUS'), '', JText::_('STATUS'));?></td>
+					<td><textarea class="inputbox required" name="status" id="status" cols="25"></textarea></td>
 				</tr>
 				<tr>
-					<td><?php echo JText::_('COUNT') ?></td>
-					<td><input type="text" name="count" value="" id="" size="30" />
-					<?php echo JHTML::tooltip(JText::_('TOOLTIPCOUNT'), 'Count', 'tooltip.png', '',  'http://techjoomla.com'); ?></td>
+					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPCOUNT'), JText::_('COUNT'), '', JText::_('COUNT'));?></td>
+					<td><input type="text" class="inputbox required validate-numeric"  name="count" value="" id="" size="30" /></td>
 				</tr>
 				<tr>
-					<td><?php echo JText::_('INTERVALS') ?></td>
-					<td><input type="text" name="interval" value="" id="" size="30" />
-					<?php echo JHTML::tooltip(JText::_('TOOLTIPINTERVAL'), 'Interval', 'tooltip.png', '',  'http://techjoomla.com'); ?></td>
+					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPINTERVAL')." 3600 ".JText::_('BC_SECS'), JText::_('INTERVALS'), '', JText::_('INTERVALS'));?></td>
+					<td><input type="text" class="inputbox required validate-numeric" name="interval" value="" id="" size="30" OnChange= checkforinverval(this); /></td>
 				</tr>
 			</table>
 		</fieldset>

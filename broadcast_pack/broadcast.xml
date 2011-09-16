@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/component-install.dtd">
 <install type="component" version="1.5.0" method="upgrade">
-	<name>broadcast</name>
-	<creationDate>2010-11-16</creationDate>
-	<author>tekdi.net</author>
-	<authorEmail>tekdi.net</authorEmail>
-	<authorUrl>http://www.tekdi.net.com</authorUrl>
-	<copyright>Copyright 2008 by Slashes &amp; Dots Sdn Bhd. All rights reserved</copyright>
-	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<name>Broadcast</name>
+	<creationDate>Sep 2011</creationDate>
+	<author>TechJoomla</author>
+	<authorEmail>TechJoomla</authorEmail>
+	<authorUrl>contact@techjoomla.com</authorUrl>
 	<version>1.0.0</version>
 	<description>Social Broadcast  is a social networking component for connecting to Linkedin,facebook,twitter!</description>
     <!-- installation part -->
@@ -17,20 +15,15 @@
 			<file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
 		</sql>
 	</install>
-	
-	<update> <!-- Runs on update; New in 1.6 -->
-		<schemas>
-			<schemapath type="mysql">sql/updates/mysql</schemapath>
-		</schemas>
-	</update>
+
 	<installfile>install.broadcast.php</installfile>
 	<files folder="site">
 		<folder>controllers</folder>
 		<folder>lib</folder>
 		<folder>css</folder>
-		<folder>images</folder>
 		<folder>models</folder>
 		<folder>views</folder>
+		<folder>images</folder>		
 		<file>broadcast.php</file>
 		<file>broadcast.ini</file>
 		<file>controller.php</file>
@@ -38,17 +31,11 @@
 		<file>index.html</file>	
 	</files>
 	<languages folder="site/language">
-		<language tag="en-GB">en-GB.com_broadcast.ini</language>
+		<language tag="en-GB">en-GB/en-GB.com_broadcast.ini</language>
 	</languages>
 	
-	<menu link="option=com_broadcast&amp;view=config" img="">Broadcast</menu>
 	<administration>
-		<menu link="option=com_broadcast" img="">Social Broadcast
-			<submenu>
-				<menu link="option=com_broadcast&amp;view=setting" img="components/com_jmailalerts/images/icons/mail_alert_configure_small.png">Configuration</menu>
-			</submenu>	
-		</menu>
-
+		<menu link="option=com_broadcast" img="">COM_BROADCAST</menu>
 		<files folder="admin">
 			<folder>sql</folder>
 			<folder>config</folder>	
@@ -62,7 +49,9 @@
 			<file>index.html</file>	
 		</files>	
 		<languages folder="admin/language">
-			<language tag="en-GB">en-GB.com_broadcast.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_broadcast.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_broadcast.sys.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_broadcast.menu.ini</language>
 		</languages>
 	</administration>	
 </install>

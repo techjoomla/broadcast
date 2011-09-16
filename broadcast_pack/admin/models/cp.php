@@ -10,10 +10,10 @@ class broadcastModelcp extends JModel
 	function __construct()
 	{
 		parent::__construct();
-		global $option;
-		$app		= JFactory::getApplication();
-		$limit		= $app->getUserStateFromRequest( 'global.list.limit', 'limit', $app->getCfg('list_limit'), 'int' );
-		$limitstart	= $app->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
+		global $option, $mainframe;;
+		$mainframe		= JFactory::getApplication();
+		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
+		$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
 		$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
@@ -38,8 +38,10 @@ class broadcastModelcp extends JModel
 		$obj->flag		= 0;
 		$obj->count		= $post['count'];
 		$obj->interval	= $post['interval'];
-		$db->insertObject('#__broadcast_queue',$obj,'id');
-		
+		if (!$db->insertObject('#__broadcast_queue',$obj,'id')){
+			echo $this->_db->stderr();
+	   		return false;
+		 }
 		return true;
 	}
 }

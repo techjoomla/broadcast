@@ -37,7 +37,7 @@ class BroadcastControllertwitter extends JController
 		$mylogobj	= new BroadcastHelperLogs();
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 		$pkey = JRequest::getVar('pkey', '');
-		if($pkey!=$config['private_key_cronjob'])		
+		if($pkey!=$broadcast_config['private_key_cronjob'])		
 		{
 			echo "This Private Cron Key Doesnot Exist";
 			return;
@@ -50,10 +50,10 @@ class BroadcastControllertwitter extends JController
 		$pkey = JRequest::getVar('pkey', '');
 		$log = array();
 		
-	if($config['twitter'])
+	if($broadcast_config['twitter'])
 	{		
 	
-	$twitter_limit_cron=$config['twitter_limit'];
+	$twitter_limit_cron=$broadcast_config['twitter_limit'];
 	if(!$twitter_limit_cron)
 	$twitter_limit_cron='10';
 		foreach($this->uaccess as $k=>$v){
@@ -101,9 +101,9 @@ class BroadcastControllertwitter extends JController
 									$statusup="";
 									$actor="";
 									
-									if($config['status_skip'])
+									if($broadcast_config['status_skip'])
 									{
-										$search=explode(',', $config['status_skip']);
+										$search=explode(',', $broadcast_config['status_skip']);
 										$statusup=str_replace($search, '', $status[$i]['status']);
 									}
 									else
@@ -113,7 +113,7 @@ class BroadcastControllertwitter extends JController
 									
 												
 									
-									if($config['show_name'])
+									if($broadcast_config['show_name'])
 									{			
 										$actor='{actor} ';
 									}
@@ -122,7 +122,7 @@ class BroadcastControllertwitter extends JController
 										$actor='';
 									}
 									
-									if($config['status_via'])
+									if($broadcast_config['status_via'])
 									{
 										$statusdata[$k]['title']			= $actor.$statusup.' (via Twitter)';
 									}
@@ -175,16 +175,17 @@ class BroadcastControllertwitter extends JController
 		if($session->get('statustwitterlog') != $data['status_twitter'])
 		{
 		$session->set('statustwitterlog', $data['status_twitter']); 
-		$app =& JFactory::getApplication();  
-		$sitename=$app->getCfg('sitename');
+		global $mainframe;		
+		$mainframe =& JFactory::getApplication();  
+		$sitename=$mainframe->getCfg('sitename');
 		if($data['status_twitter'])
 			$msg=$user->name." has connected with twitter through $sitename";
 		
 		}
 
-	    $app	= JFactory::getApplication();
+	    $mainframe	= JFactory::getApplication();
 		$currentMenu = $session->get('currentMenu');
-		$app->redirect($currentMenu, $msg);
+		$mainframe->redirect($currentMenu, $msg);
 	}
 	
 	function getRemotedata($URL)
