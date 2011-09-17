@@ -284,7 +284,7 @@ class BroadcastControllerfacebook extends JController
 			$mainframe =& JFactory::getApplication();  
 			$sitename=$mainframe->getCfg('sitename');
 			if($data['status_fb'])
-			$msg=$user->name." has connected with facebook through $sitename";
+			$msg=$user->name." ".JText::_('F_CONN_MSG')." ".$sitename;
 		}
 		$mainframe	= JFactory::getApplication();
 		$currentMenu = $session->get('currentMenu');

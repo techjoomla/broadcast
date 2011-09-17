@@ -2,9 +2,10 @@
 defined( '_JEXEC' ) or die( 'Direct Access to this location is not allowed.' );
 require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.'config.php');
 $bconfig = new BroadcastConfig;   // please remove and check all functionality
-require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.$bconfig->twitter_library_path;
-require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.$bconfig->facebook_library_path;
-require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.$bconfig->linkedin_library_path;
+//require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.$bconfig->twitter_library_path;
+require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib_new'.DS.'linkedin_twitter'.DS.'twitteroauth.php');
+require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.'facebook'.DS.'facebook.php';
+require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib_new'.DS.'linkedin_twitter'.DS.'linkedinoAuth.php';
 
 class combroadcastHelper
 { 	
@@ -54,7 +55,47 @@ class combroadcastHelper
 	
 	
 		/////////////////////////////////////Twitter start//////////////////////////////////////
-		if($broadcast_config['twitter'])
+
+
+$access_token = $_SESSION['access_token'];
+//if (empty($_SESSION['access_token']) || empty($_SESSION['access_token']['oauth_token']) || empty($_SESSION['access_token']['oauth_token_secret'])) {
+	//code to chk if consumer key & secret if present
+	$remove_link_twitter='';
+	$request_link_twitter ='';
+	if (combroadcastHelper::validate($uaccess, 'twitter'))
+		$status_twitter = 1;
+	else
+	{
+		$status_twitter = 0;		
+		$connection = new TwitterOAuth($bconfig->twitter_consumer, $bconfig->twitter_secret);
+		$request_token = $connection->getRequestToken($bconfig->callback_url_twitter);
+		$_SESSION['oauth_token'] = $token = $request_token['oauth_token'];
+		$_SESSION['oauth_token_secret'] = $request_token['oauth_token_secret'];
+
+		/* If last connection failed don't display authorization link. */
+		switch ($connection->http_code) {
+			case 200:
+				/* Build authorize URL and redirect user to Twitter. */
+				$request_link_twitter = $connection->getAuthorizeURL($token);
+	//    header('Location: ' . $url); 
+				break;
+			default:
+				/* Show notification if something went wrong. */
+				echo 'Could not connect to Twitter. Refresh the page or try again later.';
+		}
+	}
+	if ($status_twitter) {
+		$remove_link_twitter = JRoute::_('index.php?option=com_broadcast&controller=twitter&task=remove');		
+	}  
+	$data['status_twitter']			= $status_twitter;		
+	$data['request_link_twitter'] =  $request_link_twitter;
+	$data['remove_link_twitter']	= $remove_link_twitter;
+
+
+
+
+
+/*		if($broadcast_config['twitter'])
 		{	
 			$request_link_twitter ='';
 			if (combroadcastHelper::validate($uaccess, 'twitter'))
@@ -62,7 +103,7 @@ class combroadcastHelper
 			else
 			{
 				$status_twitter = 0;		
-				$to = new TwitterOAuth($bconfig->twitter_consumer, $bconfig->twitter_secret);
+				$to = new TwitterOAuth($bconfig->twitter_consumer, $bconfig->twitter_secret);print_r($to);
 				$tok = $to->getRequestToken();
 				$request_link_twitter = $to->getAuthorizeURL($tok);	  	
 				$_SESSION['oauth_request_token'] = $token = $tok['oauth_token'];
@@ -78,6 +119,7 @@ class combroadcastHelper
 			$data['remove_link_twitter']	= $remove_link_twitter;
 	
 		}		
+*/
 		/////////////////////////////////////Twitter End////////////////////////////////////////
 	
 		/////////////////////////////////////Linkedin start//////////////////////////////////////
@@ -104,6 +146,7 @@ class combroadcastHelper
 			$data['request_link_linkedin']		= $request_link_linkedin;
 			$data['remove_link_linkedin']		= $remove_link_linkedin;
 		}
+
 	/////////////////////////////////////Linkedin End//////////////////////////////////////
 		return $data;		
 	}

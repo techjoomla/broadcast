@@ -3,23 +3,55 @@ defined( '_JEXEC' ) or die( 'Direct Access to this location is not allowed.' );
 jimport('joomla.application.component.controller');
 require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.'config.php');
 $bconfig = new BroadcastConfig;
-require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.$bconfig->twitter_library_path);
+//require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.$bconfig->twitter_library_path);
+
+
+require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib_new'.DS.'linkedin_twitter'.DS.'twitteroauth.php');
+
 
 class BroadcastControllertwitter extends JController
 {
 	
+	function BroadcastControllerlinkedin()
+	{
+		parent::__construct();
+		$bconfig = new BroadcastConfig;
+		$this->bconfig = $bconfig;		
+	}
 	function authorise2()
 	{
 		try{
-			$bconfig = new BroadcastConfig;
+
+$connection = new TwitterOAuth($this->bconfig->twitter_consumer, $this->bconfig->twitter_secret, $_SESSION['oauth_token'], $_SESSION['oauth_token_secret']);
+
+/* Request access tokens from twitter */
+$tok= $connection->getAccessToken($_REQUEST['oauth_verifier']);
+
+/* Save the access tokens. Normally these would be saved in a database for future use. */
+$_SESSION['access_token'] = $tok;
+
+	$data['twitter_oauth'] 	= $tok['oauth_token'];
+			$data['twitter_secret']	= $tok['oauth_token_secret'];
+			$model =	$this->getModel('twitter');
+			$model->store($data);
+
+		/*	$bconfig = new BroadcastConfig;
 			$to = new TwitterOAuth($this->bconfig->twitter_consumer, 
 			$bconfig->twitter_secret, $_SESSION['oauth_request_token'],$_SESSION['oauth_request_token_secret']);
 			$tok = $to->getAccessToken();
-			//print_r($tok);die;
+			print_r($tok);die;
 			$data['twitter_oauth'] 	= $tok['oauth_token'];
 			$data['twitter_secret']	= $tok['oauth_token_secret'];
 			$model =	$this->getModel('twitter');
 			$model->store($data);
+*/
+unset($_SESSION['oauth_token']);
+unset($_SESSION['oauth_token_secret']);
+if (200 == $connection->http_code) {
+  /* The user has been verified and the access tokens can be saved for future use */
+ echo $_SESSION['status'] = 'verified';
+
+} 
 		}catch(Exception $e){error_log($e);}
 		
 		$this->redirect();
@@ -179,8 +211,7 @@ class BroadcastControllertwitter extends JController
 		$mainframe =& JFactory::getApplication();  
 		$sitename=$mainframe->getCfg('sitename');
 		if($data['status_twitter'])
-			$msg=$user->name." has connected with twitter through $sitename";
-		
+			$msg=$user->name." ".JText::_('T_CONN_MSG')." ".$sitename;		
 		}
 
 	    $mainframe	= JFactory::getApplication();

@@ -3,7 +3,8 @@ defined( '_JEXEC' ) or die( 'Direct Access to this location is not allowed.' );
 jimport('joomla.application.component.controller');
 require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.'config.php');
 $bconfig = new BroadcastConfig;
-require_once JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.$bconfig->linkedin_library_path;
+//require_once JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.$bconfig->linkedin_library_path;
+require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib_new'.DS.'linkedin_twitter'.DS.'linkedinoAuth.php';
 
 class BroadcastControllerlinkedin extends JController
 {
@@ -156,7 +157,7 @@ class BroadcastControllerlinkedin extends JController
 			$mainframe =& JFactory::getApplication();  
 			$sitename=$mainframe->getCfg('sitename');
 			if($data['status_linkedin'])
-				$msg=$user->name." has connected with linkedin through $sitename";
+				$msg=$user->name." ".JText::_('L_CONN_MSG')." ".$sitename;
 		}		
 		
 	    $mainframe	= JFactory::getApplication();
