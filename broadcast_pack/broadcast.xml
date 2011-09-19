@@ -20,6 +20,7 @@
 	<files folder="site">
 		<folder>controllers</folder>
 		<folder>lib</folder>
+		<folder>lib_new</folder>
 		<folder>css</folder>
 		<folder>models</folder>
 		<folder>views</folder>
