@@ -6,7 +6,7 @@ jimport('joomla.filesystem.file');
 
 
 $db = & JFactory::getDBO();
-$condtion = array(0 => '\'community\'');
+$condtion = array(0 => '\'community\'',1 => '\'techjoomlaAPI\'');
 $condtionatype = join(',',$condtion);
 if(JVERSION >= '1.6.0')
 {
@@ -64,7 +64,29 @@ else
 {
 	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_('JomSocial Broadcast plugin installed').'</span>'; 	
 }
-	
+
+//install Techjoomla API plugins and publish it
+$installer = new JInstaller;
+$result = $installer->install($install_source.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_linkedin');
+if (!in_array("plug_techjoomlaAPI_linkedin", $status)) {
+	if(JVERSION >= '1.6.0')
+	{
+		$query = "UPDATE #__extensions SET enabled=1 WHERE element='plug_techjoomlaAPI_linkedin' AND folder='techjoomlaAPI'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	else
+	{
+		$query = "UPDATE #__plugins SET published=1 WHERE element='plug_techjoomlaAPI_linkedin' AND folder='techjoomlaAPI'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_('Techjoomla Linkedin API plugin installed and published').'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_('JomSocial Broadcast plugin not installed').'</span>'; 	
+}
+else
+{
+	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_('Techjoomla Linkedin API plugin installed').'</span>'; 	
+}
 
 function com_install()
 {
