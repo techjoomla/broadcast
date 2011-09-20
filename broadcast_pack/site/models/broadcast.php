@@ -21,7 +21,7 @@ class BroadcastModelbroadcast extends JModel
 		$callback = JURI::base()."index.php?option=com_broadcast&controller=broadcast&task=get_access_token";
 		$grt_response = array();
 		$dispatcher = &JDispatcher::getInstance();
-		JPluginHelper::importPlugin('invitex',$api_used);
+		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
 		$grt_response=$dispatcher->trigger('get_request_token',array($callback));
 		
 		if(!$grt_response[0])	{
@@ -34,7 +34,7 @@ class BroadcastModelbroadcast extends JModel
 	{
 		$callback = JURI::base()."index.php?option=com_broadcast&controller=broadcast&task=get_access_token";
 		$dispatcher = &JDispatcher::getInstance();
-		JPluginHelper::importPlugin('invitex',$_SESSION['api_used']);
+		JPluginHelper::importPlugin('techjoomlaAPI',$_SESSION['api_used']);
 		$grt_response = $dispatcher->trigger('get_access_token',array($get,'broadcast',$callback));
 		if(!$grt_response[0])	{
 			return FALSE;
@@ -45,7 +45,7 @@ class BroadcastModelbroadcast extends JModel
 	}
 	function removetoken($api_used){
 		$dispatcher = &JDispatcher::getInstance();
-		JPluginHelper::importPlugin('invitex',$api_used);
+		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
 		$grt_response = $dispatcher->trigger('remove_token',array('broadcast'));
 	}
 
