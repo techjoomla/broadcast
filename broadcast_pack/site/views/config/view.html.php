@@ -8,6 +8,7 @@ class broadcastViewconfig extends JView
 	function display($tpl = null)
 	{
 		$model	= $this->getModel( 'config' );
+
 		$lists	= $model->getlist();
 		$subscribedlists	= $model->getsubscribedlist();
 				

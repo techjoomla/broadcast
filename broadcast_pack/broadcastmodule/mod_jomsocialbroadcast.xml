@@ -20,7 +20,7 @@
   </languages>   
 	<!-- parameters for Joomla 1.5.x -->
 	<params>
-		<param name="show_horizontal" type="radio" default="0" label="MOD_ORIENT" description="MOD_ORIENT_DESC">
+		<param name="show_horizontal" type="radio" default="1" label="MOD_ORIENT" description="MOD_ORIENT_DESC">
 			<option value="1">MOD_ORIENT_HR</option>
 			<option value="0">MOD_ORIENT_VR</option>
 		</param>
@@ -31,7 +31,7 @@
 	<config>
 	<fields name="params">			
 		<fieldset name="basic">
-			<field name="show_horizontal" type="radio" default="0" label="MOD_ORIENT" description="MOD_ORIENT_DESC">
+			<field name="show_horizontal" type="radio" default="1" label="MOD_ORIENT" description="MOD_ORIENT_DESC">
 				<option value="1">MOD_ORIENT_HR</option>
 				<option value="0">MOD_ORIENT_VR</option>
 			</field>

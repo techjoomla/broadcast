@@ -5,10 +5,18 @@ $bconfig = new BroadcastConfig;   // please remove and check all functionality
 //require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.$bconfig->twitter_library_path;
 require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib_new'.DS.'linkedin_twitter'.DS.'twitteroauth.php');
 require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.'facebook'.DS.'facebook.php';
-require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib_new'.DS.'linkedin_twitter'.DS.'linkedinoAuth.php';
+//require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib_new'.DS.'linkedin_twitter'.DS.'linkedinoAuth.php';
 
 class combroadcastHelper
 { 	
+	function getapistatus(){
+		require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'models'.DS.'broadcast.php');
+		$apis=BroadcastModelbroadcast::getapistatus();
+		return $apis;
+	}
+	
+	
+	
 	// this function is called from linkedin / twitter / facebook controllers
     function getInfo()
     {
@@ -132,10 +140,11 @@ $access_token = $_SESSION['access_token'];
 			 else
 			 {
 					$status_linkedin = 0;
-					$linkedin = new LinkedIn($bconfig->linkedin_access, $bconfig->linkedin_secret, $bconfig->callback_url_linkedin );    		
+/*					$linkedin = new LinkedIn($bconfig->linkedin_access, $bconfig->linkedin_secret, $bconfig->callback_url_linkedin );    		
 					$linkedin->getRequestToken();
 					$_SESSION['requestToken']= serialize($linkedin->request_token);			 		    		
 					$request_link_linkedin = $linkedin->generateAuthorizeUrl();		
+*/
 			}
 
 			$remove_link_linkedin ='';
@@ -143,7 +152,7 @@ $access_token = $_SESSION['access_token'];
 				$remove_link_linkedin = JRoute::_('index.php?option=com_broadcast&controller=linkedin&task=remove');			
 	
 			$data['status_linkedin']			= $status_linkedin;		
-			$data['request_link_linkedin']		= $request_link_linkedin;
+			$data['request_link_linkedin']		= JRoute::_('index.php?option=com_broadcast&controller=broadcast&task=get_request_token&api=Linkedin');//$request_link_linkedin;
 			$data['remove_link_linkedin']		= $remove_link_linkedin;
 		}
 

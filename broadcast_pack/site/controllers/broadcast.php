@@ -10,7 +10,48 @@ class BroadcastControllerbroadcast extends JController
 	{
 		parent::display();
 	}
+	
+	
+		//START apis
+	/*call model for request token*/
+	function get_request_token()
+	{
+		$mainframe = JFactory::getApplication();
+		$session =& JFactory::getSession();	
+		$model=&$this->getModel('broadcast');
+		$api_used =JRequest::getVar('api'); 
+		$session->set('api_used',$api_used);
+		$grt_response=$model->getRequestToken($api_used);
+	}
+	
+	/*call model for access token*/
+	function get_access_token()
+	{ 
+		$mainframe = JFactory::getApplication();
+		$session =& JFactory::getSession();	
+		$msg = '';
+		$get=JRequest::get('get');
+		$model=&$this->getModel('broadcast');
+		$response=$model->getAccessToken($get);
+		if($response){
+			$user	= JFactory::getUser();
+			$msg	= $user->name." "."connected!!"." ".$mainframe->getCfg('sitename');
+		}
+	 	$currentMenu = $session->get('currentMenu'); 
+		$mainframe->redirect( JURI::base(), $msg);
+	}
+	function remove_token()
+	{ 
+		$mainframe = JFactory::getApplication();
+		$session =& JFactory::getSession();	
+		$api_used =JRequest::getVar('api');
+		$model = $this->getModel('broadcast');
+		$model->removetoken($api_used);
 
+		$currentMenu = $session->get('currentMenu'); 
+		$mainframe->redirect( JURI::base(), $msg);
+	}
+	//for broadcasting the status to the networks
  	function broadcast()
 	{
 		$db 		= & JFactory::getDBO();
@@ -178,7 +219,7 @@ class BroadcastControllerbroadcast extends JController
 		$db->insertObject('#__broadcast_tmp_activities', $obj);
 		
 	}
-	
+
 }
 class BroadcastHelperLog
 {

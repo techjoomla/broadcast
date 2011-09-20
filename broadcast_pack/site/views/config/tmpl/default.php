@@ -1,149 +1,207 @@
-<?php 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+<?php
 
+defined('_JEXEC') or die( 'Restricted access' );
+
+require_once(JPATH_SITE.DS.'components'.DS.'com_community'.DS.'libraries'.DS.'core.php');
 require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 
-$u =& JURI::getInstance();
-$currentMenu= $u->toString();
-if(!stristr($currentMenu, 'index.php'))
-	$currentMenu= JURI::base();	
+$document = &JFactory::getDocument();
+
+$document->addScript( JURI::base().'components/com_community/assets/'.'jquery-1.3.2.pack.js' );
+$document->addScript( JURI::base().'components/com_community/assets/'.'joms.jquery.js' );
+$document->addScript( JURI::base().'components/com_community/assets/validate-1.5.js' );
+$document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css' );
+
+
 
 $session =& JFactory::getSession();
-$session->set('currentMenu', $currentMenu); 
-$status_fb = $data['status_fb'];
-$remove_link_fb = $data['remove_link_fb'];
-$loginUrl_fb = $data['loginUrl_fb'];
-$status_twitter = $data['status_twitter'];
-$remove_link_twitter = $data['remove_link_twitter'];
-$request_link_twitter = $data['request_link_twitter'];
-$status_linkedin = $data['status_linkedin'];
-$remove_link_linkedin = $data['remove_link_linkedin'];
-$request_link_linkedin = $data['request_link_linkedin'];
-$rss_link=JRoute::_('index.php?option=com_broadcast&view=config');
-if(isset($data['pretext']))
-	$pretext = $data['pretext'];
-if(isset($data['posttext']))
-	$posttext = $data['posttext'];
-$user 	= JFactory::getUser();
-$msg="";
 
-
-if($align==1){	//horizontal
-$outclass='broadcast_hori';
-$inclass='inbroadcast_hori';
-}
-else{	//vertical
-$outclass='broadcast_ver';
-$inclass='inbroadcast_ver';
-}
-
-$doc =& JFactory::getDocument();
-$logo=JURI::base();
-$doc->addStyleSheet( $logo.'modules/mod_jomsocialbroadcast/mod_jomsocialbroadcast.css' );
-?>
-<?php if($posttext){?>
-<div class="broadcast_head"><?php echo $pretext; ?></div>
-<?php }?>
-<?php 
-if($broadcast_config['facebook_profile'] or $broadcast_config['facebook_page'] or $broadcast_config['twitter'] or  $broadcast_config['linkedin'])
+$itemid = JRequest::getVar('Itemid', '','GET');
+$session->set('itemid_session',$itemid);	
+$u =& JURI::getInstance();
+$currentMenu= $u->toString();
+$session->set('currentMenu', $currentMenu);
+if(isset($this->subscribedlists->broadcast_rss_url) )
 {
-	if($broadcast_config['facebook_profile'] or $broadcast_config['facebook_page'] )
-	{
-	?>
-	<div class="<?php echo $outclass ?>" >
-		<div class="<?php echo $inclass ?>" >
-			<img src="<?php echo $logo; ?>modules/mod_jomsocialbroadcast/images/facebook_logo.png"  >
-		</div>
-		<div>
-		<?php
-		if ($status_fb){
-		?>
-			<a href="<?php echo $remove_link_fb; ?>" ><img src="<?php echo $logo;?>modules/mod_jomsocialbroadcast/images/disconn.png" /></a>
-		<?php
-		}
-		else{?>
-			<a href="<?php echo $loginUrl_fb; ?>" ><img src="<?php echo $logo;?>modules/mod_jomsocialbroadcast/images/conn.png" /></a>
-		<?php
-		}
-		?>
-		</div>
-		<div style="clear:both;"></div>
-	</div>
-		
-<?php
+	$rsslists = explode('|', $this->subscribedlists->broadcast_rss_url);
 }
-if($broadcast_config['twitter'])
-{
 ?>
-	<div class="<?php echo $outclass ?>" >
-		<div class="<?php echo $inclass ?>">
-			<img src="<?php echo $logo;?>modules/mod_jomsocialbroadcast/images/twitter_logo.png"  >
-		</div>
-		<div>
-		<?php
-		if ($status_twitter) {
-		?>
-		<a href="<?php echo $remove_link_twitter; ?>" ><img src="<?php echo $logo;?>modules/mod_jomsocialbroadcast/images/disconn.png" /></a>
-		<?php
-		}
-		else {
-		?>
-			<a href="<?php echo $request_link_twitter; ?>" ><img src="<?php echo $logo;?>modules/mod_jomsocialbroadcast/images/conn.png" /></a>
-		<?php
-		}
-		?>
-		</div>
-		<div style="clear:both;"></div>
-	</div>
-		
-<?php
-}
-	if($broadcast_config['linkedin'])
-	{
-?>
-	<div class="<?php echo $outclass ?>" >
-		<div class="<?php echo $inclass ?>">
-			<img src="<?php echo $logo; ?>modules/mod_jomsocialbroadcast/images/linkfinal.jpg" >
-		</div>
-		<div>
-		<?php
-		if ($status_linkedin) {
-		?>
-			<a href="<?php echo $remove_link_linkedin; ?>" ><img src="<?php echo $logo;?>modules/mod_jomsocialbroadcast/images/disconn.png" /></a>
-		<?php
-		} else {
-		?>
-			<a href="<?php echo $request_link_linkedin; ?>" ><img src="<?php echo $logo;?>modules/mod_jomsocialbroadcast/images/conn.png" /></a>
-		<?php
-		}
-		?>
-		</div>
-		<div style="clear:both;"></div>
-	</div>
-		
-		
-<?php
+
+<script type="text/javascript">
+   jQuery.noConflict();
+</script>
+ 
+<script type="text/javascript">
+	 var limit="<?php echo $broadcast_config['rss_link_limit']; ?>";
+	 <?php
+	 if($this->subscribedlists->broadcast_rss_url)
+	 {
+	 ?>
+	 	var counter="<?php echo count($rsslists)+1; ?>";
+	 <?php
+	 }
+	 else
+	 {
+	 ?>
+		var counter=1;
+	<?php
 	}
+	?>
 
-}
-?>
-	<div class="<?php echo $outclass ?>" >
+	
+</script>
 
-		<div class="<?php echo $inclass ?>"><a href="<?php echo $rss_link; ?>" style="color:black; text-decoration:none;">
-			<img src="<?php echo $logo; ?>modules/mod_jomsocialbroadcast/images/rss.png" height="20"></a>
-			<div><a href="<?php echo $rss_link; ?>" style="color:black; text-decoration:none;"><b style="vertical-align:middle; padding-bottom:25px;">
-			<?php
-			echo JText::_('BC_RSS');
+	<h1 class="contentheading">											
+			 <?php echo JText::_('BC_SETT');?>
+	</h1>
+ <?php
+	
+
+	if($broadcast_config['facebook_profile'] or $broadcast_config['facebook_page'] or $broadcast_config['twitter'] or  $broadcast_config['linkedin'])
+	{
+ ?>
+	<fieldset class="fieldsetstyle">
+		<legend class="legendstyle"><?php echo JText::_('CONN_SER')?></legend>
+		<div class="check_connect_border"></div>
+		<div id="broadcast_connect">
+			<div class="content_cover" id="check_rss_label" style="padding-left: 8px;"><?php echo JText::_('BC_SER_MSG')?></div>
+			<?php 
+			include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+			$lang = & JFactory::getLanguage();
+			$lang->load('mod_jomsocialbroadcast', JPATH_SITE);
+			$apidata = combroadcastHelper::getapistatus();
+			$align=1;			
+			ob_start();
+				include(JModuleHelper::getLayoutPath('mod_jomsocialbroadcast'));
+				$html = ob_get_contents();
+			ob_end_clean();
+			echo $html ;	
 			?>
-			</b></div></a>
+		</div><!--End of Div Broadcast_Connect -->
+	</fieldset>
+	<?php
+	}
+	?>
+
+
+<?php
+$user	=	JFactory::getUser();
+
+ if($user->id)
+ {
+	
+?>
+<form action=""  method="POST" name="manualform" >
+	<!-- **** Start Added & Modified By Deepak -->
+	<fieldset class="fieldsetstyle">
+		<legend class="legendstyle"><?php echo JText::_('BC_ACT')?></legend>             
+		<div id="broadcast_activity" >
+			<table>
+				<tr>
+				    <td style="padding-left: 8px;">		
+						<?php
+							$brodfile 	= JPATH_SITE."/components/com_broadcast/broadcast.ini";
+							$activities = parse_ini_file($brodfile);
+							$lists 	= array();	
+							if (isset($this->subscribedlists->broadcast_activity_config))
+								$lists 	=  explode('|', $this->subscribedlists->broadcast_activity_config);
+							foreach($activities as $v=>$bractive)
+							{								
+								if(in_array($v, $lists))
+									$brchecked = 'checked="checked"';
+								else
+									$brchecked = '';
+												
+								if($bractive != '')							
+									echo '<input type="checkbox" name="broadcast_activity[]" '.$brchecked.' value="'.$v.'" >'.$bractive.'<br />';								
+							}
+						?>
+				</td>                                       
+				</tr>	
+			</table>	
+		</div>
+	<div class="content_cover" style="padding-left: 8px;"><?php echo JText::_('BC_ACT_MSG')?></div>
+	</fieldset>			
+	<fieldset class="fieldsetstyle">
+		<legend class="legendstyle"><?php echo JText::_('ACT_RSS')?></legend>
+		<script type="text/javascript">
+			var latestId = counter+1;
+			function addNewItem() {
+				if(counter>limit){
+	        	    alert("Only  "+limit+" RSS Links are allowed.");
+				}
+				else{
+				appendElement("container1", "element" + latestId, "<input type='text' class='inputbox' name='rss_link[]' value='' /><a href=\"javascript:removeItem(" + latestId + ")\"> [Remove Link]</a>");		
+				latestId++;
+				counter++;
+				}
+			}
+
+			function removeItem(idNumber) {	
+				removeElement("container1", "element" + idNumber);
+				counter--;
+			}
+
+			function removeElement(parentId, elementId) {	
+				//Get a reference to the element containgint the element we are removing
+			  	var parentElement = document.getElementById(parentId);
+			  	//Get a reference to the element we are removing
+			  	var childElement = document.getElementById(elementId);
+			  	
+				//remove the 
+			  	parentElement.removeChild(childElement);
+			}
+
+			function appendElement(container1Id, newElementId, newElementContent) {	
+				//First, we need to create a new DIV element
+			  	var newElement=document.createElement("div");
+				//New we will give it the specified ID so we can manage it later if necessary
+				newElement.setAttribute("id", newElementId);
+				//Insert the HTML content into the new element
+			  	newElement.innerHTML=newElementContent;
+	
+				//Get a reference to the element that will contain the new element
+			 	var container1 = document.getElementById(container1Id);
+				//Now we just need to insert our new element into the containing element
+			  	container1.appendChild(newElement, container1);	
+			}
+		</script>		
+		<div class="content_cover" id="check_rss_label" style="padding-left: 8px;"><?php echo JText::_('ACT_RSS_MSG')?></div>
+<br />		
+<div id="broadcast_rss">
+			<div id="container1" style="padding-left: 20px;">
+				<?php 
+					if(isset($this->subscribedlists->broadcast_rss_url) )
+					{
+						$rsslists = explode('|', $this->subscribedlists->broadcast_rss_url);						
+						$i=0;
+						foreach($rsslists as $rss)
+						{
+							echo '<div id="element'.$i.'">';													
+							echo '<input size="50" type="text" class="inputbox" name="rss_link['.$i.']" value="'.$rss.'" />';
+							echo '<a href="javascript:removeItem('.$i.');" > ['.JText::_('REM_RSS').']</a>'."<br />";
+							echo '</div>';
+							$i++;
+						}
+					}
+				?>
+			</div><br />
+			<div style="text-align: left; padding-left:8px;"><a id="addButton" href="javascript:addNewItem();">[<?php echo JText::_('ADD_RSS')?>]</a></div>			
 		</div>	
-	</div>
-		
-		<div style="clear:left;"></div>
-		<?php if($posttext){?>
-		<div class="broadcast_foot" style="width:100%"><?php echo $posttext; ?></div>
-		<?php }?>
+	</fieldset>	
+	<!-- **** End Added & Modified By Deepak -->
+	
+	<table cellspacing='5'  align='center' width="40%">	
+		<tr>	
+			<td align='left' colspan="2">
+				<input type="hidden" name="option" value="com_broadcast">		
+				<input type="hidden" id="task" name="task" value="save">
+				<input type="button" value="<?php echo JText::_('BC_SAVE')?>" onclick="submit(this.form);">
+			</td>
+		</tr>
+	</table>
 
-
-
-
+ </form>
+<?php
+ }
+?>
