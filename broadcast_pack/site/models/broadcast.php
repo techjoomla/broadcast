@@ -10,7 +10,7 @@ class BroadcastModelbroadcast extends JModel
 	function getapistatus(){
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 		$dispatcher = &JDispatcher::getInstance();
-		JPluginHelper::importPlugin('invitex');
+		JPluginHelper::importPlugin('techjoomlaAPI');
 		$api_response=$dispatcher->trigger('renderPluginHTML',array($broadcast_config));
 		return $api_response;
 	}
