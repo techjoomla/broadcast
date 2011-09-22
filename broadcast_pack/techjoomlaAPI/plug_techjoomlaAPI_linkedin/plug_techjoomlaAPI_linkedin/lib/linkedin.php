@@ -2,7 +2,7 @@
 
 
 
-require_once('plugins/techjoomlaAPI/plug_techjoomlaAPI_linkedin/plug_techjoomlaAPI_linkedin/lib/OAuth.php');
+require_once('OAuth.php');
 /**
  * 'LinkedInException' class declaration.
  *  
@@ -742,14 +742,18 @@ class LinkedInAPI {
 	 * @param    str   $options        [OPTIONAL] Data retrieval options.	 
 	 * @return   arr                   Array containing retrieval success, LinkedIn XML formatted response.
 	 */
-	public function profile($options = '~') {
+	public function profile($options = '~',$param=0) {
 	  // check passed data
 	  if(!is_string($options)) {
 	    // bad data passed
 		  throw new LinkedInException('LinkedIn->profile(): bad data passed, $options must be of type string.');
 	  }
+	  	if($param==1)
+	  	$query_params = self::_URL_API . '/v1/people' . trim($options);
+	  	else
+	  	$query = self::_URL_API . '/v1/people/' . trim($options);
 	  
-	  $query = self::_URL_API . '/v1/people/' . trim($options);
+	   
 	  $response = $this->fetch('GET', $query);
 	  if($response['info']['http_code'] == 200) {
 	    // profile request successful
@@ -818,7 +822,7 @@ class LinkedInAPI {
       return $return_data;
     } catch(OAuthException $e) {
       // oauth exception raised
-	// $_SESSION['techjoomla_api_linkedin']$e->getMessage();
+      throw new LinkedInException('OAuth exception caught: ' . $e->getMessage());
     }
 	}
 	
@@ -1307,14 +1311,17 @@ class LinkedInAPI {
 	  }
 	  
 	  if(!is_null($id) && self::isId($id)) {
-	    $query = self::_URL_API . '/v1/people/' . $id . '/network/updates' . trim($options);
+	    $query = self::_URL_API . '/v1/people/' . $id . '/network/updates?scope=self'. trim($options);
 	  } else {
-      $query = self::_URL_API . '/v1/people/~/network/updates' . trim($options);
+      $query = self::_URL_API . '/v1/people/~/network/updates?scope=self'.trim($options);
     }
-	  $response = $this->fetch('GET', $query);
+   
+    $response = $this->fetch('GET', $query);
+    
 	  if($response['info']['http_code'] == 200) {
 	    // profile request successful
 	    $return_data            = $response;
+	  
 	    $return_data['success'] = TRUE;
 	  } else {
 	    // profile request failed
@@ -1322,6 +1329,7 @@ class LinkedInAPI {
 	    $return_data['error']   = 'HTTP response from LinkedIn end-point was not code 200';
 	    $return_data['success'] = FALSE;
 	  }
+	  
 		return $return_data;
 	}
 	
@@ -1370,68 +1378,7 @@ class LinkedInAPI {
 	  xml_parser_free($parser);
     return $return_data;
   }
-  //Added by sagar
-  function getstatus($id) {
-  	//http://api.linkedin.com/v1/people/~/network/updates?scope=self
-  //http://api.linkedin.com/v1/people/id=abcdefg/network/updates?scope=self
-    $profile_url = $this->base_url . "/v1/people/~/network/updates?scope=self";
-    $request = OAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "GET", $profile_url);
-    $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
-    $auth_header = $request->to_header("https://api.linkedin.com"); # this is the realm
-    # This PHP library doesn't generate the header correctly when a realm is not specified.
-    # Make sure there is a space and not a comma after OAuth
-    // $auth_header = preg_replace("/Authorization\: OAuth\,/", "Authorization: OAuth ", $auth_header);
-    // # Make sure there is a space between OAuth attribute
-    // $auth_header = preg_replace('/\"\,/', '", ', $auth_header);
-    if ($debug) {
-      echo $auth_header;
-    }
-    // $response will now hold the XML document
-    $response = $this->httpRequest($profile_url, $auth_header, "GET");
-
-    return $response;
-  }
-  function setStatus($status) {
-    $status_url = $this->base_url . "/v1/people/~/current-status";
-    //echo "Setting status...\n";
-    $xml = "<current-status>" . htmlspecialchars($status, ENT_NOQUOTES, "UTF-8") . "</current-status>";
-    //echo $xml . "\n";
-    $request = OAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "PUT", $status_url);
-    $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
-    $auth_header = $request->to_header("https://api.linkedin.com");
-    if ($debug) {
-      echo $auth_header . "\n";
-    }
-    $response = $this->httpRequest($status_url, $auth_header, "PUT", $xml);
-    return $response;
-  }
   
-  function httpRequest($url, $auth_header, $method, $body = NULL) {
-    if (!$method) {
-      $method = "GET";
-    };
-
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_HEADER, 0);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array($auth_header)); // Set the headers.
-
-    if ($body) {
-      curl_setopt($curl, CURLOPT_POST, 1);
-      curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
-      curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-      curl_setopt($curl, CURLOPT_HTTPHEADER, array($auth_header, "Content-Type: text/xml;charset=utf-8"));   
-    }
-
-    $data = curl_exec($curl);
-    if ($this->debug) {
-      echo $data . "\n";
-    }
-    curl_close($curl);
-    return $data; 
-  }
-  //added by sagar
 }
 
 ?>
