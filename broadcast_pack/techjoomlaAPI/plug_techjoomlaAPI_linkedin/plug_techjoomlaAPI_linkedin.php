@@ -46,9 +46,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		$plug['api_used']=$this->_name; 
 		$plug['message_type']='pm';               
 		$plug['img_file_name']="linkedin.png";   
-	//dipti
-		$plug['apistatus'] = $this->status();
-	//eoc     
+		//dipti
+			$plug['apistatus'] = $this->status();
+		//eoc     
 		return $plug;   
 	}
 	
@@ -302,7 +302,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
             
     }
   }//end send message
-  /*
+ /*
 Array(
     [0] => Array(
             [user_id] => 42
