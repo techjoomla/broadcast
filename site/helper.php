@@ -214,6 +214,55 @@ $access_token = $_SESSION['access_token'];
       			return false;
   		}
 	}
+	function intempAct($id, $act, $date, $api='')
+	{
+		$db 			=& JFactory::getDBO();
+		$obj			= new StdClass();
+		$obj->uid 		= $id;
+		$obj->status 	= $act;
+		$obj->created_date	= $date;	
+		$obj->type		= $api; 
+		if(!$db->insertObject('#__broadcast_tmp_activities', $obj)){		
+      		$db->stderr();
+      		return false;
+  		}
+	}
+	function inJSAct($actor,$target,$title,$content,$api,$cid,$date)
+	{
+		$db 			=& JFactory::getDBO();
+		$obj			= new StdClass();
+		$obj->actor 	= $actor;
+		$obj->target 	= $target;
+		$obj->title		= $title;			
+		$obj->content	= $content;
+		$obj->app		= $api;
+		$obj->cid		= $cid;
+		$obj->params	= '';
+		$obj->created	= $date;	#TODO convert into correct date time 
+		$obj->access	= 0;
+		$obj->points	= 1;
+		$obj->archived	= 0; 
+		if(!$db->insertObject('#__community_activities', $obj)){		
+      		$db->stderr();
+      		return false;
+  		}
+	}
+	function checkexist($status,$uid,$api='')
+	{
+		$db 		=& JFactory::getDBO();
+		$status		= explode('(via',$status);		
+		$newstatus	= trim($status[0]);
+		$newstatus	=$db->getEscaped($newstatus);
+		$where = '';
+		if($api)
+			$where = ' AND type='.$api;
+		$query = "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid} AND status = '{$newstatus}' ".$where ;
+		$db->setQuery($query);
+		if($db->loadResult())			
+			return 1;					
+		else
+			return 0;
+	}	
 }
 
 //this class is used to make log for f/l/t controllers 

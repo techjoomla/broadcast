@@ -1,9 +1,9 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-require(JPATH_ROOT.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 require_once( JPATH_SITE . DS . 'components' . DS . 'com_community' . DS . 'libraries' . DS . 'core.php'); 
 require_once( JPATH_SITE . DS . 'components' . DS . 'com_community' . DS . 'helpers' . DS . 'time.php'); 
+include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 
 class plgCommunityjomsocialbroadcast extends CApplications 
 { 
@@ -15,7 +15,6 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	
 	function onProfileDisplay() 
 	{
-		include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 		$show 		= $this->params->get('show_plugin', '');	
 		if(!$show)
 			return;	
@@ -39,25 +38,25 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	{
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_community'.DS.'libraries'.DS.'activities.php');
 		require(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'url-shortening-class.php');
-		if($broadcast_config['facebook_profile'] or $broadcast_config['facebook_page'] or $broadcast_config['twitter'] or  $broadcast_config['linkedin'])
-		{
-			$subscribedapp	= explode('|',$this->getusersetting());
-			if(in_array($activity->app,$subscribedapp))
-			{	 
-				$title=$this->tag_replace($activity->actor,$activity->target,$activity->created,$activity);
+		$user	= JFactory::getUser();	
+		$subscribedapp	= explode('|',$this->getusersetting($user->id));
+		if(in_array($activity->app,$subscribedapp))
+		{	 
+			$title=$this->tag_replace($activity->actor,$activity->target,$activity->created,$activity);
 /*			
-				$matches="";
-				preg_match_all("/<a href=.*?<\/a>/", $new_status, $matches);
-				$orgUrl  ="";
-				$innertest="";
-				$shortUrl="";
-				if(!empty($matches))
-					$this->setUrlShortening($broadcast_config,$matches); 
+			$matches="";
+			preg_match_all("/<a href=.*?<\/a>/", $new_status, $matches);
+			$orgUrl  ="";
+			$innertest="";
+			$shortUrl="";
+			if(!empty($matches))
+				$this->setUrlShortening($broadcast_config,$matches); 
 */
-				$user	= JFactory::getUser();	
-				combroadcastHelper::inQueue($title, $user->id, 1,0);
-			}
+			
+			combroadcastHelper::inQueue($title, $user->id, 1,0);
+			combroadcastHelper::intempAct($user->id, $title, date('Y-m-d',time()));
 		}
+
 	return true;
 	}
 
@@ -66,7 +65,6 @@ class plgCommunityjomsocialbroadcast extends CApplications
 		$my			= CFactory::getUser();
 		$config		= CFactory::getConfig();
 		$dayinterval 	= ACTIVITY_INTERVAL_DAY;
-		$row1=$oRow1= $activity2;
 				
 		$title = $activity->title;
 		$app = $activity->app;

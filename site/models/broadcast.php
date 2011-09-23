@@ -63,13 +63,15 @@ class BroadcastModelbroadcast extends JModel
 	function storestatus($apistatuses,$api){
 		jimport('joomla.utilities.date');
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+		
 		$api_name = str_replace('plug_techjoomlaAPI_', '', $api);
 
 		foreach($apistatuses as $apistatus){
 			$userid = $apistatus['user_id'];
 			foreach ($apistatus['status'] as $status )
 			{	
-				if((!$this->checkexist($status['comment'],$userid,$api)))
+				if((!combroadcastHelper::checkexist($status['comment'],$userid,$api)))
 				{
 					$obj = new StdClass();
 					if($broadcast_config['show_name'])
@@ -88,48 +90,19 @@ class BroadcastModelbroadcast extends JModel
 						$status_content = $status_content.' (via '.ucfirst($api_name).')';
 
 					$status_content = combroadcastHelper::makelink($status_content);
-					
-					$obj->actor 	= $userid;
-					$obj->target 	= $userid;
-					$obj->title		= $actor.$status_content;			
-					$obj->content	= '';
-					$obj->app		= $api_name;
-					$obj->cid		= $userid;
-					$obj->params	= '';
-					$today_date	= & JFactory::getDate($status['timestamp']);
-					$obj->created	= $today_date->toMySQL();	#TODO convert into correct date time 
-					$obj->access	= 0;
-					$obj->points	= 1;
-					$obj->archived	= 0; 
-					$this->_db->insertObject('#__community_activities', $obj);
-					
-					$obj=null;
-					$obj->uid 		= $userid;
-					$obj->status 	= $status['comment'];
-					$obj->created_date	= date('Y-m-d',time());	
-					$obj->type		= $api; 
-					$this->_db->insertObject('#__broadcast_tmp_activities', $obj);
+
+					combroadcastHelper::inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toMySQL() );
+					combroadcastHelper::intempAct($userid, $status['comment'],date('Y-m-d',time()),$api );
 
 					$query	= "UPDATE `#__community_users` SET `status` ='{$this->_db->getEscaped($status_content)}', 
 								posted_on='{$today_date->toMySQL()}', points=points +1 WHERE userid='{$userid}'";
 					$this->_db->setQuery( $query );
-					$addHit =$this->_db->query();	
+					$result =$this->_db->query();	
 				}
 			}
 		}
 	}
-	function checkexist($status,$uid,$api)
-	{
-		$status		= explode('(via',$status);		
-		$newstatus	= trim($status[0]);
-		$newstatus	=$this->_db->getEscaped($newstatus);
-		$query = "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid} and status = '{$newstatus}' ";
-		$this->_db->setQuery($query);
-		if($this->_db->loadResult())			
-			return 1;					
-		else
-			return 0;
-	}
+	
 	function getqueue(){
 		$query 		= "SELECT * FROM #__broadcast_queue";
 		$this->_db->setQuery($query);
