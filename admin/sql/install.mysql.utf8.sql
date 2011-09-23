@@ -1,19 +1,16 @@
-			
-CREATE TABLE IF NOT EXISTS `#__broadcast_users` (
-`user_id` int(11) NOT NULL,
-`facbook_uid` varchar(100) NOT NULL,
-`facebook_secret` varchar(400) NOT NULL,
-`twitter_oauth` varchar(400) NOT NULL,
-`twitter_secret` varchar(400) NOT NULL,
-`linkedin_oauth` varchar(400) NOT NULL,
-`linkedin_secret` varchar(400) NOT NULL,
-PRIMARY KEY  (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `#__techjoomlaAPI_users` (
+  `id` int(11) NOT NULL auto_increment,
+  `api` varchar(200) NOT NULL,
+  `token` TEXT NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `client` varchar(200) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `#__broadcast_tmp_activities` (
   `uid` int(10) NOT NULL,
-  `status` varchar(500) NOT NULL,
+  `status` TEXT NOT NULL,
   `type` varchar(50) NOT NULL,
   `created_date` date NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
