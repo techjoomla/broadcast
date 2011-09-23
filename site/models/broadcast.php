@@ -93,11 +93,7 @@ class BroadcastModelbroadcast extends JModel
 
 					combroadcastHelper::inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toMySQL() );
 					combroadcastHelper::intempAct($userid, $status['comment'],date('Y-m-d',time()),$api );
-
-					$query	= "UPDATE `#__community_users` SET `status` ='{$this->_db->getEscaped($status_content)}', 
-								posted_on='{$today_date->toMySQL()}', points=points +1 WHERE userid='{$userid}'";
-					$this->_db->setQuery( $query );
-					$result =$this->_db->query();	
+					combroadcastHelper::updateJSstatus($userid, $status_content,$today_date->toMySQL() );
 				}
 			}
 		}

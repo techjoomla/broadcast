@@ -14,177 +14,7 @@ class combroadcastHelper
 		$apis=BroadcastModelbroadcast::getapistatus();
 		return $apis;
 	}
-	
-	
-	
 
-	
-
-	// this function is called from linkedin / twitter / facebook controllers
-    function getInfo()
-    {
-		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
-		$bconfig = new BroadcastConfig;
-
-		$user = JFactory::getUser();
-		$db = JFactory::getDBO();
-		$fbquery = "SELECT * FROM #__broadcast_users WHERE user_id = {$user->id}";
-		$db->setQuery($fbquery);
-		$uaccess = $db->loadObject();		
-
-		//////////////////////Facebook Connection//////////////
-		if($broadcast_config['facebook_page'] or $broadcast_config['facebook_profile'])
-		{	
-			$facebook = new Facebook(array(
-				'appId'  => $bconfig->fb_api,
-				'secret' => $bconfig->fb_secret,
-				'cookie' => true,
-			));
-
-			$loginUrl_fb='';
-			if (combroadcastHelper::validate($uaccess, 'facebook')) 
-				$status_fb = 1;
-			else 
-				$status_fb = 0;
-				
-				$remove_link_fb ='';
-
-			if ($status_fb) 
-				$remove_link_fb = JRoute::_('index.php?option=com_broadcast&controller=facebook&task=remove');
-			else 
-			{
-					if($broadcast_config['facebook_page'])
-						$loginUrl_fb = $facebook->getLoginUrl( array('req_perms' => 'offline_access,publish_stream,user_status,status_update,manage_pages'),$bconfig->callback_url_facebook);
-					else
-						$loginUrl_fb = $facebook->getLoginUrl( array('req_perms' =>'offline_access,publish_stream,user_status,status_update'),$bconfig->callback_url_facebook);				
-			}
-				$data['status_fb']		= $status_fb;		
-				$data['remove_link_fb']	= $remove_link_fb;
-				$data['loginUrl_fb']	= $loginUrl_fb;
-		}
-		//////////////////////////////////////facebook End//////////////////////////////////////
-	
-	
-		/////////////////////////////////////Twitter start//////////////////////////////////////
-
-
-$access_token = $_SESSION['access_token'];
-//if (empty($_SESSION['access_token']) || empty($_SESSION['access_token']['oauth_token']) || empty($_SESSION['access_token']['oauth_token_secret'])) {
-	//code to chk if consumer key & secret if present
-	$remove_link_twitter='';
-	$request_link_twitter ='';
-	if (combroadcastHelper::validate($uaccess, 'twitter'))
-		$status_twitter = 1;
-	else
-	{
-		$status_twitter = 0;		
-		$connection = new TwitterOAuth($bconfig->twitter_consumer, $bconfig->twitter_secret);
-		$request_token = $connection->getRequestToken($bconfig->callback_url_twitter);
-		$_SESSION['oauth_token'] = $token = $request_token['oauth_token'];
-		$_SESSION['oauth_token_secret'] = $request_token['oauth_token_secret'];
-
-		/* If last connection failed don't display authorization link. */
-		switch ($connection->http_code) {
-			case 200:
-				/* Build authorize URL and redirect user to Twitter. */
-				$request_link_twitter = $connection->getAuthorizeURL($token);
-	//    header('Location: ' . $url); 
-				break;
-			default:
-				/* Show notification if something went wrong. */
-				echo 'Could not connect to Twitter. Refresh the page or try again later.';
-		}
-	}
-	if ($status_twitter) {
-		$remove_link_twitter = JRoute::_('index.php?option=com_broadcast&controller=twitter&task=remove');		
-	}  
-	$data['status_twitter']			= $status_twitter;		
-	$data['request_link_twitter'] =  $request_link_twitter;
-	$data['remove_link_twitter']	= $remove_link_twitter;
-
-
-
-
-
-/*		if($broadcast_config['twitter'])
-		{	
-			$request_link_twitter ='';
-			if (combroadcastHelper::validate($uaccess, 'twitter'))
-				$status_twitter = 1;
-			else
-			{
-				$status_twitter = 0;		
-				$to = new TwitterOAuth($bconfig->twitter_consumer, $bconfig->twitter_secret);print_r($to);
-				$tok = $to->getRequestToken();
-				$request_link_twitter = $to->getAuthorizeURL($tok);	  	
-				$_SESSION['oauth_request_token'] = $token = $tok['oauth_token'];
-				$_SESSION['oauth_request_token_secret'] = $tok['oauth_token_secret'];		  	
-			}
-
-			$remove_link_twitter='';
-			if ($status_twitter) {
-				$remove_link_twitter = JRoute::_('index.php?option=com_broadcast&controller=twitter&task=remove');		
-			}  
-			$data['status_twitter']			= $status_twitter;		
-			$data['request_link_twitter']	= $request_link_twitter;
-			$data['remove_link_twitter']	= $remove_link_twitter;
-	
-		}		
-*/
-		/////////////////////////////////////Twitter End////////////////////////////////////////
-	
-		/////////////////////////////////////Linkedin start//////////////////////////////////////
-		if($broadcast_config['linkedin'])
-		{		
-			$request_link_linkedin='';
-	
-			if (combroadcastHelper::validate($uaccess, 'linkedin'))
-				$status_linkedin = 1;
-			 else
-			 {
-					$status_linkedin = 0;
-/*					$linkedin = new LinkedIn($bconfig->linkedin_access, $bconfig->linkedin_secret, $bconfig->callback_url_linkedin );    		
-					$linkedin->getRequestToken();
-					$_SESSION['requestToken']= serialize($linkedin->request_token);			 		    		
-					$request_link_linkedin = $linkedin->generateAuthorizeUrl();		
-*/
-			}
-
-			$remove_link_linkedin ='';
-			if ($status_linkedin)
-				$remove_link_linkedin = JRoute::_('index.php?option=com_broadcast&controller=linkedin&task=remove');			
-	
-			$data['status_linkedin']			= $status_linkedin;		
-			$data['request_link_linkedin']		= JRoute::_('index.php?option=com_broadcast&controller=broadcast&task=get_request_token&api=Linkedin');//$request_link_linkedin;
-			$data['remove_link_linkedin']		= $remove_link_linkedin;
-		}
-
-	/////////////////////////////////////Linkedin End//////////////////////////////////////
-		return $data;		
-	}
-
-	function validate($uaccess, $app) 
-	{
-		 switch ($app)
-		 {		
-			case 'twitter':
-			if ($uaccess->twitter_oauth && $uaccess->twitter_secret)
-			return true;
-			break;
-			
-			case 'linkedin':
-			if ($uaccess->linkedin_oauth && $uaccess->linkedin_secret)
-			return true;
-			break;
-			
-			case 'facebook':
-			if ($uaccess->facbook_uid)
-			return true;
-			break;
-		}
-	
-	}
-	
 	function makelink($text)
 	{
 		$text = $text;
@@ -194,7 +24,6 @@ $access_token = $_SESSION['access_token'];
 		$text = preg_replace("#(^|[\n ])\#([^ \"\t\n\r<]*)#ise", "'\\1<a href=\"http://hashtags.org/search?query=\\2\" >#\\2</a>'", $text);
 		return $text;
 	}
-	
 	
 	#inQueue function called from plugin as well can be called from custom place	
 	function inQueue($newstatus, $userid, $count, $interval)
@@ -214,6 +43,7 @@ $access_token = $_SESSION['access_token'];
       			return false;
   		}
 	}
+	#populate the temp activity table of broadcast called from broadcast & rss models 
 	function intempAct($id, $act, $date, $api='')
 	{
 		$db 			=& JFactory::getDBO();
@@ -227,6 +57,7 @@ $access_token = $_SESSION['access_token'];
       		return false;
   		}
 	}
+	#populate the Jomsocial activity table called from broadcast & rss models 
 	function inJSAct($actor,$target,$title,$content,$api,$cid,$date)
 	{
 		$db 			=& JFactory::getDBO();
@@ -247,6 +78,16 @@ $access_token = $_SESSION['access_token'];
       		return false;
   		}
 	}
+	#set the current Jomsocial status, called from broadcast & rss models 
+	function updateJSstatus($userid,$status,$date)
+	{
+		$db 	=& JFactory::getDBO();
+		$query	= "UPDATE `#__community_users` SET `status` ='{$db->getEscaped($status)}', 
+								posted_on='{$date}', points=points +1 WHERE userid='{$userid}'";
+		$db->setQuery( $query );
+		$result =$db->query();
+	}
+	#check if the status exist in the temp table of broadcast
 	function checkexist($status,$uid,$api='')
 	{
 		$db 		=& JFactory::getDBO();

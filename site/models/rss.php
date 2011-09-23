@@ -2,34 +2,31 @@
 
 defined('_JEXEC') or die();
 jimport( 'joomla.application.component.model' );
+include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 
 class BroadcastModelrss extends JModel
 {
 		
-	 function rssstore($act)
+	 function rssstore($uid,$rssobj)
 	 {
-				$db	 	= &$this->getDBO();	
-				$db->insertObject('#__community_activities', $act);
-				$tmp_obj=null;
-				$currentstatus=$act->title;
-				$tmp_obj->uid 				= $act->actor;
-				$currentstatus=str_replace("{actor} ",'',$currentstatus);
-				$currentstatus	=mysql_real_escape_string("$currentstatus");	
-				$tmp_obj->status 		=$currentstatus;
-				$tmp_obj->created_date	=$act->created;	
-				$tmp_obj->type='rss';					
-				$db->insertObject('#__broadcast_tmp_activities', $tmp_obj);
-				$qry	 			= "SELECT title, created FROM #__community_activities WHERE actor = {$act->actor} ORDER BY created desc ";
-				$db->setQuery($qry);		
-				$mydata 		= $this->_db->loadObject();		
-				$currentstatus  = $mydata->title;
-				$created 		= $mydata->created;
-				$currentstatus=str_replace("{actor} ",'',$currentstatus);
-				$currentstatus	=mysql_real_escape_string("$currentstatus");					
-				$query	= "UPDATE `#__community_users` SET `status` ='{$currentstatus}', 
-									posted_on='{$created}', points=points +1 WHERE userid='{$act->actor}'";
-				$db->setQuery( $query );
-				$addHit =$db->query();
+	 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+			$db	 	= &$this->getDBO();	
+			$today_date = & JFactory::getDate($rssobj->get_date());	
+			$date = $today_date->toMySQL();
+			
+			$str_title_link	= "<a href=".$rssobj->get_link()." target='_blank'>".$rssobj->get_description()."</a>";
+		 	
+		 	if($broadcast_config['status_via'])
+		   		$str_title_link	.= " (via RSS)";
+		 							 	
+			echo $str_title_link."<br>";
+                            //$html_reg = '/<+\s*\/*\s*([A-Z][A-Z0-9]*)\b[^>]*\/*\s*>+/i';
+                          //htmlentities( preg_replace( $html_reg, '', $str_title_link ) );
+ 		 	$str_title_link = "<img style='height: 20px;' src=".JURI::base().'modules'.DS.'mod_jomsocialbroadcast'.DS.'images'.DS.'rss.png'."> ".$str_title_link;
+			
+			combroadcastHelper::inJSAct($uid,$uid,$str_title_link,'', 'rss',$uid, $date);
+			combroadcastHelper::intempAct($uid, $rssobj->get_description(), $date,'rss' );
+			combroadcastHelper::updateJSstatus($uid, $str_title_link,$date );
 	  }
 
 		function rssdeletetmpactivity()
@@ -41,20 +38,5 @@ class BroadcastModelrss extends JModel
 			$query = "DELETE FROM #__broadcast_tmp_activities WHERE created_date<'$previousdt'";
 			$db->setQuery($query);	
 			$db->query();		
-		}
-		
-		function checkexist($status,$uid)
-		{
-			$status		= explode('(via',$status);		
-			$newstatus	= trim($status[0]);
-			$db	 	= &$this->getDBO();
-			$newstatus	=$db->getEscaped($newstatus);
-			$query 			= "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid} and status LIKE '{$newstatus}' AND type='rss' ";
-			$db->setQuery($query);	
-			$result 			=$db->loadObjectList();
-			if($result)			
-			return 1;					
-			else
-			return 0;
 		}
 	}
