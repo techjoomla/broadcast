@@ -35,11 +35,11 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	
 	
 	function onBeforeStreamCreate($activity) ///trigger present in SOME versions of joomla
-	{
+	{ 
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_community'.DS.'libraries'.DS.'activities.php');
-		require(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'url-shortening-class.php');
+		require(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'googlshorturl.php');
 		$user	= JFactory::getUser();	
-		$subscribedapp	= explode('|',$this->getusersetting($user->id));
+		$subscribedapp	= explode('|',$this->getusersetting($user->id)); 
 		if(in_array($activity->app,$subscribedapp))
 		{	 
 			$title=$this->tag_replace($activity->actor,$activity->target,$activity->created,$activity);
@@ -62,6 +62,9 @@ class plgCommunityjomsocialbroadcast extends CApplications
 
 	function tag_replace($actor, $target, $date = null, $activity )
 	{
+	$api_key='';
+	$goo = new Googl($api_key);//if you have an api key
+
 		$my			= CFactory::getUser();
 		$config		= CFactory::getConfig();
 		$dayinterval 	= ACTIVITY_INTERVAL_DAY;
@@ -84,17 +87,27 @@ class plgCommunityjomsocialbroadcast extends CApplications
 		$activity->title = preg_replace('/\{multiple\}(.*)\{\/multiple\}/i', '', $activity->title);
 		$search  = array('{single}','{/single}');
 		$activity->title	= CString::str_ireplace($search, '', $activity->title);
+		
+		// replacement of url in title
+    $regex = "/(http:\/\/[^\s]+)/"; // url 
+    preg_match($regex, $activity->title,$matches);
+	if($matches){
+		$surl = $goo->set_short($matches[0]); echo $surl['id'];
+		$activity->title = preg_replace('/(http:\/\/[^\s]+)/', $surl['id'],  $activity->title );
+	
+	}	
+    //$activity->title = preg_replace('/(http:\/\/[^\s]+)/', $goo->set_short('.$1.'),  $activity->title );
+		
 	
 	//Append URL
-		$url='';
+		$shorturl='';
 		if($activity->params){
-		$shorturl = array();
-			$shorturl[0][] = $this->_getURL($activity->app,json_decode($activity->params));
+			$response = array();
+			$response = $goo->set_short(JURI::base().$this->_getURL($activity->app,json_decode($activity->params)));
+			$shorturl = $response['id'];
 		}
-		if(!empty($shorturl))
-			$url=	$this->setUrlShortening($shorturl); 
-	
-		$activity->title=strip_tags($activity->title." ".$url);
+		
+		$activity->title=strip_tags($activity->title." ".$shorturl); 
 		return $activity->title;
 	}
 
