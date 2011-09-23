@@ -23,22 +23,22 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	{
 		
 		parent::__construct($subject, $config);
-		$appKey	=& $this->params->get('appKey');
-		$appSecret	=& $this->params->get('appSecret');
-		$this->API_CONFIG=array(
-		'appKey'       => $appKey,
-		'appSecret'    => $appSecret,
-		'callbackUrl'  => NULL 
-		);
-		
+		$this->appKey	=& $this->params->get('appKey');
+		$this->appSecret	=& $this->params->get('appSecret');
+		$this->callbackUrl='';
+		$this->errorlogfile='facebook_error_log.php';
+		$this->user = JFactory::getUser();
+		$this->db=JFactory::getDBO();
 		$this->facebook = new Facebook(array(
- 	 'appId'  => $appKey,
-   'secret' => $appSecret,
+ 	 'appId'  => $this->appKey,
+   'secret' => $this->appSecret,
+   'callbackUrl'=> $this->callbackUrl,
    'cookie' => true, // enable optional cookie support
 		));
-			//Create Global Error Log Object//
-		$error_log=new BroadcastHelperLogs();		
-		$this->ERROR_LOG	=$error_log;
+		
+		//Create Global Error Log Object//
+		$this->ERROR_LOG=new BroadcastHelperLogs();	
+		
 	}
 	
 	/*
@@ -52,7 +52,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
     $plug=array(); 
    	$plug['name']="Facebook";
   	//check if keys are set
-		if($this->API_CONFIG['appKey']=='' || $this->API_CONFIG['appSecret']==''|| !in_array($this->_name,$config) )
+		if($this->appKey=='' || $this->appSecret=='' || !in_array($this->_name,$config))
 		{
 			$plug['error_message']=true;		
 			return $plug;
@@ -67,116 +67,126 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	}
 	
 	function status(){
-		$user = JFactory::getUser();
-		$db = JFactory::getDBO();
-		$query = "SELECT facbook_uid,facebook_secret FROM #__broadcast_users WHERE user_id = {$user->id}";
-		$db->setQuery($query);
-		$uaccess = $db->loadObject();
-		if ($uaccess->facbook_uid && $uaccess->facebook_secret)
+	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE user_id = {$this->user->id}  AND api='{$this->_name}'";
+		$this->db->setQuery($query);
+		$result	= $this->db->loadResult();		
+		$uaccess=json_decode($result);
+		if ($uaccess->facebook_uid && $uaccess->facebook_secret)
 			return 1;
 		else
 			return 0;
 	}
+	
 	function get_request_token($callback) 
 	{
 		
-		$this->API_CONFIG['callbackUrl']=$callback;
+		$this->callbackUrl=$callback;
 		$params = array(
 							'redirect_uri' => $callback,
-							'scope' =>'email,read_stream,user_status,publish_stream,offline_access', //,
+							'scope' =>'email,read_stream,user_status,publish_stream,offline_access', 
 							);
-		$loginUrl = $this->facebook->getLoginUrl($params);
+			
+		try	{
+			$loginUrl = $this->facebook->getLoginUrl($params);
+			$user = $this->facebook->getUser();
+		} 
+		catch (FacebookApiException $e) 
+		{
+			$this->raiseException($e->getMessage());
+			return false;
+		}	
+			$response=header('Location:'.$loginUrl);  
 		
-		$user = $this->facebook->getUser();
-		$response=header('Location:'.$loginUrl);   
-		return true;
-		
-
+			return true; 
 	
 	}
 	
 	function get_access_token($get,$client,$callback) 
 	{
 		
-			try
-			{
-				$uid = $this->facebook->getUser();
-				$facebook_secret = $this->facebook->getAccessToken();
-
-				$data['facbook_uid'] = $uid;
-				$data['facebook_secret'] = $facebook_secret;
-				$this->store($client,$data);
-								
-			}
-			catch (FacebookApiException $e)
-			{	
-				
-				return false;
-			}
-			
-			return true;
-		
-		
-		
+		try{	
+			$uid = $this->facebook->getUser();			
+			$facebook_secret = $this->facebook->getAccessToken();
+		}
+		catch (FacebookApiException $e) 
+		{
+			$this->raiseException($e->getMessage());
+			return false;
+    }	
+    
+		$data = array('facebook_uid'=>$uid,'facebook_secret'=>$facebook_secret);
+		$this->store($client,$data);		
+		return true;
 		
 	}
 	
 	function store($client,$data) #TODO insert client also in db 
 	{
-		$db	 	=  & JFactory::getDBO();
-		$user = JFactory::getUser();
-		$qry = "SELECT user_id FROM #__broadcast_users WHERE user_id = {$user->id}";
-		$db->setQuery($qry);
-		$exists = $db->loadResult();
+		
+		$qry = "SELECT id FROM #__techjoomlaAPI_users WHERE user_id ={$this->user->id} AND client='{$client}' AND api='{$this->_name}' ";
+		$this->db->setQuery($qry);
+		$id	=$exists = $this->db->loadResult();
 		$row = new stdClass;
-		$row->user_id = $user->id;
-		foreach ($data as $k=>$v)
+		$row->id=NULL;
+		$row->user_id = $this->user->id;
+		$row->api 		= $this->_name;
+		$row->client=$client;
+		$row->token=json_encode($data);
+		
+		if($exists)
 		 {
-			$row->$k = $v;
-	   }		
-
-		if ($exists)
-		 {
-				$db->updateObject('#__broadcast_users', $row, 'user_id');
+		 		$row->id=$id;
+	 			$this->db->updateObject('#__techjoomlaAPI_users', $row, 'id');
 		 }
 		 else
 		 {
-			$db->insertObject('#__broadcast_users', $row);
+		 			
+				$status=$this->db->insertObject('#__techjoomlaAPI_users', $row);
 		 }
+		
 	}
 	
 	function getToken($user=''){
-		$db = JFactory::getDBO();
+		$user=$this->user->id;
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;
-		$query = "SELECT user_id,facbook_uid,facebook_secret
-		FROM #__broadcast_users 
-		WHERE facbook_uid<>'' and facebook_secret<>'' ".$where ;
-		$db->setQuery($query);
-		return $db->loadObjectlist();
+			
+		$query = "SELECT user_id,token
+		FROM #__techjoomlaAPI_users 
+		WHERE token<>'' AND api='{$this->_name}' ".$where ;
+		$this->db->setQuery($query);
+		return $this->db->loadObjectlist();
 	}
 	function remove_token($client)
 	{ 
-		$db	 = & JFactory::getDBO();
-		$user 	= JFactory::getUser();
+		if($client!='')
+		$where="AND client='{$client}' AND api='{$this->_name}'";
+		
 		#TODO add condition for client also
-		$qry 	= "UPDATE #__broadcast_users SET facbook_uid='',facebook_secret='' WHERE user_id = {$user->id}";
-		$db->setQuery($qry);	
-		$db->query();
+		$qry 	= "UPDATE #__techjoomlaAPI_users SET token='' WHERE user_id = {$this->user->id} ".$where;
+		$this->db->setQuery($qry);	
+		$this->db->query();
 	}
 	
 	        
 	function get_contacts() 
 	{
-		$friends= $this->facebook->api('/me/friends');
+		try{	
+			$contacts=array();
+			$friends= $this->facebook->api('/me/friends');
+		}
+		catch (FacebookApiException $e) 
+		{
+			$this->raiseException($e->getMessage());
+			return false;
+    }	
 		if(!$friends)
 		{
-		
-			return false;//Actual Message should be passed back to controller to display. No Hard coded Messages in Controller
-		
+					$this->raiseException(JText::_( 'EXCEPTION_CONTACT_NOT_FOUND' ));			
+					return $contacts;
 		}
-		$contacts=array();
+		
 		$connections =$friends;	
 		
 		$cnt=0;
@@ -192,10 +202,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			}
 			
 			$contacts=$this->renderContacts($emails);
-		if($contacts)
+		
 		return $contacts;
-		else
-		return array();
+		
 	}
 	
 	function renderContacts($emails)
@@ -236,26 +245,31 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
   
   function plug_techjoomlaAPI_facebookgetstatus()
 	{ 
+		$oauth_keys =array();
 	 	$oauth_keys = $this->getToken();
+	 
 	 	$i = 0;
 	 	$today=date('Y-m-d');
 		$facebook_profile_limit=10;
 		$returndata = array();
+		if(!$oauth_keys)
+		return array();
 	 	foreach($oauth_keys as $oauth_key){	
 	 	
-			$access_token =$oauth_key->facebook_secret;			
-			try {
-				$json_facebook = $this->facebook->api($oauth_key->facbook_uid.'/statuses',array('access_token'=>$oauth_key->facebook_secret,'since'=>$today,'limit'=>$facebook_profile_limit));
-				
+			$token =json_decode($oauth_key->token);	
+			try{		
+				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'since'=>$today,'limit'=>$facebook_profile_limit));
 			}
-			catch(FacebookApiException $o ){
-				print_r($o);
-			}
+			catch (FacebookApiException $e) 
+			{
+				$this->raiseException($e->getMessage());
+				return false;
+		  }	
 			$returndata[$i]['user_id'] = $oauth_key->user_id;
 			$returndata[$i]['status'] = $this->renderstatus($json_facebook['data']);
 			$i++;
 		}
-		
+			
 			return $returndata;
 		
 	}
@@ -276,21 +290,42 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		return $status;
 	}
 
-	function plug_techjoomlaAPI_facebooksetstatus($userid,$content='')
+	function plug_techjoomlaAPI_facebooksetstatus($userid='',$content='')
 	{
+		if(!$userid)
+		{
+			$this->raiseException($this->raiseException(JText::_( 'SESSION_TIMEOUT' )));
+     	return array();
+		}
 		$oauth_key = $this->getToken($userid);
+		$token =json_decode($oauth_key->token);	
 		$post=array();
 		if(!$content)
 		return array();
-		$access_token =$oauth_key[0]->facebook_secret;	
-		try {
-		$post = $this->facebook->api($oauth_key[0]->facbook_uid.'/feed', 'POST', array('access_token'=>$oauth_key[0]->facebook_secret,'message' => $content));
-		}
-		catch(FacebookApiException $o ){
-    print_r($o);
-	}    print_r($post); 
-	return $post;
+		
+		try{
+		$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $content));
+		
+		} 
+		catch (FacebookApiException $e) 
+		{
+  
+     $this->raiseException($e->getMessage());
+     return array();
+    }
+		
+		return $post;
 	
+	}
+	
+	function raiseException($exception)
+	{
+		$params=array(
+		'name'=>$this->_name,
+		'group'=>$this->_type,	
+		);	
+		$this->ERROR_LOG->simpleLog($exception,$path='',$this->errorlogfile,'plugin',$params);
+		return;
 	}
 	
 	
