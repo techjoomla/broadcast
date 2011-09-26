@@ -9,9 +9,13 @@ class BroadcastModelbroadcast extends JModel
 	/*trigger plugin to get the api data required for display*/
 	function getapistatus(){
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$api_response=array();
+		if( isset($broadcast_config['api']) )
+		{
 		$dispatcher = &JDispatcher::getInstance();
 		JPluginHelper::importPlugin('techjoomlaAPI');
 		$api_response=$dispatcher->trigger('renderPluginHTML',array($broadcast_config['api']));
+		}
 		return $api_response;
 	}
 	
