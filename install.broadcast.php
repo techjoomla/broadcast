@@ -215,3 +215,9 @@ function com_install()
 		JFile::move(JPATH_SITE.'/components/com_broadcast/images/facebook.png', JPATH_SITE.'/components/com_community/assets/favicon/facebook.png' );
 	}
 }
+
+	function getConfig($filename)
+	{
+		include($filename);
+		return $broadcast_config;
+	}

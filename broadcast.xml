@@ -22,6 +22,7 @@
 		<folder>css</folder>
 		<folder>models</folder>
 		<folder>views</folder>
+		<folder>images</folder>
 		<file>broadcast.php</file>
 		<file>broadcast.ini</file>
 		<file>controller.php</file>
@@ -29,7 +30,7 @@
 		<file>index.html</file>	
 	</files>
 	<languages folder="site/language">
-		<language tag="en-GB">en-GB.com_broadcast.ini</language>
+		<language tag="en-GB">en-GB/en-GB.com_broadcast.ini</language>
 	</languages>
 	
 	<administration>
@@ -47,9 +48,9 @@
 			<file>index.html</file>	
 		</files>	
 		<languages folder="admin/language">
-			<language tag="en-GB">en-GB.com_broadcast.ini</language>
-			<language tag="en-GB">en-GB.com_broadcast.sys.ini</language>
-			<language tag="en-GB">en-GB.com_broadcast.menu.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_broadcast.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_broadcast.sys.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_broadcast.menu.ini</language>
 		</languages>
 	</administration>	
 </install>
