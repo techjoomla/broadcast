@@ -39,7 +39,7 @@ return false;
 <script type="text/javascript">
 	 var limit="<?php echo $broadcast_config['rss_link_limit']; ?>";
 	 <?php
-	 if($this->subscribedlists->broadcast_rss_url)
+	 if(isset($this->subscribedlists->broadcast_rss_url))
 	 {
 	 ?>
 	 	var counter="<?php echo count($rsslists)+1; ?>";
@@ -59,12 +59,7 @@ return false;
 	<h1 class="contentheading">											
 			 <?php echo JText::_('BC_SETT');?>
 	</h1>
- <?php
-	
 
-	if($broadcast_config['facebook_profile'] or $broadcast_config['facebook_page'] or $broadcast_config['twitter'] or  $broadcast_config['linkedin'])
-	{
- ?>
 	<fieldset class="fieldsetstyle">
 		<legend class="legendstyle"><?php echo JText::_('CONN_SER')?></legend>
 		<div class="check_connect_border"></div>
@@ -84,9 +79,6 @@ return false;
 			?>
 		</div><!--End of Div Broadcast_Connect -->
 	</fieldset>
-	<?php
-	}
-	?>
 
 
 <?php

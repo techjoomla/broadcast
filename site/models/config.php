@@ -5,32 +5,7 @@ jimport( 'joomla.application.component.model' );
 
 class BroadcastModelconfig extends JModel
 {
-	function store($data)
-	{
-		$user = JFactory::getUser();
-		$row = new stdClass;
-		$qry = "SELECT `user_id` FROM #__broadcast_users WHERE `user_id` = {$user->id}";
-		$this->_db->setQuery($qry);
-		$exists = $this->_db->loadResult();
-		$row->user_id = $user->id;
-		
-		foreach ($data as $k=>$v)
-			$row->$k = $v;	
-				
-		if ($exists)
-			$this->_db->updateObject('#__broadcast_users', $row, 'user_id');
-		else 
-			 $this->_db->insertObject('#__broadcast_users', $row);
-	}
-	
-	function remove()
-	{
-		$user 	= JFactory::getUser();
-		$qry 	= "UPDATE #__broadcast_users SET facbook_uid='',facebook_secret='' WHERE user_id = {$user->id}";
-		$this->_db->setQuery($qry);	
-		$addHit =$this->_db->query();
-	}
-	
+
 	function getlist()
 	{
 		$qry = "SELECT distinct(app) FROM #__community_activities WHERE app<>'' order by app";
