@@ -22,6 +22,8 @@ class plgCommunityjomsocialbroadcast extends CApplications
 		$target = $activeProfile->id;
 		if($target==$user->id)
 		{
+			$lang = & JFactory::getLanguage();
+			$lang->load('mod_jomsocialbroadcast', JPATH_SITE);
 			$apidata = combroadcastHelper::getapistatus();			
 			$align=$this->params->get('show_horizontal', 0);
 			ob_start();
