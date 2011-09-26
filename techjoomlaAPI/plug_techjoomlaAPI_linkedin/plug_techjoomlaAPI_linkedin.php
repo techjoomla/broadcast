@@ -16,9 +16,6 @@ if(JVERSION >='1.6.0')
 else
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_linkedin'.DS.'lib'.DS.'linkedin.php');
 	
-//Helper class to write log file//
-require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'helper.php');
-
 class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 { 
 	function plgTechjoomlaAPIplug_techjoomlaAPI_linkedin(& $subject, $config)
@@ -35,11 +32,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		'appSecret'    => $appSecret,
 		'callbackUrl'  => NULL 
 		);
-		$this->linkedin = new LinkedInAPI($this->API_CONFIG); 
-		
-		//Create Global Error Log Object//
-		$this->ERROR_LOG=new BroadcastHelperLogs();	
-
+		$this->linkedin = new LinkedInAPI($this->API_CONFIG);
 	}
 	
 	/*
@@ -407,7 +400,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		'name'=>$this->_name,
 		'group'=>$this->_type,	
 		);	
-		$this->ERROR_LOG->simpleLog($exception,$path='',$this->errorlogfile,'plugin',$params);
+		techjoomlaHelperLogs::simpleLog($exception,'plugin',$this->errorlogfile,$path='',$display=1,$params);
 		return;
 	}
 }//end class

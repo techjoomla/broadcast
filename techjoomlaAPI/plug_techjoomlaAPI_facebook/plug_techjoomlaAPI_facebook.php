@@ -14,8 +14,7 @@ if(JVERSION >='1.6.0')
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_facebook'.DS.'plug_techjoomlaAPI_facebook'.DS.'lib'.DS.'facebook.php');
 else
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_facebook'.DS.'lib'.DS.'facebook.php');
-//Helper class to write log file//
-require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'helper.php');
+
 	
 class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 { 
@@ -324,7 +323,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		'name'=>$this->_name,
 		'group'=>$this->_type,	
 		);	
-		$this->ERROR_LOG->simpleLog($exception,$path='',$this->errorlogfile,'plugin',$params);
+		techjoomlaHelperLogs::simpleLog($exception,'plugin',$this->errorlogfile,$path='',$display=1,$params);
 		return;
 	}
 	
