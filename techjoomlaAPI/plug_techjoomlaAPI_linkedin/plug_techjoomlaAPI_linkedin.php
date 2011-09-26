@@ -377,7 +377,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				if(isset($totalresponse->values[$i]->updateContent->person->currentShare->comment)){
 					$status[$j]['comment'] =  $totalresponse->values[$i]->updateContent->person->currentShare->comment;
 					$status[$j]['timestamp'] = $totalresponse->values[$i]->updateContent->person->currentShare->timestamp;
-					$status[$j]['timestamp'] = number_format($status[$j]['timestamp'],0,'','');
 					$j++;
 				}
 			} 
