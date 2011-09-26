@@ -1,11 +1,5 @@
 <?php
 defined( '_JEXEC' ) or die( 'Direct Access to this location is not allowed.' );
-require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.'config.php');
-$bconfig = new BroadcastConfig;   // please remove and check all functionality
-//require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.$bconfig->twitter_library_path;
-//require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib_new'.DS.'linkedin_twitter'.DS.'twitteroauth.php');
-//require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.'facebook'.DS.'facebook.php';
-//require_once  JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib_new'.DS.'linkedin_twitter'.DS.'linkedinoAuth.php';
 
 class combroadcastHelper
 { 	
@@ -106,20 +100,6 @@ class combroadcastHelper
 	}	
 }
 
-/*this class is used to make log for f/l/t controllers 
-class BroadcastHelperLogs
-{	
-	function simpleLog($comment, $level=1)
-    {
-        // Include the library dependancies
-        jimport('joomla.error.log');
-        $my = JFactory::getUser();
-        $options = array('format' => "{DATE}\t{TIME}\t{USER}\t{COMMENT}");
-        // Create the instance of the log file in case we use it later
-        $log = &JLog::getInstance('broadcast.log');
-        $log->addEntry(array('comment' => $comment, 'user' => $my->name .'('.$my->id.')'));
-    }
-}	*/
 
 //this class is used to make log for f/l/t controllers 
 class techjoomlaHelperLogs

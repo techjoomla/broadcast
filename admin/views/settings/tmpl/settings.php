@@ -15,16 +15,21 @@ require(JPATH_SITE.DS."administrator".DS."components".DS."com_broadcast".DS."con
 		$status_via='SELECTED=true';
 	else
 		$status_via_no='SELECTED=true';
+
 	
-	/*
-	if($broadcast_config['show_status_update'])
-		$show_status_update ='SELECTED=true';
-	else
-		$show_status_update_no ='SELECTED=true';
 	if($broadcast_config['show_name'])
 		$show_name ='SELECTED=true';
 	else
 		$show_name_no ='SELECTED=true';	
+
+	if( isset($broadcast_config['api']) )
+		$apis =	$broadcast_config['api'];
+	else
+		$apis = '';
+/* if($broadcast_config['show_status_update'])
+		$show_status_update ='SELECTED=true';
+	else
+		$show_status_update_no ='SELECTED=true';
 	if($broadcast_config['show_status_viarss'])
 		$show_status_viarss ='SELECTED=true';
 	else
@@ -74,11 +79,7 @@ else
 		$apiname = ucfirst(str_replace('plug_techjoomlaAPI_', '',$api->element));
 		$apiselect[] = JHTML::_('select.option',$api->element, $apiname);
 	}
-	
-	// For JPane Tab
-	$pane =& JPane::getInstance('tabs', array('startOffset'=>3)); 
-	echo $pane->startPane( 'pane' );
-	echo $pane->startPanel( JText::_('BC_COMMON'), 'panel1' );
+
 	?>
 	<table border="0" width="100%" class="adminlist">
 		<tr>
@@ -145,7 +146,7 @@ else
 		<tr>
 		<td  width="25%"><?php echo JHTML::tooltip(JText::_('SELECT_API_DES'), JText::_('SELECT_API'), '', JText::_('SELECT_API'));?></td>
 		<td class="setting-td">
-		<?php echo JHTML::_('select.genericlist', $apiselect, "data[api][]", ' multiple size="3"  ', "value", "text", $broadcast_config['api'] )?>
+		<?php echo JHTML::_('select.genericlist', $apiselect, "data[api][]", ' multiple size="3"  ', "value", "text", $apis )?>
 		
 		</td>
 		</tr>
@@ -213,11 +214,6 @@ else
 			</td>
 		</tr>					
 	</table>
-	<?php
-	echo $pane->endPanel();
-	echo $pane->endPane();
-
-	?>
 	
 <?php			
 $option='com_broadcast';
