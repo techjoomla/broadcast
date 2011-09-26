@@ -33,7 +33,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		'callbackUrl'  => NULL 
 		);
 		$this->linkedin = new LinkedInAPI($this->API_CONFIG);
-	}
+		}
 	
 	/*
 		 * Get the plugin output as a separate html form 
@@ -204,10 +204,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		$this->db->query();
 	}
 	
-	function get_contacts($callback) 
+	function plug_techjoomlaAPI_linkedinget_contacts() 
 	{
 		$session = JFactory::getSession();
-		$this->API_CONFIG['callbackUrl']= $callback;		//JURI::base().'index.php?option=com_invitex&view=invites&layout=apis';
+		$this->API_CONFIG['callbackUrl']= JURI::base().'index.php?option=com_invitex&view=invites&layout=apis';
 		
 		if($session->get("['oauth']['linkedin']['authorized']",'') === TRUE)
     {
@@ -289,8 +289,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		}
 	}
 	
-	function send_message($post)
+	function plug_techjoomlaAPI_linkedinsend_message($post)
 	{
+		$session = JFactory::getSession();	
 		if($session->get("['oauth']['linkedin']['authorized']",'') === TRUE)
     {
 			if(!empty($post['contacts']))
@@ -323,14 +324,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				} 
 				else
 				{
-					$this->raiseException("Message Not sent to user");
 					return false;
 				}
 			} 
 			else
 			{
-				$this->raiseException("No contact Found");
-				return false;
 				
 			}
             
@@ -384,20 +382,25 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		}
 	function plug_techjoomlaAPI_linkedinsetstatus($userid,$comment='')
 	{
+	
 		//To do use json encode decode for this	
-		$oauth_key = json_decode($this->getToken($userid));
-		$oauth= json_decode($oauth_key[0]->linkedin_oauth, true); 
+		$oauth_key = $this->getToken($userid); 
+		$oauth_token		 	= json_decode($oauth_key[0]->token);
+		$oauth	=	json_decode($oauth_token->linkedin_oauth, true);
+		
 		try{
 			$this->linkedin = new LinkedInAPI($this->API_CONFIG);  	
 			$this->linkedin->setTokenAccess($oauth);			
+			
+		$content = array ('comment' => $comment);
+		$status= $this->linkedin->share('new',$content); 
 		}
 		catch(LinkedInException $e)
-		{ 
+		{
+		
 			$this->raiseException($e->getMessage());
 			return false;
-		}	
-		$content = array ('comment' => $comment, 'title' => '', 'submitted-url' => '', 'submitted-image-url' => '', 'description' => '');
-		$status= $this->linkedin->share('new',$content); 
+		} 
 		return $status['success'];
 	}
 	
