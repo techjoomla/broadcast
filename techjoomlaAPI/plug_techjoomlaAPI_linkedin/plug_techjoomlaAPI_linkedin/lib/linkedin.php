@@ -11,7 +11,9 @@ require_once('OAuth.php');
  * @access  public
  * @package classpackage
  */
+ if (!class_exists('LinkedInException')){
 class LinkedInException extends Exception {}
+}
 
 /**
  * 'LinkedIn' class declaration.
@@ -21,6 +23,7 @@ class LinkedInException extends Exception {}
  * @access  public
  * @package classpackage
  */
+ if (!class_exists('LinkedInAPI')){
 class LinkedInAPI {
   // api/oauth settings
   const _API_OAUTH_REALM             = 'http://api.linkedin.com';
@@ -1380,5 +1383,5 @@ class LinkedInAPI {
   }
   
 }
-
+}
 ?>
