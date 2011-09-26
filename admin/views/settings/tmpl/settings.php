@@ -5,9 +5,6 @@ jimport('joomla.html.pane');
 JHTML::_('behavior.tooltip');
 JHTML::_('behavior.formvalidation');
 require(JPATH_SITE.DS."administrator".DS."components".DS."com_broadcast".DS."config".DS."config.php");
-require(JPATH_SITE.DS."components".DS."com_broadcast".DS."lib".DS."config.php");
-$apiconf = new BroadcastConfig();
-
 	
 	$status_via=$status_via_no='';
 	$show_status_update=$show_status_update_no='';
