@@ -7,7 +7,6 @@ include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 
 class plgCommunityjomsocialbroadcast extends CApplications 
 { 
-
 	function plgCommunityjomsocialbroadcast(& $subject, $config)
 	{
 		parent::__construct($subject, $config);
@@ -37,22 +36,11 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	function onBeforeStreamCreate($activity) ///trigger present in SOME versions of joomla
 	{ 
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_community'.DS.'libraries'.DS.'activities.php');
-		require(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'googlshorturl.php');
 		$user	= JFactory::getUser();	
 		$subscribedapp	= explode('|',$this->getusersetting($user->id)); 
 		if(in_array($activity->app,$subscribedapp))
 		{	 
 			$title=$this->tag_replace($activity->actor,$activity->target,$activity->created,$activity);
-/*			
-			$matches="";
-			preg_match_all("/<a href=.*?<\/a>/", $new_status, $matches);
-			$orgUrl  ="";
-			$innertest="";
-			$shortUrl="";
-			if(!empty($matches))
-				$this->setUrlShortening($broadcast_config,$matches); 
-*/
-			
 			combroadcastHelper::inQueue($title, $user->id, 1,0);
 			combroadcastHelper::intempAct($user->id, $title, date('Y-m-d',time()));
 		}
@@ -62,8 +50,10 @@ class plgCommunityjomsocialbroadcast extends CApplications
 
 	function tag_replace($actor, $target, $date = null, $activity )
 	{
-	$api_key='';
-	$goo = new Googl($api_key);//if you have an api key
+		require(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'googlshorturl.php');
+		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$api_key=$broadcast_config['url_apikey'];
+		$goo = new Googl($api_key);//if you have an api key
 
 		$my			= CFactory::getUser();
 		$config		= CFactory::getConfig();
@@ -86,28 +76,23 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	
 		$activity->title = preg_replace('/\{multiple\}(.*)\{\/multiple\}/i', '', $activity->title);
 		$search  = array('{single}','{/single}');
-		$activity->title	= CString::str_ireplace($search, '', $activity->title);
-		
-		// replacement of url in title
-    $regex = "/(http:\/\/[^\s]+)/"; // url 
-    preg_match($regex, $activity->title,$matches);
-	if($matches){
-		$surl = $goo->set_short($matches[0]); echo $surl['id'];
-		$activity->title = preg_replace('/(http:\/\/[^\s]+)/', $surl['id'],  $activity->title );
-	
-	}	
-    //$activity->title = preg_replace('/(http:\/\/[^\s]+)/', $goo->set_short('.$1.'),  $activity->title );
-		
+		$activity->title	= CString::str_ireplace($search, '', $activity->title);		
 	
 	//Append URL
 		$shorturl='';
 		if($activity->params){
-			$response = array();
-			$response = $goo->set_short(JURI::base().$this->_getURL($activity->app,json_decode($activity->params)));
-			$shorturl = $response['id'];
+			$activity->title = $activity->title." ".$this->_getURL($activity->app,json_decode($activity->params));
 		}
+
+		// replacement of url in title
+		$regex = "/(http:\/\/[^\s]+)/"; // url 
+	    preg_match($regex, $activity->title,$matches);
+		if($matches){
+			$surl = $goo->set_short($matches[0]); 
+			$activity->title = preg_replace('/(http:\/\/[^\s]+)/', $surl['id'],  $activity->title );
 		
-		$activity->title=strip_tags($activity->title." ".$shorturl); 
+		}
+		$activity->title=strip_tags($activity->title); 
 		return $activity->title;
 	}
 
@@ -116,16 +101,16 @@ class plgCommunityjomsocialbroadcast extends CApplications
 		$url =  '';
 		switch($app)
 		{
-		case 'events':
-				$url = $paramarray->event_url;
-		break;
-		case 'videos':
-				$url = $paramarray->video_url;
-		break;
-		case 'photos':
-				$url = $paramarray->photo_url;
-		break;
-				
+			case 'events':
+				$url = JURI::base().$paramarray->event_url;
+			break;
+			case 'videos':
+				$url = JURI::base().$paramarray->video_url;
+			break;
+			case 'photos':
+				$u =& JURI::getInstance(JURI::current());
+				$url = 'http://'.$u->getHost().$paramarray->photo_url;
+			break;
 		}
 		return $url;
 	}
@@ -133,41 +118,11 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	function getusersetting($userid)
 	{
 		$db        = & JFactory::getDBO();
-		$qry       = "SELECT broadcast_activity_config  FROM #__broadcast_config WHERE  user_id  = {$userid}";
+		$qry       = "SELECT broadcast_activity_config  FROM #__broadcast_config WHERE user_id  = {$userid}";
 		$db->setQuery($qry);
 		$sub_list  = $db->loadResult();
 		return $sub_list;
 	}
-	
-			
-	function setUrlShortening($mtchs)
-	{
-		if(isset($mtchs[0]))
-		foreach ($mtchs[0] as $mtch) 
-		{
-			try 
-			{
-				$innertest=strip_tags($mtch);
-				$mtch_bits = explode('"', $mtch); 
-
-				$pathsite=str_replace(JURI::base( true )."/", "", JURI::base());
-				$objGoogl = new Googl();
-				if(stristr($mtch_bits[1],"http://") || stristr($mtch_bits[1],"www"))
-					$orgUrl  = "{$mtch_bits[1]}";
-				else
-					$orgUrl  = $pathsite."{$mtch_bits[1]}";
-
-				 if(strlen($orgUrl)>$broadcast_config['url_limit'])
-				 {
-					$shortUrl  = $objGoogl->shorten($orgUrl);
-					if($orgUrl != $shortUrl && $shortUrl != "")
-					$orgUrl  = $shortUrl;
-				 }
-			}
-			catch (Exception $e) {}
-		}
-		return $orgUrl;
-	}	
 		
 }
 

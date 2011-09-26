@@ -126,19 +126,21 @@ else
 			<td align="left" width="10%"><?php echo JHTML::tooltip(JText::_('STATUS_SKIP_CHARACTER_DES'), JText::_('STATUS_SKIP_CHARACTER'), '', JText::_('STATUS_SKIP_CHARACTER'));?></td>
 			<td width="90%">
 			<input type="text" class="inputbox" name="data[status_skip]" width="90%" value="<?php
-			 if($broadcast_config['status_skip'])		 
-			echo $broadcast_config['status_skip'];
+			if($broadcast_config['status_skip'])		 
+				echo $broadcast_config['status_skip'];
+			else
+				echo '';
 			 ?>"  >
 			</td>
 		</tr>
 		<tr>
-			<td align="left" width="10%"><?php echo JHTML::tooltip(JText::_('URL_LIMIT_DES'), JText::_('URL_LIMIT'), '', JText::_('URL_LIMIT'));?></td>
+			<td align="left" width="10%"><?php echo JHTML::tooltip(JText::_('URL_API_DES'), JText::_('URL_API'), '', JText::_('URL_API'));?></td>
 			<td width="90%">
-			<input type="text" class="inputbox required validate-numeric" name="data[url_limit]" width="90%" value="<?php
-			 if($broadcast_config['url_limit'])		 
-			echo $broadcast_config['url_limit'];
+			<input type="text" class="inputbox " name="data[url_apikey]" width="90%" value="<?php
+			if($broadcast_config['url_apikey'])		 
+				echo $broadcast_config['url_apikey'];
 			else
-			echo '10';
+				echo '';
 			 ?>"  >
 			</td>
 		</tr>

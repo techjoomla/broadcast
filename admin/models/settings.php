@@ -25,6 +25,17 @@ class broadcastModelSettings extends JModel
 		global $mainframe;	
 		$mainframe = JFactory::getApplication();
 		$config	= JRequest::getVar('data', '', 'post', 'array', JREQUEST_ALLOWRAW );
+		//code to enable the techjoomlaAPI plugins
+		$condtion = array(0 => '\'techjoomlaAPI\'');
+		$condtionatype = join(',',$condtion);  
+		if(JVERSION>='1.6.0')
+			$query = "UPDATE #__extensions SET enabled=1";
+		else
+			$query = "UPDATE #__plugins SET published=1";
+		$query .=" WHERE element IN ('".join("','",$config['api'])."') AND folder in ($condtionatype)";
+		$this->_db->setQuery($query);
+		$this->_db->query();
+		
 		$file = 	JPATH_SITE.DS."administrator".DS."components".DS."com_broadcast".DS."config".DS."config.php";
 		if ($config)
 		{
