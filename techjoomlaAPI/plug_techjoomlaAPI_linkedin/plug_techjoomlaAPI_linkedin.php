@@ -71,7 +71,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	
 	function get_request_token($callback) 
 	{
-		session_start();		
+		$session = JFactory::getSession();
 		$this->linkedin->callbackUrl=$this->API_CONFIG['callbackUrl']= $callback.'&'.LinkedInAPI::_GET_RESPONSE.'=1'; 
 		try{
 		$this->linkedin = new LinkedInAPI($this->API_CONFIG);
@@ -95,10 +95,12 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				}
 			if($response['success'] === TRUE)
 			{
+				$cart['oauth'][][]=array();
+				$session->set("['oauth']['linkedin']['request']",$response['linkedin']);
+				$request_token=$session->get("['oauth']['linkedin']['request']");
 				
-				$_SESSION['oauth']['linkedin']['request'] = $response['linkedin'];
 				try{
-				header('Location:'.LinkedInAPI::_URL_AUTH.$_SESSION['oauth']['linkedin']['request']['oauth_token']);
+				header('Location:'.LinkedInAPI::_URL_AUTH.$request_token['oauth_token']);
 				}
 				catch(LinkedInException $e)
 				{ 
@@ -118,7 +120,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	
 	function get_access_token($get,$client,$callback) 
 	{
-		
+		$session = JFactory::getSession();
 		$this->API_CONFIG['callbackUrl']=NULL;
 		$this->linkedin = new LinkedInAPI($this->API_CONFIG);
 		
@@ -126,7 +128,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		if($get[LINKEDINAPI::_GET_RESPONSE])
 		{
 				try{
-				$response = $this->linkedin->retrieveTokenAccess($get['oauth_token'], $_SESSION['oauth']['linkedin']['request']['oauth_token_secret'], $get['oauth_verifier']);
+				$request_token=$session->get("['oauth']['linkedin']['request']");
+				$response = $this->linkedin->retrieveTokenAccess($get['oauth_token'], $request_token['oauth_token_secret'], $get['oauth_verifier']);
 				}
 				catch(LinkedInException $e)
 				{ 
@@ -135,11 +138,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				}
 				if($response['success'] === TRUE)
 				{
-				  
-				  $_SESSION['oauth']['linkedin']['access'] = $response['linkedin'];
-				
-				  $_SESSION['oauth']['linkedin']['authorized'] = TRUE;
-				  
+				  $session->set("['oauth']['linkedin']['access']",$response['linkedin']);
+				  $session->set("['oauth']['linkedin']['authorized']",true);
+					  
 					$response_data['linkedin_oauth']		= json_encode($response['linkedin']);		
 					$response_data['linkedin_secret']	= $get['oauth_verifier'];
 					$this->store($client,$response_data); 
@@ -203,15 +204,17 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		$this->db->query();
 	}
 	
-	function get_contacts() 
+	function get_contacts($callback) 
 	{
-		$this->API_CONFIG['callbackUrl']= JURI::base().'index.php?option=com_invitex&view=invites&layout=apis';
-		if($_SESSION['oauth']['linkedin']['authorized'] === TRUE)
+		$session = JFactory::getSession();
+		$this->API_CONFIG['callbackUrl']= $callback;		//JURI::base().'index.php?option=com_invitex&view=invites&layout=apis';
+		
+		if($session->get("['oauth']['linkedin']['authorized']",'') === TRUE)
     {
 			// user is already connected
 			try{
 				$this->linkedin = new LinkedInAPI($this->API_CONFIG);
-				$this->linkedin->setTokenAccess($_SESSION['oauth']['linkedin']['access']);			
+				$this->linkedin->setTokenAccess($session->get("['oauth']['linkedin']['access']",''));			
 				$response = $this->linkedin->connections('~/connections:(id,first-name,last-name,picture-url)');			
 			}
 			catch(LinkedInException $e)
@@ -224,6 +227,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				$connections = simplexml_load_string($response['linkedin']);
 				$contacts=array();
 				$contacts=$this->renderContacts($connections);
+				
 			} 
 			else 
 			{
@@ -287,13 +291,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	
 	function send_message($post)
 	{
-		if($_SESSION['oauth']['linkedin']['authorized'] === TRUE)
+		if($session->get("['oauth']['linkedin']['authorized']",'') === TRUE)
     {
 			if(!empty($post['contacts']))
 			{
 				$this->API_CONFIG['callbackUrl']=NULL;
 				$this->linkedin = new LinkedInAPI($this->API_CONFIG);
-				$this->linkedin->setTokenAccess($_SESSION['oauth']['linkedin']['access']);
+				$this->linkedin->setTokenAccess($session->get("['oauth']['linkedin']['access']",''));
 				
 				if(!empty($post['message_copy']))
 				{
@@ -319,11 +323,14 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				} 
 				else
 				{
+					$this->raiseException("Message Not sent to user");
 					return false;
 				}
 			} 
 			else
 			{
+				$this->raiseException("No contact Found");
+				return false;
 				
 			}
             
