@@ -106,7 +106,7 @@ class combroadcastHelper
 	}	
 }
 
-//this class is used to make log for f/l/t controllers 
+/*this class is used to make log for f/l/t controllers 
 class BroadcastHelperLogs
 {	
 	function simpleLog($comment, $level=1)
@@ -118,6 +118,37 @@ class BroadcastHelperLogs
         // Create the instance of the log file in case we use it later
         $log = &JLog::getInstance('broadcast.log');
         $log->addEntry(array('comment' => $comment, 'user' => $my->name .'('.$my->id.')'));
+    }
+}	*/
+
+//this class is used to make log for f/l/t controllers 
+class techjoomlaHelperLogs
+{	
+	function simpleLog($comment,$type,$filename,$path="", $display=1,$params=array())
+    {
+   
+    		if($path=="" and $type="plugin")
+    		{
+		  		if(JVERSION >='1.6.0')
+					$path=JPATH_SITE.DS.'plugins'.DS.$params['group'].DS.$params['name'].DS.$params['name'].DS.'lib';
+					else
+					$path=JPATH_SITE.DS.'plugins'.DS.$params['group'].DS.$params['name'].DS.'lib';    		
+    		}
+    		
+    		if($path=="" and $type="component")
+    			$path=JPATH_JPATH_COMPONENT; 
+    			   	
+        // Include the library dependancies
+        jimport('joomla.error.log');
+        $my = JFactory::getUser();
+        $options = array('format' => "{DATE}\t{TIME}\t{USER}\t{COMMENT}");
+        // Create the instance of the log file in case we use it later
+       	$log = &JLog::getInstance($filename, $options, $path);
+        $log->addEntry(array('comment' => $comment, 'user' => $my->name .'('.$my->id.')'));
+        if($display==1)
+        JError::raiseWarning(500, $comment);
+
+        
     }
 }	
 	
