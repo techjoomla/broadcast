@@ -81,7 +81,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	
 	function get_request_token($callback='') 
 	{
-	$params = array('oauth_callback'     => $callback);
+	$params = array('oauth_callback'=> $callback);
 	//echo $callback;
  echo  $code = $this->twitter->request('POST', $this->twitter->url('oauth/request_token', ''), $params);
   if ($code == 200) {
@@ -89,7 +89,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
     $authurl = $this->twitter->url("oauth/authorize", '') .  "?oauth_token={$_SESSION['oauth']['oauth_token']}";
   } else {
  
- $this->outputError($this->twitter);
+ 	$this->outputError($this->twitter);
   }
 
 			return true;
