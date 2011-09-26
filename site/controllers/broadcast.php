@@ -1,7 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die( 'Direct Access to this location is not allowed.' );
 jimport('joomla.application.component.controller');
-require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'lib'.DS.'config.php');
+
 
 class BroadcastControllerbroadcast extends JController
 {
