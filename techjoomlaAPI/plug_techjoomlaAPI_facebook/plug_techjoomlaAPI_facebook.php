@@ -35,9 +35,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
    'cookie' => true, // enable optional cookie support
 		));
 		
-		//Create Global Error Log Object//
-		$this->ERROR_LOG=new BroadcastHelperLogs();	
-		
 	}
 	
 	/*
@@ -310,10 +307,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		{
   
      $this->raiseException($e->getMessage());
-     return array();
+     return false;
     }
 		
-		return $post;
+		return true;
 	
 	}
 	
@@ -326,7 +323,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		techjoomlaHelperLogs::simpleLog($exception,'plugin',$this->errorlogfile,$path='',$display=1,$params);
 		return;
 	}
-	
 	
 
 }//end class
