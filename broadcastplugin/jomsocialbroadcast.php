@@ -43,7 +43,7 @@ class plgCommunityjomsocialbroadcast extends CApplications
 		if(in_array($activity->app,$subscribedapp))
 		{	 
 			$title=$this->tag_replace($activity->actor,$activity->target,$activity->created,$activity);
-			combroadcastHelper::inQueue($title, $user->id, 1,0);
+			combroadcastHelper::inQueue($title, $user->id, 1,0,'com_community');
 			combroadcastHelper::intempAct($user->id, $title, date('Y-m-d',time()));
 		}
 

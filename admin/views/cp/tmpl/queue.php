@@ -51,20 +51,20 @@ else
 	$document->addScriptDeclaration($js_key);	
 ?>
 <form name="adminForm" method="post" id="queue" class="form-validate" action="">
-	<div class="width-50 fltlft">
+	<div  style= "width:20%; float: left;">
 		<fieldset class="queue">
-			<legend><?php echo JText::_('QUEUE_FORM_MESSAGE') ?></legend>
+			<legend><?php echo JText::_('PUSH_TO_Q') ?></legend>
 			<table width="100%">
 				<tr>
-					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPUSER'), JText::_('USER'), '', JText::_('USER'));?></td>
+					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPUSER'), JText::_('BC_USER'), '', JText::_('BC_USER'));?></td>
 					<td><input type="text" class="inputbox required validate-numeric" name="userid" value="" id="userid" size="30" /></td>
 				</tr>
 				<tr>
-					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPSTATUS'), JText::_('STATUS'), '', JText::_('STATUS'));?></td>
+					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPSTATUS'), JText::_('BC_MSG'), '', JText::_('BC_MSG'));?></td>
 					<td><textarea class="inputbox required" name="status" id="status" cols="25"></textarea></td>
 				</tr>
 				<tr>
-					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPCOUNT'), JText::_('COUNT'), '', JText::_('COUNT'));?></td>
+					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPCOUNT'), JText::_('BC_COUNT'), '', JText::_('BC_COUNT'));?></td>
 					<td><input type="text" class="inputbox required validate-numeric"  name="count" value="" id="" size="30" /></td>
 				</tr>
 				<tr>
@@ -74,39 +74,41 @@ else
 			</table>
 		</fieldset>
 	</div>
+	<div  style= "width:77%; float: right;">
+		<fieldset class="queue">
+			<legend><?php echo JText::_('QUEUE_FORM_MESSAGE') ?></legend>
+			<table class="adminlist" width="100%">
+			<thead>
+				<tr>
+				<th><?php echo JText::_('BC_ID');?></th>
+					<th><?php echo JHTML::tooltip(JText::_('DESC_BC__MSG'), JText::_('BC_MSG'), '', JText::_('BC_MSG'));?></th>
+					<th><?php echo JHTML::tooltip(JText::_('DESC_BC_USER'), JText::_('BC_USER'), '', JText::_('BC_USER'));?></th>
+					<th><?php echo JHTML::tooltip(JText::_('DESC_BC_LAS_DATE'), JText::_('BC_LAS_DATE'), '', JText::_('BC_LAS_DATE'));?></th>
+					<th><?php echo JHTML::tooltip(JText::_('DESC_BC_PEN_CNT'), JText::_('BC_PEN_CNT'), '', JText::_('BC_PEN_CNT'));?></th>
+					<th><?php echo JHTML::tooltip(JText::_('DESC_BC_INT_TIM'), JText::_('BC_INT_TIM'), '', JText::_('BC_INT_TIM'));?></th>
+					<th><?php echo JHTML::tooltip(JText::_('DESC_BC_PEN_API'), JText::_('BC_PEN_API'), '', JText::_('BC_PEN_API'));?></th>
+					<th><?php echo JHTML::tooltip(JText::_('DESC_BC_SUPPLIER'), JText::_('BC_SUPPLIER'), '', JText::_('BC_SUPPLIER'));?></th>
+				</tr>
+			</thead>
+		<?php
+			foreach($this->queues as $queue){
+		?>
+			<tr>
+				<td align="center"><?php echo $queue->id;?></td>
+				<td align="center"><?php echo $queue->status;?></td>
+				<td align="center"><?php echo JFactory::getUser($queue->userid)->name;?></td>
+				<td align="center"><?php echo $queue->date;?></td>
+				<td align="center"><?php echo $queue->count;?></td>
+				<td align="center"><?php echo $queue->interval;?></td>
+				<td ><?php echo $queue->api;?></td>
+				<td align="center"><?php echo $queue->supplier;?></td>
+			</tr>
+<?php } ?>
+			</table>
+		</fieldset>
+	</div>
 	<input type="hidden" name="option" value="com_broadcast" />		
 	<input type="hidden" name="task" value="save" />
 	<input type="hidden" name="controller" value="cp" />
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>
-
-
-<script>
-/*
-var a = new Ajax( {$url}, {
-	method: 'get',
-	update: $('ajax-container')
-}).request();
-
-
-window.addEvent( 'domready', function() {
- 
-	$('userid').addEvent( 'click', function() {
- 
-		$('ajax-container').empty().addClass('ajax-loading');
- 
-		var a = new Ajax( {url: 'index.php'}, {
-			method: 'get',
-			onComplete: function( response ) {
-				var resp = Json.evaluate( response );
- 
-				// Other code to execute when the request completes.
- 
-				$('ajax-container').removeClass('ajax-loading').setHTML( output );
- 
-			}
-		}).request();
-	});
-});
-*/
-</script>

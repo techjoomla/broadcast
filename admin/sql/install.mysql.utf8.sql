@@ -32,5 +32,6 @@ CREATE TABLE IF NOT EXISTS `#__broadcast_queue` (
   `count` int(5) NOT NULL,
   `interval` int(11) NOT NULL,
   `api` varchar(500) NOT NULL,
+  `supplier` varchar(100) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

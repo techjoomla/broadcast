@@ -10,6 +10,10 @@ class broadcastViewcp extends JView
 		$this->_setToolBar();
 		if(!JRequest::getVar('layout'))
 			$this->setLayout('default');
+		else{
+			$queue = $this->get('queue');
+			$this->assignRef('queues', $queue);
+		}
 		parent::display($tpl);
 	}
 	

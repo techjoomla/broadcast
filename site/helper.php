@@ -20,7 +20,7 @@ class combroadcastHelper
 	}
 	
 	#inQueue function called from plugin as well can be called from custom place	
-	function inQueue($newstatus, $userid, $count, $interval)
+	function inQueue($newstatus, $userid, $count, $interval, $supplier)
 	{
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 
@@ -34,6 +34,7 @@ class combroadcastHelper
 		$obj->count	   = $count;
 		$obj->interval = $interval;
 		$obj->api = implode(',',$broadcast_config['api']);
+		$obj->supplier	   = $supplier ;
 			
 		if(!$db->insertObject('#__broadcast_queue', $obj)){
       			$db->stderr();
@@ -41,6 +42,7 @@ class combroadcastHelper
   		}
   		return true;
 	}
+	
 	#populate the temp activity table of broadcast called from broadcast & rss models 
 	function intempAct($id, $act, $date, $api='')
 	{
