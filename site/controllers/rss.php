@@ -77,7 +77,7 @@ class BroadcastControllerrss extends JController
 				}catch(Exception $e){echo 'Caught exception: '.$e->getMessage(); "\n";}
 	
 			}//for each link
-			$model->rssdeletetmpactivity();
+			
 		}
 	}
 

@@ -29,14 +29,5 @@ class BroadcastModelrss extends JModel
 			combroadcastHelper::updateJSstatus($uid, $str_title_link,$date );
 	  }
 
-		function rssdeletetmpactivity()
-		{
-			$curtime=time();
-		 	$previousdt1= $curtime-(3600*24*2);		 	
-		 	$previousdt=date('Y-m-d',$previousdt1);
-			$db	 	= &$this->getDBO();		
-			$query = "DELETE FROM #__broadcast_tmp_activities WHERE created_date<'$previousdt'";
-			$db->setQuery($query);	
-			$db->query();		
-		}
+		
 	}
