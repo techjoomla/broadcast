@@ -102,6 +102,8 @@ class combroadcastHelper
 
 
 //this class is used to make log for f/l/t controllers 
+if (!class_exists('techjoomlaHelperLogs'))
+{
 class techjoomlaHelperLogs
 {	
 	function simpleLog($comment,$type,$filename,$path="", $display=1,$params=array())
@@ -131,5 +133,5 @@ class techjoomlaHelperLogs
         
     }
 }	
-	
+}
 ?>
