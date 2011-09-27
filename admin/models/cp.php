@@ -31,18 +31,8 @@ class broadcastModelcp extends JModel
 	
 	function store($post)
 	{
-		$db	= JFactory::getDBO();
-		$obj	= new stdClass();
-		$obj->status	= $post['status'];
-		$obj->userid	= $post['userid'];
-		$obj->flag		= 0;
-		$obj->count		= $post['count'];
-		$obj->interval	= $post['interval'];
-		if (!$db->insertObject('#__broadcast_queue',$obj,'id')){
-			echo $this->_db->stderr();
-	   		return false;
-		 }
-		return true;
+		include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+		return combroadcastHelper::inQueue($post['status'], $post['userid'],$post['count'],$post['interval']);
 	}
 }
 
