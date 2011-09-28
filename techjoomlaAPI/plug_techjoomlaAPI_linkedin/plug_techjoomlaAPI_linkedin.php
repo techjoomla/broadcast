@@ -15,7 +15,9 @@ if(JVERSION >='1.6.0')
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_linkedin'.DS.'plug_techjoomlaAPI_linkedin'.DS.'lib'.DS.'linkedin.php');
 else
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_linkedin'.DS.'lib'.DS.'linkedin.php');
-	
+
+$lang = & JFactory::getLanguage();
+$lang->load('plug_techjoomlaAPI_linkedin', JPATH_ADMINISTRATOR);	
 class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 { 
 	function plgTechjoomlaAPIplug_techjoomlaAPI_linkedin(& $subject, $config)
@@ -95,7 +97,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					return false;
 				}
 				
-			$return=$this->raiseLog($response,"From Linkedin To site[Get Access Token]",$this->user->id,0);
+			$return=$this->raiseLog($response,JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0);
 			
 			if($response['success'] === TRUE)
 			{
@@ -144,7 +146,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					return false;
 				}
 				
-				$return=$this->raiseLog($response,"From Linkedin To site[Get Access Token]",$this->user->id,0);
+				$return=$this->raiseLog($response,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0);
 				if($response['success'] === TRUE)
 				{
 					
@@ -230,9 +232,18 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				$this->raiseException($e->getMessage());
 				return false;
 			}
-				$return=$this->raiseLog($response,"From Linkedin to site[get contacts]",$this->user->id,0);
-				if(!$return)
-				return $return;
+			
+			$return=$this->raiseLog($response,JText::_('LOG_GET_CONTACTS'),$this->user->id,0);
+			if($response['success'] === TRUE)
+			{
+				$connections = simplexml_load_string($response['linkedin']);
+				$contacts=array();
+				$contacts=$this->renderContacts($connections);
+				if(count($contacts)==0)
+				$this->raiseException('NO_CONTACTS');
+				return false;
+				
+			} 
 			
     }
   
@@ -315,7 +326,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					return false;
 				}
 				
-				$return=$this->raiseLog($response,"From site to linkedin[Send Message]",$this->user->id,0);
+				$return=$this->raiseLog($response,JText::_('LOG_SEND_MESSAGE'),$this->user->id,0);
 				return $return;
 			
 			} 
@@ -349,7 +360,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				//return false;
 			}
 			
-			$response=$this->raiseLog($response_updates,"From Linkedin To site[Get status]",$oauth_key->user_id,1);
+			$response=$this->raiseLog($response_updates,JText::_('LOG_GET_STATUS'),$oauth_key->user_id,1);
 			if($response)
 			{
 					$json_linkedin= $response_updates['linkedin']; 	
@@ -398,7 +409,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			return false;
 		} 
 		
-		$response=$this->raiseLog($status,"FROM site to Linkedin profile",$userid,1);
+		$response=$this->raiseLog($status,JText::_('LOG_SET_STATUS'),$userid,1);
 		return $response;
 	}
 	
@@ -430,7 +441,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		else
 		{
 			$params['success']	=	true;
-			$this->raiseException("Successfully updated Linkedin",$userid,$display,$params);		
+			$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
 			return true;
 		
 		}
