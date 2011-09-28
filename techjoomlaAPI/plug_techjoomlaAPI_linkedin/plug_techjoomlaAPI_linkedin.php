@@ -428,23 +428,28 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	{
 		$params=array();		
 		$params['desc']	=	$desc;
-		$params['http_code']		=	$status['info']['http_code'];
-		if(!$status['success'])
+		if(isset($status['info']['http_code']))
 		{
-			$response_error=techjoomlaHelperLogs::xml2array($status['linkedin']);
+			$params['http_code']		=	$status['info']['http_code'];
+			if(!$status['success'])
+			{
+				$response_error=techjoomlaHelperLogs::xml2array($status['linkedin']);
 			
-			$params['success']			=	false;
-			$this->raiseException($response_error['error']['message'],$userid,$display,$params);
-			return false;
+				$params['success']			=	false;
+				$this->raiseException($response_error['error']['message'],$userid,$display,$params);
+				return false;
 		
-		}
-		else
-		{
-			$params['success']	=	true;
-			$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
-			return true;
+			}
+			else
+			{
+				$params['success']	=	true;
+				$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
+				return true;
 		
+			}
 		}
+		$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);	
+		return true;	
 	}
 	
 }//end class

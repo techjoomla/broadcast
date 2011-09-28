@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.plugin.plugin');
 // include the Hotmail class
 if(JVERSION >='1.6.0')
-require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_hotmail'.'plug_techjoomlaAPI_hotmail'.DS.'lib'.DS.'contacts_importer.class.php');
+require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_hotmail'.DS.'plug_techjoomlaAPI_hotmail'.DS.'lib'.DS.'contacts_importer.class.php');
 else
 require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_hotmail'.DS.'lib'.DS.'contacts_importer.class.php');
 
@@ -27,7 +27,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 		parent::__construct($subject, $config);		
 		$appKey	=& $this->params->get('appKey');
 		$appSecret	=& $this->params->get('appSecret');
-		
+		$this->db=JFactory::getDBO();
 		$this->callbackUrl='';
 		$this->errorlogfile='linkedin_error_log.php';
 		$this->user =& JFactory::getUser();
@@ -40,7 +40,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 		
 		
 		$import = new ContactsImporter;
-		$import->returnURL =JRoute::_(JURI::base().'live_api.php');//itemid /jroute
+		$import->returnURL =JRoute::_(JURI::base().'techjoomla_hotmail_api.php');//itemid /jroute
 		$import->WLLPolicy = JRoute::_(JURI::base().'policy.php');
 		$import->WLLAPIid = $appKey;
 		$import->WLLSecret = $appSecret;
@@ -106,8 +106,39 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 	
 	function get_access_token($get) 
 	{	
-		$return=$this->raiseLog($retarr,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0);
-		$response_data['hotmail_oauth']		= json_encode($get);		
+		
+		$return=$this->raiseLog($_REQUEST,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0);
+		$response_data['hotmail_oauth']		= json_encode($get);	
+		try{
+		$this->imported_contacts = $this->import_live->getContacts();
+		}
+		catch(Exception $e)
+		{ 
+			$this->raiseException($e->getMessage());
+			return false;
+		}
+		
+		$connections = $this->imported_contacts;		
+		$cnt=0;
+			foreach ($connections as $contact)
+			{
+					if ($contact->email)
+					{
+						 $emails[$cnt]['id']= $contact->email;						
+					}
+					if ($contact->name)
+					{
+							$emails[$cnt]['name'] = $contact->name;						
+					}
+				
+				$cnt++;
+			}
+			$contacts=$this->renderContacts($emails);
+			
+			$session = JFactory::getSession();
+			$session->set("invitex['oauth']['hotmail']['contacts']", $contacts);
+		
+		
 		$this->store($client,$response_data);
 		return true;
     
@@ -163,41 +194,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 		$this->db->query();
 	}
  	
-	function get_profile()
+	function plug_techjoomlaAPI_hotmailget_profile()
 	{
 	
 	}
           
-	function plug_techjoomlaAPI_gmailget_contacts() 
+	function plug_techjoomlaAPI_hotmailget_contacts() 
 	{
-	
-		try{
-		$this->imported_contacts = $this->import_live->getContacts();
-		}
-		catch(Exception $e)
-		{ 
-			$this->raiseException($e->getMessage());
-			return false;
-		}
-		
-
-		$connections = $this->imported_contacts;		
-		$cnt=0;
-			foreach ($connections as $contact)
-			{
-					if ($contact->email)
-					{
-						 $emails[$cnt]['id']= $contact->email;						
-					}
-					if ($contact->name)
-					{
-							$emails[$cnt]['name'] = $contact->name;						
-					}
-				
-				$cnt++;
-			}
-			$contacts=$this->renderContacts($emails);
-		
+		$session = JFactory::getSession();
+		$contacts=$session->get("invitex['oauth']['hotmail']['contacts']", '');		
 		if(count($contacts)==0)
 			$this->raiseException(JText::_('NO_CONTACTS'));	
 		if($contacts)
@@ -264,22 +269,27 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 	{
 		$params=array();		
 		$params['desc']	=	$desc;
-		$params['http_code']		=	$status['info']['http_code'];
-		if(!$status['success'])
+		if(isset($status['info']['http_code']))
 		{
-			$response_error=techjoomlaHelperLogs::xml2array($status['linkedin']);
+			$params['http_code']		=	$status['info']['http_code'];
+			if(!$status['success'])
+			{
+				$response_error=techjoomlaHelperLogs::xml2array($status['linkedin']);
 			
-			$params['success']			=	false;
-			$this->raiseException($response_error['error']['message'],$userid,$display,$params);
-			return false;
+				$params['success']			=	false;
+				$this->raiseException($response_error['error']['message'],$userid,$display,$params);
+				return false;
 		
-		}
-		else
-		{
-			$params['success']	=	true;
-			$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
-			return true;
+			}
+			else
+			{
+				$params['success']	=	true;
+				$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
+				return true;
 		
+			}
 		}
+		$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);	
+		return true;	
 	}
 }//end class

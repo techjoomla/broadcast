@@ -12,7 +12,8 @@ jimport('joomla.plugin.plugin');
 	if(JVERSION >='1.6.0')
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_gmail'.DS.'plug_techjoomlaAPI_gmail'.DS.'lib'.DS.'GmailOath.php');
 	else
-	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_gmail'.DS.'lib'.DS.'GmailOath.php');	
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_gmail'.DS.'lib'.DS.'GmailOath.php');
+	
 	$lang = & JFactory::getLanguage();
 	$lang->load('plug_techjoomlaAPI_gmail', JPATH_ADMINISTRATOR);	
 	class plgTechjoomlaAPIplug_techjoomlaAPI_gmail extends JPlugin
@@ -126,10 +127,9 @@ jimport('joomla.plugin.plugin');
 		$this->store($client,$response_data);
 		if($retarr['oauth_token'])
 		{
-					$session->set("invitex['oauth']['gmail']['authorized']", true);
-					$session->set("invitex['oauth']['gmail']['request']['oauth_token']", $retarr['oauth_token']);
-					$session->set("invitex['oauth']['gmail']['request']['oauth_token_secret']", $retarr['oauth_token_secret']);
-					
+				$session->set("invitex['oauth']['gmail']['authorized']", true);
+				$session->set("invitex['oauth']['gmail']['request']['oauth_token']", $retarr['oauth_token']);
+				$session->set("invitex['oauth']['gmail']['request']['oauth_token_secret']", $retarr['oauth_token_secret']);				
 				return true;
 		}
 		else
@@ -208,13 +208,20 @@ jimport('joomla.plugin.plugin');
 			return false;
 		}
 		
-		$return=$this->raiseLog($response,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0);
+		$contacts=array();
 		
 		if($session->get("invitex['oauth']['gmail']['authorized']", ''))
     {
+    	try{
 			$getcontact_access=new GmailGetContacts();
 		  $connections= $getcontact_access->callcontact($oauth, $access_token, $access_token_secret, false, true);
 			$contacts=$this->renderContacts($connections);
+			}
+			catch(Exception $e)
+			{ 
+				$this->raiseException($e->getMessage());
+				return false;
+			}
 			if(count($contacts)==0)
 			$this->raiseException(JText::_('NO_CONTACTS'));				
 		}
@@ -261,24 +268,32 @@ jimport('joomla.plugin.plugin');
 	
 	function raiseLog($status,$desc="",$userid="",$display="")
 	{
+		
 		$params=array();		
 		$params['desc']	=	$desc;
-		$params['http_code']		=	$status['info']['http_code'];
-		if(!$status['success'])
+		
+		if(isset($status['info']['http_code']))
 		{
-			$response_error=techjoomlaHelperLogs::xml2array($status['linkedin']);
+			$params['http_code']		=	$status['info']['http_code'];
+			if(!$status['success'])
+			{
+				$response_error=techjoomlaHelperLogs::xml2array($status['gmail']);
 			
-			$params['success']			=	false;
-			$this->raiseException($response_error['error']['message'],$userid,$display,$params);
-			return false;
+				$params['success']			=	false;
+				$this->raiseException($response_error['error']['message'],$userid,$display,$params);
+				return false;
 		
-		}
-		else
-		{
-			$params['success']	=	true;
-			$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
-			return true;
+			}
+			else
+			{
+				$params['success']	=	true;
+				$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
+				return true;
 		
+			}
+			
 		}
+		$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);	
+		return true;	
 	}
 }//end class

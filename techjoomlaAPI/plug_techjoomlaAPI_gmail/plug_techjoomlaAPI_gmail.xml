@@ -17,8 +17,8 @@
 		<file plugin="plug_techjoomlaAPI_gmail">plug_techjoomlaAPI_gmail.php</file>
 		<folder>plug_techjoomlaAPI_gmail</folder>
 	</files>
-		<languages> 
-			<language tag="en-GB">en-GB/en-GB.plug_techjoomlaAPI_gmail.ini</language>
+		<languages folder="language"> 
+			<language tag="en-GB">/en-GB/en-GB.plug_techjoomlaAPI_gmail.ini</language>
 	</languages>
 	<!-- parameters for Joomla 1.5.x -->
 	<params>

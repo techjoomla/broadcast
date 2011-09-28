@@ -15,6 +15,8 @@ if(JVERSION >='1.6.0')
 else
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_facebook'.DS.'lib'.DS.'facebook.php');
 
+$lang = & JFactory::getLanguage();
+$lang->load('plug_techjoomlaAPI_linkedin', JPATH_ADMINISTRATOR);
 	
 class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 { 
@@ -43,10 +45,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
      * @return  string  The html form for this plugin
      * NOTE: all hidden inputs returned are very important
 	*/
- function renderPluginHTML($config=array())
+ function renderPluginHTML($config)
 	{
     $plug=array(); 
    	$plug['name']="Facebook";
+   	
   	//check if keys are set
 		if($this->appKey=='' || $this->appSecret=='' || !in_array($this->_name,$config))
 		{
@@ -56,9 +59,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		$plug['api_used']=$this->_name; 
 		$plug['message_type']='pm';               
 		$plug['img_file_name']="facebook.png"; 
-		//dipti
 		$plug['apistatus'] = $this->status();
-		//eoc            
+		
 		return $plug; 
 	}
 	
@@ -91,7 +93,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			$this->raiseException($e->getMessage());
 			return false;
 		}	
-			$response=header('Location:'.$loginUrl);  
+			$response=header('Location:'.$loginUrl);
+			 
+			
 		
 			return true; 
 	
@@ -109,7 +113,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			$this->raiseException($e->getMessage());
 			return false;
     }	
-    
+    $return=$this->raiseLog($response,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0); 
 		$data = array('facebook_uid'=>$uid,'facebook_secret'=>$facebook_secret);
 		$this->store($client,$data);		
 		return true;
@@ -166,7 +170,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	}
 	
 	        
-	function get_contacts() 
+	function plug_techjoomlaAPI_facebookget_contacts() 
 	{
 		try{	
 			$contacts=array();
@@ -177,11 +181,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			$this->raiseException($e->getMessage());
 			return false;
     }	
-		if(!$friends)
-		{
-					$this->raiseException(JText::_( 'EXCEPTION_CONTACT_NOT_FOUND' ));			
-					return $contacts;
-		}
+		
+		$return=$this->raiseLog($response,JText::_('LOG_GET_CONTACTS'),$this->user->id,0);
 		
 		$connections =$friends;	
 		
@@ -198,6 +199,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			}
 			
 			$contacts=$this->renderContacts($emails);
+			if(count($contacts)==0)
+				$this->raiseException(JText::_('NO_CONTACTS'));
 		
 		return $contacts;
 		

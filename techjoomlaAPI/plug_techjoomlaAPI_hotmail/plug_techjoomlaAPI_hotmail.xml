@@ -17,7 +17,7 @@
 		<file plugin="plug_techjoomlaAPI_hotmail">plug_techjoomlaAPI_hotmail.php</file>
 		<folder>plug_techjoomlaAPI_hotmail</folder>
 	</files>
-		<languages> 
+		<languages folder="language"> 
 			<language tag="en-GB">en-GB/en-GB.plug_techjoomlaAPI_hotmail.ini</language>
 	</languages>
 	<!-- parameters for Joomla 1.5.x -->
