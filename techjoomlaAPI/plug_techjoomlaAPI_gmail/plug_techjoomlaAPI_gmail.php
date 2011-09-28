@@ -215,6 +215,8 @@ jimport('joomla.plugin.plugin');
 			$getcontact_access=new GmailGetContacts();
 		  $connections= $getcontact_access->callcontact($oauth, $access_token, $access_token_secret, false, true);
 			$contacts=$this->renderContacts($connections);
+			if(count($contacts)==0)
+			$this->raiseException(JText::_('NO_CONTACTS'));				
 		}
 		
 		return $contacts;

@@ -241,7 +241,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				$contacts=$this->renderContacts($connections);
 				if(count($contacts)==0)
 				$this->raiseException(JText::_('NO_CONTACTS'));
-				return false;
+				
 				
 			} 
 			
