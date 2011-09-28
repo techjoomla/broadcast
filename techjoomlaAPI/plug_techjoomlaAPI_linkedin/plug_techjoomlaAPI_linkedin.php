@@ -25,7 +25,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		$appSecret	=& $this->params->get('appSecret');
 		$this->callbackUrl='';
 		$this->errorlogfile='linkedin_error_log.php';
-		$this->user = JFactory::getUser();
+		$this->user =& JFactory::getUser();
+		
 		$this->db=JFactory::getDBO();
 		$this->API_CONFIG=array(
 		'appKey'       => $appKey,
@@ -93,6 +94,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					$this->raiseException($e->getMessage());
 					return false;
 				}
+				
+			$return=$this->raiseLog($response,"From Linkedin To site[Get Access Token]",$this->user->id,0);
+			
 			if($response['success'] === TRUE)
 			{
 				$cart['oauth'][][]=array();
@@ -114,12 +118,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				
 				return false;
 			}
+			return $return;
+				
 		}//end if
 		
 	}
 	
 	function get_access_token($get,$client,$callback) 
 	{
+	
 		$session = JFactory::getSession();
 		$this->API_CONFIG['callbackUrl']=NULL;
 		$this->linkedin = new LinkedInAPI($this->API_CONFIG);
@@ -136,21 +143,22 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					$this->raiseException($e->getMessage());
 					return false;
 				}
+				
+				$return=$this->raiseLog($response,"From Linkedin To site[Get Access Token]",$this->user->id,0);
 				if($response['success'] === TRUE)
 				{
+					
 				  $session->set("['oauth']['linkedin']['access']",$response['linkedin']);
 				  $session->set("['oauth']['linkedin']['authorized']",true);
 					  
 					$response_data['linkedin_oauth']		= json_encode($response['linkedin']);		
 					$response_data['linkedin_secret']	= $get['oauth_verifier'];
-					$this->store($client,$response_data); 
-					return true;
+					$this->store($client,$response_data);
+					
 				
 				}
-				else
-				{
-					 return false;
-				}
+				return $return;
+				
 			}
 	}
 
@@ -222,17 +230,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				$this->raiseException($e->getMessage());
 				return false;
 			}
-			if($response['success'] === TRUE)
-			{
-				$connections = simplexml_load_string($response['linkedin']);
-				$contacts=array();
-				$contacts=$this->renderContacts($connections);
-				
-			} 
-			else 
-			{
-				
-			}
+				$return=$this->raiseLog($response,"From Linkedin to site[get contacts]",$this->user->id,0);
+				if(!$return)
+				return $return;
+			
     }
   
 		return $contacts;
@@ -282,11 +283,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				}
 				return $r_connections;
 		}
-		else
-		{
-			
-			
-		}
+		
 	}
 	
 	function plug_techjoomlaAPI_linkedinsend_message($post)
@@ -317,20 +314,12 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					$this->raiseException($e->getMessage());
 					return false;
 				}
-				if($response['success'] === TRUE)
-				{
-					//return "message sent";
-					return true;
-				} 
-				else
-				{
-					return false;
-				}
-			} 
-			else
-			{
 				
-			}
+				$return=$this->raiseLog($response,"From site to linkedin[Send Message]",$this->user->id,0);
+				return $return;
+			
+			} 
+			
             
     }
   }//end send message
@@ -356,13 +345,18 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			}
 			catch(LinkedInException $e)
 			{ 
-				$this->raiseException($e->getMessage());
-				return false;
+				$this->raiseException($e->getMessage(),$oauth_key->user_id,1);
+				//return false;
 			}
-			$json_linkedin= $response_updates['linkedin']; 	
-			$returndata[$i]['user_id'] = $oauth_key->user_id;
-			$returndata[$i]['status'] = $this->renderstatus(json_decode($json_linkedin));
-			$i++;
+			
+			$response=$this->raiseLog($response_updates,"From Linkedin To site[Get status]",$oauth_key->user_id,1);
+			if($response)
+			{
+					$json_linkedin= $response_updates['linkedin']; 	
+					$returndata[$i]['user_id'] = $oauth_key->user_id;
+					$returndata[$i]['status'] = $this->renderstatus(json_decode($json_linkedin));
+					$i++;
+			}
 		}
 		return $returndata;
 	}
@@ -375,7 +369,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				if(isset($totalresponse->values[$i]->updateContent->person->currentShare->comment)){
 					$status[$j]['comment'] =  $totalresponse->values[$i]->updateContent->person->currentShare->comment;
 					$status[$j]['timestamp'] = $totalresponse->values[$i]->updateContent->person->currentShare->timestamp;
-					$status[$j]['timestamp'] = number_format($status[$j]['timestamp'],0,'','');
 					$j++;
 				}
 			} 
@@ -392,26 +385,55 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		try{
 			$this->linkedin = new LinkedInAPI($this->API_CONFIG);  	
 			$this->linkedin->setTokenAccess($oauth);			
-			
-		$content = array ('comment' => $comment);
-		$status= $this->linkedin->share('new',$content); 
+
+			$content = array ('comment' => $comment);
+			//$content = array ('comment' => $comment, 'title' => '', 'submitted-url' => '', 'submitted-image-url' => '', 'description' => '');
+			$status= $this->linkedin->share('new',$content); 
+		
 		}
 		catch(LinkedInException $e)
 		{
-		
-			$this->raiseException($e->getMessage());
+			
+			$this->raiseException($e->getMessage(),$userid,1);
 			return false;
 		} 
-		return $status['success'];
+		
+		$response=$this->raiseLog($status,"FROM site to Linkedin profile",$userid,1);
+		return $response;
 	}
 	
-	function raiseException($exception)
+	function raiseException($exception,$userid='',$display=1,$params=array())
 	{
-		$params=array(
-		'name'=>$this->_name,
-		'group'=>$this->_type,	
-		);	
-		techjoomlaHelperLogs::simpleLog($exception,'plugin',$this->errorlogfile,$path='',$display=1,$params);
+		$path="";
+		$params['name']=$this->_name;
+		$params['group']=$this->_type;	
+		if($this->params->get('log_file_path'))
+		$path=& $this->params->get('log_file_path');
+		techjoomlaHelperLogs::simpleLog($exception,$userid,'plugin',$this->errorlogfile,$path,$display,$params);
 		return;
 	}
+	
+	function raiseLog($status,$desc="",$userid="",$display="")
+	{
+		$params=array();		
+		$params['desc']	=	$desc;
+		$params['http_code']		=	$status['info']['http_code'];
+		if(!$status['success'])
+		{
+			$response_error=techjoomlaHelperLogs::xml2array($status['linkedin']);
+			
+			$params['success']			=	false;
+			$this->raiseException($response_error['error']['message'],$userid,$display,$params);
+			return false;
+		
+		}
+		else
+		{
+			$params['success']	=	true;
+			$this->raiseException("Successfully updated Linkedin",$userid,$display,$params);		
+			return true;
+		
+		}
+	}
+	
 }//end class

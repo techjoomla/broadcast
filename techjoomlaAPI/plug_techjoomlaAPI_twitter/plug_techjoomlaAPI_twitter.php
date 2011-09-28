@@ -35,9 +35,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
   'consumer_key'    => $this->appKey,
   'consumer_secret' => $this->appSecret,
 		));
-			//Create Global Error Log Object//
-		$error_log=new BroadcastHelperLogs();		
-		$this->ERROR_LOG	=$error_log;
+			
 
 	}
 	
@@ -298,6 +296,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	
 	}
 
+function raiseException($exception)
+	{
+		$params=array(
+		'name'=>$this->_name,
+		'group'=>$this->_type,	
+		);	
+		techjoomlaHelperLogs::simpleLog($exception,'plugin',$this->errorlogfile,$path='',$display=1,$params);
+		return;
+	}
 function outputError($tmhOAuth) {
 			return JError::raiseWarning( 500,$tmhOAuth->response['response']);
   tmhUtilities::pr($tmhOAuth);
