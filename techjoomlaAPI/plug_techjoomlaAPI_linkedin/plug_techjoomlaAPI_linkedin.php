@@ -240,7 +240,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				$contacts=array();
 				$contacts=$this->renderContacts($connections);
 				if(count($contacts)==0)
-				$this->raiseException('NO_CONTACTS');
+				$this->raiseException(JText::_('NO_CONTACTS'));
 				return false;
 				
 			} 
