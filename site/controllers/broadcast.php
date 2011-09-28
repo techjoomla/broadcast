@@ -108,7 +108,7 @@ class BroadcastControllerbroadcast extends JController
 					$db->query();
 				}
 				else{
-					$query="UPDATE #__broadcast_queue SET api='".implode(',',$remain_api)."'";
+					$query="UPDATE #__broadcast_queue SET flag=0,api='".implode(',',$remain_api)."'";
 					$db->setQuery($query);
 					$db->query();
 					
