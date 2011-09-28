@@ -26,7 +26,7 @@ class broadcastViewcp extends JView
 		
 		if(JRequest::getVar('layout'))
 		{
-			JToolBarHelper::save('save',JText::_('BC_QUEUE') );
+			JToolBarHelper::save('save',JText::_('BC_TOOL_QUEUE') );
 			JToolBarHelper::cancel( 'cancel', JText::_('BC_CLOSE') );
 		}	
 	}
