@@ -155,7 +155,7 @@ class techjoomlaHelperLogs
         if(isset($params['desc']) and $display==1)
         echo $my->name .'('.$my->id.')'.$comment.$params['desc']."]"."HTTP CODE:".$http_code."<BR>";   
                      
-       	if(!isset($params))
+       	if(!isset($params['desc']))
       	JError::raiseWarning(500, $comment);
        
 
