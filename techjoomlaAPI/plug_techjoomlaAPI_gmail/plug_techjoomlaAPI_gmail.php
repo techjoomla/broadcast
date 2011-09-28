@@ -10,10 +10,9 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.plugin.plugin');
 	if(JVERSION >='1.6.0')
-	require_once(JPATH_SITE.DS.'plugins'.DS.'invitex'.DS.'plug_techjoomlaAPI_gmail'.'plug_techjoomlaAPI_gmail'.DS.'lib'.DS.'GmailOath.php');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_gmail'.DS.'plug_techjoomlaAPI_gmail'.DS.'lib'.DS.'GmailOath.php');
 	else
-	require_once(JPATH_SITE.DS.'plugins'.DS.'invitex'.DS.'plug_techjoomlaAPI_gmail'.DS.'lib'.DS.'GmailOath.php');
-	
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_gmail'.DS.'lib'.DS.'GmailOath.php');	
 	$lang = & JFactory::getLanguage();
 	$lang->load('plug_techjoomlaAPI_gmail', JPATH_ADMINISTRATOR);	
 	class plgTechjoomlaAPIplug_techjoomlaAPI_gmail extends JPlugin
@@ -31,7 +30,7 @@ jimport('joomla.plugin.plugin');
 		$this->API_CONFIG=array(
 		'appKey'       => $appKey,
 		'appSecret'    => $appSecret,
-		'argarray' 		 => $argv[0],
+		'argarray' 		 => array(),
 		'debug' 			 => 0,
 		'callbackUrl'  => NULL 
 		);
