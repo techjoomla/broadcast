@@ -130,7 +130,7 @@ class techjoomlaHelperLogs
         jimport('joomla.error.log');
         
         if($userid)
-        $my = &JFactory::getUser($userid->id);
+        $my = &JFactory::getUser($userid);
         else
         $my = &JFactory::getUser();
        
