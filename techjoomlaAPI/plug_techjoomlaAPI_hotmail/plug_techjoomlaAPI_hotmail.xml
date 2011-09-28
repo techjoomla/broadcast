@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="techjoomlaAPI" method="upgrade">
+	<name>Techjoomla-Hotmail API</name>
+	<author>Techjoomla</author>
+	<creationDate>15th Mar 2011</creationDate>
+	<copyright>(C)techjoomla.com</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>extensions@tekdi.net</authorEmail>
+	<authorUrl>www.techjoomla.com</authorUrl>
+	<version>2.1</version>
+	<isconsumer>true</isconsumer>
+	<description>
+		Techjoomla Hotmail API plugin 
+	</description>
+	
+	<files>
+		<file plugin="plug_techjoomlaAPI_hotmail">plug_techjoomlaAPI_hotmail.php</file>
+		<folder>plug_techjoomlaAPI_hotmail</folder>
+	</files>
+		<languages> 
+			<language tag="en-GB">en-GB/en-GB.plug_techjoomlaAPI_hotmail</language>
+	</languages>
+	<!-- parameters for Joomla 1.5.x -->
+	<params>
+		<param name="appKey" type="text" default="" label="Enter Hotmail Client ID" description="Enter Hotmail Client ID" />
+		<param name="appSecret" type="text" default="" label="Enter Hotmail Client secret" description="Enter Hotmail Client secret" />
+		<param name="no_allowed_message" type="text" default="10" label="Enter no of allowed messages" description="Enter no of allowed messages" />
+		<param name="log_file_path" type="text" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored" />		
+		<param name="broadcast_limit" type="text" default="50" label="Limit for Broadcast" description="Enter the Limit for no of statuses to get" />								
+		
+
+	</params>
+	
+	<!-- Fields for Joomla 1.6.x and onwards -->
+	<config name="params">
+  	<fields name="params">
+    	<fieldset name="basic">
+				<field name="appKey" type="text" default="" label="Enter Hotmail Client ID" description="Enter Hotmail Client ID"/>
+				<field name="appSecret" type="text" default="" label="Enter Hotmail Client secret" description="Enter Hotmail Client secret" />
+				<field name="no_allowed_message" type="text" default="10" label="Enter no of allowed messages" description="Enter no of allowed messages"/>
+				<field name="log_file_path" type="text" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored"/>		
+				<field name="broadcast_limit" type="text" default="50" label="Limit for Broadcast" description="Enter the Limit for no of statuses to get" />						
+			</fieldset>
+		</fields>
+	</config>
+
+</install>

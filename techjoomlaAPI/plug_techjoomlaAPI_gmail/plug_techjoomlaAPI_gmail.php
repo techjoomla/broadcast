@@ -122,7 +122,7 @@ jimport('joomla.plugin.plugin');
 			$this->raiseException($e->getMessage());
 			return false;
 		}
-		$return=$this->raiseLog($response,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0);
+		$return=$this->raiseLog($retarr,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0);
 		$response_data['gmail_oauth']		= json_encode($retarr);		
 		$this->store($client,$response_data);
 		if($retarr['oauth_token'])
@@ -130,7 +130,8 @@ jimport('joomla.plugin.plugin');
 					$session->set("invitex['oauth']['gmail']['authorized']", true);
 					$session->set("invitex['oauth']['gmail']['request']['oauth_token']", $retarr['oauth_token']);
 					$session->set("invitex['oauth']['gmail']['request']['oauth_token_secret']", $retarr['oauth_token_secret']);
-				
+					
+				return true;
 		}
 		else
 		{
