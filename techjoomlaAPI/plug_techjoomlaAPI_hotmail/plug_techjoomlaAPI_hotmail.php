@@ -194,10 +194,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 		$this->db->query();
 	}
  	
-	function plug_techjoomlaAPI_hotmailget_profile()
-	{
 	
-	}
           
 	function plug_techjoomlaAPI_hotmailget_contacts() 
 	{

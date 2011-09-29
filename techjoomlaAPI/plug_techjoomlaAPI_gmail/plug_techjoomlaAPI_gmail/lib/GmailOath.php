@@ -377,7 +377,7 @@ class GmailOath {
      */
     function normalize_url($url) {
         $parts = parse_url($url);
-
+				$port ='';
         $scheme = $parts['scheme'];
         $host = $parts['host'];
         if(isset($parts['port']))
