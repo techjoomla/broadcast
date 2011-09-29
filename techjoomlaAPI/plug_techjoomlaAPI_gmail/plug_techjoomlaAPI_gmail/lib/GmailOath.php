@@ -380,6 +380,7 @@ class GmailOath {
 
         $scheme = $parts['scheme'];
         $host = $parts['host'];
+        if(isset($parts['port']))
         $port = $parts['port'];
         $path = $parts['path'];
 
