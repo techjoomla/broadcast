@@ -26,6 +26,10 @@
 		</param>
 		<param name="pretext" type="textarea" default="" rows="2" cols="40" label="MOD_PRE_TEXT" description="MOD_PRE_TEXT_DESC" />
 		<param name="posttext" type="textarea" default="" rows="2" cols="40" label="MOD_POS_TEXT" description="MOD_POS_TEXT_DESC" />
+			<param name="show_rss" type="radio" default="1" label="MOD_BCRSS" description="MOD_BCRSS_DESC">
+			<option value="1">MOD_BCYES</option>
+			<option value="0">MOD_BCNO</option>
+		</param>
 	</params>
 	<!-- Fields for Joomla 1.6.x and onwards -->
 	<config>
@@ -37,6 +41,10 @@
 			</field>
 			<field name="pretext" type="textarea" default="" rows="2" cols="40" label="MOD_PRE_TEXT" description="MOD_PRE_TEXT_DESC" />
 			<field name="posttext" type="textarea" default="" rows="2" cols="40" label="MOD_POS_TEXT" description="MOD_POS_TEXT_DESC" />
+			<field name="show_rss" type="radio" default="1" label="MOD_BCRSS" description="MOD_BCRSS_DESC">
+				<option value="1">MOD_BCYES</option>
+				<option value="0">MOD_BCNO</option>
+			</field>
 		</fieldset>
 	</fields>
 	</config>

@@ -65,6 +65,8 @@ for($i=0; $i<count($apidata); $i++)
 }
 ?>
 
+<?php if(isset($show_rss)){
+	 if($show_rss == 1){?>
 	<div class="<?php echo $outclass ?>" >
 		<div class="<?php echo $inclass ?>">
 			<a href="<?php echo $rss_link; ?>" style="color:black; text-decoration:none;">
@@ -78,8 +80,12 @@ for($i=0; $i<count($apidata); $i++)
 			</b></a></div>
 		</div>	
 	</div>
-	<div style="clear:left;"></div>
 	
+	<div style="clear:left;"></div>
+<?php
+	}
+}
+?>
 	<?php if($posttext){?>
 	<div class="broadcast_foot" style="width:100%"><?php echo $posttext; ?></div>
 	<?php }?>

@@ -9,6 +9,7 @@ if($user->id){
 	$data['pretext']=trim( $params->get('pretext') );
 	$data['posttext']=trim( $params->get('posttext') );
 	$align	= trim( $params->get('show_horizontal') );
+	$show_rss	= trim( $params->get('show_rss') );
 	
 	$apidata = combroadcastHelper::getapistatus();
 	require( JModuleHelper::getLayoutPath( 'mod_jomsocialbroadcast' ) );
