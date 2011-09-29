@@ -18,8 +18,8 @@
 		<folder>plug_techjoomlaAPI_yahoo</folder>
 	</files>
 	
-	<languages> 
-			<language tag="en-GB">en-GB/en-GB.plug_techjoomlaAPI_yahoo.ini</language>
+	<languages folder="language">  
+			<language tag="en-GB">/en-GB/en-GB.plug_techjoomlaAPI_yahoo.ini</language>
 	</languages>
 	<!-- parameters for Joomla 1.5.x -->
 	<params addpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_yahoo/element">

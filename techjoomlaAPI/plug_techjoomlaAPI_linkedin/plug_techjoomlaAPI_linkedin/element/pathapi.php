@@ -20,4 +20,4 @@
 			return '<a href="https://www.linkedin.com/secure/developer" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
 		}
 	}
-?>
+
