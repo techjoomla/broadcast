@@ -7,9 +7,11 @@
 	*/ 
 
 	// Check to ensure this file is within the rest of the framework
-	defined('JPATH_BASE') or die();
+	defined('_JEXEC') or die( 'Restricted access' );
+	jimport("joomla.html.parameter.element");
 
-	class JElementpathapi extends JElement
+
+	class JElementPathapi extends JElement
 	{
 		var $_name = 'Pathapi';
 		function fetchElement($name, $value, &$node, $control_name)
