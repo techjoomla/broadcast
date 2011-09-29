@@ -275,11 +275,14 @@ jimport('joomla.plugin.plugin');
 		
 		$params=array();		
 		$params['desc']	=	$desc;
-		if(is_object($status))
+		if(is_object($status_log))
 		$status=JArrayHelper::fromObject($status_log,true);
 		
-		if(is_array($status))
+		
+		
+		if(is_array($status_log))
 		{
+			$status=$status_log;
 			if(isset($status['info']['http_code']))
 			{
 				$params['http_code']		=	$status['info']['http_code'];
@@ -307,5 +310,6 @@ jimport('joomla.plugin.plugin');
 		$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);	
 		return true;	
 	}
+	
 	
 }//end class

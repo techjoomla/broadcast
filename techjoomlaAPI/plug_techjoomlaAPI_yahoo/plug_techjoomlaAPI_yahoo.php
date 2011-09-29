@@ -318,11 +318,14 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 		
 		$params=array();		
 		$params['desc']	=	$desc;
-		if(is_object($status))
+		if(is_object($status_log))
 		$status=JArrayHelper::fromObject($status_log,true);
 		
-		if(is_array($status))
+		
+		
+		if(is_array($status_log))
 		{
+			$status=$status_log;
 			if(isset($status['info']['http_code']))
 			{
 				$params['http_code']		=	$status['info']['http_code'];
@@ -330,7 +333,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 				{
 						if(isset($status['yahoo']))				
 							$response_error=techjoomlaHelperLogs::xml2array($status['yahoo']);
-				}
+				
 			
 					$params['success']			=	false;
 					$this->raiseException($response_error['error']['message'],$userid,$display,$params);

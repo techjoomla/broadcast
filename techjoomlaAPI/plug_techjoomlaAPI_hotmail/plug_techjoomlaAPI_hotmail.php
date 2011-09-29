@@ -274,17 +274,20 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 		
 		$params=array();		
 		$params['desc']	=	$desc;
-		if(is_object($status))
+		if(is_object($status_log))
 		$status=JArrayHelper::fromObject($status_log,true);
 		
-		if(is_array($status))
+		
+		
+		if(is_array($status_log))
 		{
+			$status=$status_log;
 			if(isset($status['info']['http_code']))
 			{
 				$params['http_code']		=	$status['info']['http_code'];
 				if(!$status['success'])
 				{
-							if(isset($status['hotmail']))				
+						if(isset($status['hotmail']))				
 							$response_error=techjoomlaHelperLogs::xml2array($status['hotmail']);
 				
 			
@@ -306,5 +309,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 		$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);	
 		return true;	
 	}
+	
 	
 }//end class
