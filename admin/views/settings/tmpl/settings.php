@@ -20,7 +20,12 @@ require(JPATH_SITE.DS."administrator".DS."components".DS."com_broadcast".DS."con
 	if($broadcast_config['show_name'])
 		$show_name ='SELECTED=true';
 	else
-		$show_name_no ='SELECTED=true';	
+		$show_name_no ='SELECTED=true';
+
+	if($broadcast_config['show_status_rss'])
+		$show_status_rss ='SELECTED=true';
+	else
+		$show_status_rss_no ='SELECTED=true';			
 
 	if( isset($broadcast_config['api']) )
 		$apis =	$broadcast_config['api'];
@@ -151,35 +156,11 @@ else
 		</td>
 		</tr>
 		<tr>
-
-			<td align="left" width="20%"><?php echo JHTML::tooltip(JText::_('FACEBOOK_PRO_LIMIT_DES'), JText::_('FACEBOOK_PRO_LIMIT'), '', JText::_('FACEBOOK_PRO_LIMIT'));?></td>
-			<td width="80%">
-			<input type="text" class="inputbox required validate-numeric" name="data[facebook_profile_limit]" width="90%" value="<?php if($broadcast_config['facebook_profile_limit'])		 
-			echo $broadcast_config['facebook_profile_limit'];
-			else
-			echo '5';
-			 ?>"  >
-			</td>
-		</tr>
-		<tr>
-			<td align="left" width="10%"><?php echo JHTML::tooltip(JText::_('TWITTER_LIMIT_DES'), JText::_('TWITTER_LIMIT'), '', JText::_('TWITTER_LIMIT'));?></td>
-			<td width="90%">
-			<input type="text" class="inputbox required validate-numeric" name="data[twitter_limit]" width="90%" value="<?php if($broadcast_config['twitter_limit'])		 
-			echo $broadcast_config['twitter_limit'];
-			else
-			echo '5';
-			 ?>"  >
-			</td>
-		</tr>
-		<tr>
-			<td align="left" width="10%"><?php echo JHTML::tooltip(JText::_('LINKEDIN_LIMIT_DES'), JText::_('LINKEDIN_LIMIT'), '', JText::_('LINKEDIN_LIMIT'));?></td>
-			<td width="90%">
-			<input type="text" class="inputbox required validate-numeric" name="data[linkedin_limit]" width="90%" value="<?php
-			 if($broadcast_config['linkedin_limit'])		 
-			echo $broadcast_config['linkedin_limit'];
-			else
-			echo '5';
-			 ?>"  >
+			<td align="left" width="10%"><?php echo JHTML::tooltip(JText::_('SHOW_STATUS_RSS_DES'), JText::_('SHOW_STATUS_RSS'), '', JText::_('SHOW_STATUS_RSS'));?></td>
+			<td width="90%"><select class="inputbox" name="data[show_status_rss]">
+			<option value="1" <?php echo $show_status_rss; ?>> <?php echo JText::_('BC_YES');?> </option>
+			<option value="0" <?php echo $show_status_rss_no; ?>> <?php echo JText::_('BC_NO');?> </option>
+			</select>
 			</td>
 		</tr>
 		<tr>

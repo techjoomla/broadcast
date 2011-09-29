@@ -6,9 +6,7 @@ $broadcast_config = array(
 'status_via' => '0',
 'status_skip' => '#,@',
 'url_apikey' => '',
-'facebook_profile_limit' => '10',
-'twitter_limit' => '10',
-'linkedin_limit' => '10',
+'show_status_rss' => '1',
 'rss_link_limit' => '3',
 'private_key_cronjob' => '1234'
 )

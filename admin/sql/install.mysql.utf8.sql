@@ -30,8 +30,9 @@ CREATE TABLE IF NOT EXISTS `#__broadcast_queue` (
   `date` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `flag` int(2) NOT NULL,
   `count` int(5) NOT NULL,
+  `org_count` int(5) NOT NULL,
   `interval` int(11) NOT NULL,
-  `api` varchar(500) NOT NULL,
+  `api` varchar(150) NOT NULL,
   `supplier` varchar(100) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
