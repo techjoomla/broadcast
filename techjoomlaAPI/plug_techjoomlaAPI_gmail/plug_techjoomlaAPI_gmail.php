@@ -285,7 +285,7 @@ jimport('joomla.plugin.plugin');
 				$params['http_code']		=	$status['info']['http_code'];
 				if(!$status['success'])
 				{
-						if(isset($status['gmail'])				
+						if(isset($status['gmail']))				
 							$response_error=techjoomlaHelperLogs::xml2array($status['gmail']);
 				
 			

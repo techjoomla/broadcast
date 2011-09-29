@@ -328,7 +328,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 				$params['http_code']		=	$status['info']['http_code'];
 				if(!$status['success'])
 				{
-						if(isset($status['yahoo'])				
+						if(isset($status['yahoo']))				
 							$response_error=techjoomlaHelperLogs::xml2array($status['yahoo']);
 				}
 			

@@ -284,7 +284,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 				$params['http_code']		=	$status['info']['http_code'];
 				if(!$status['success'])
 				{
-							if(isset($status['hotmail'])				
+							if(isset($status['hotmail']))				
 							$response_error=techjoomlaHelperLogs::xml2array($status['hotmail']);
 				
 			

@@ -439,7 +439,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				$params['http_code']		=	$status['info']['http_code'];
 				if(!$status['success'])
 				{
-						if(isset($status['linkedin'])				
+						if(isset($status['linkedin']))				
 							$response_error=techjoomlaHelperLogs::xml2array($status['linkedin']);
 				
 			
