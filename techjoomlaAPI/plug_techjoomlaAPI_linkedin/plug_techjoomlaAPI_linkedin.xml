@@ -18,7 +18,7 @@
 		<folder>plug_techjoomlaAPI_linkedin</folder>
 	</files>
 	<languages folder="language"> 
-			<language tag="en-GB">/en-GB/en-GB.plug_techjoomlaAPI_linkedin.ini</language>
+			<language tag="en-GB">en-GB/en-GB.plug_techjoomlaAPI_linkedin.ini</language>
 	</languages>
 	<!-- parameters for Joomla 1.5.x -->
 	<params addpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_linkedin/element">
@@ -34,7 +34,7 @@
 	<!-- Fields for Joomla 1.6.x and onwards -->
 	<config name="params">
   	<fields name="params">
-    	<fieldset name="basic" addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_linkedin/plug_techjoomlaAPI_linkedin/element">
+    	<fieldset name="basic" label="Plugin Parameters" addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_linkedin/plug_techjoomlaAPI_linkedin/element">
 				<field name="appKey" type="text" default="" label="Enter LinkedIn application key" description="Enter LinkedIn application key"/>
 				<field name="appSecret" type="text" default="" label="Enter LinkedIn secret key" description="Enter LinkedIn secret key" />
 				<field name="no_allowed_message" type="text" default="10" label="Enter no of allowed messages" description="Enter no of allowed messages"/>	
