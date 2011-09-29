@@ -11,8 +11,10 @@ class BroadcastModelrss extends JModel
 	 {
 	 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 			$db	 	= &$this->getDBO();	
-			$today_date = & JFactory::getDate($rssobj->get_date());	
-			$date = $today_date->toMySQL();
+			$config =& JFactory::getConfig();
+			$offset = $config->getValue('config.offset'); 
+			$get_date= & JFactory::getDate($rssobj->get_date(),$offset);	
+   			$date=$get_date->toMySQL();
 			
 			$str_title_link	= "<a href=".$rssobj->get_link()." target='_blank'>".$rssobj->get_description()."</a>";
 		 	

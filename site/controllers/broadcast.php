@@ -33,6 +33,10 @@ class BroadcastControllerbroadcast extends JController
 		$response=$model->getAccessToken($get);
 		if($response){
 			$user	= JFactory::getUser();
+			$userconfig = $model->checkuserconfig($user->id);
+			if(!$userconfig){ 
+				$mainframe->redirect(JURI::base()."index.php?option=com_broadcast&view=config", 'Please set your user settings' );
+			}
 			$msg	= $user->name." "."connected!!"." ".$mainframe->getCfg('sitename');
 		}
 	 	$currentMenu = $session->get('currentMenu'); 
@@ -81,38 +85,18 @@ class BroadcastControllerbroadcast extends JController
 		{
 			$updtinterval=strtotime($queue->date)+($queue->flag+1)+$queue->interval;
 		   	$curttime=time();
-		  	if ($updtinterval<$curttime || $queue->flag==0 )
+		  	if ( ($updtinterval<$curttime || $queue->flag==0)  && $queue->count >0)
 		  	{
-				foreach($broadcast_config['api'] as $v){
-				if ( in_array( $v,explode(",",$queue->api) ) )
-					$response[$v] = $model->setStatus($v,$queue->userid,$queue->status);
-				}
-				$remain_api = array();
-				foreach ($response as $key => $row)
-				{
-					foreach($row as $cell)
-					{
-						if ($cell == false){
-							$remain_api[] = $key;
-							break;
-						}
-					}
-				}  
-				if( empty($remain_api) ){
-					if($queue->count > 1){
-						$qtime = date('Y-m-d H:i:s',$curttime); 
-						$query="UPDATE #__broadcast_queue SET date='{$qtime}', count=count-1,flag=flag+1,api='".implode(',',$broadcast_config['api'])."' WHERE id={$queue->id}";
-					}else
-						$query="DELETE FROM #__broadcast_queue where id={$queue->id}";  
-					$db->setQuery($query);
-					$db->query();
+				$response = $model->setStatus($queue->api,$queue->userid,$queue->status);
+				if( !in_array(0,$response) ){
+					$qtime = date('Y-m-d H:i:s',$curttime);
+					$query="UPDATE #__broadcast_queue SET date='{$qtime}', count=count-1,flag=1 WHERE id={$queue->id}";
 				}
 				else{
-					$query="UPDATE #__broadcast_queue SET flag=0,api='".implode(',',$remain_api)."'";
-					$db->setQuery($query);
-					$db->query();
-					
+					$query="UPDATE #__broadcast_queue SET flag=0 WHERE id={$queue->id}";
 				}
+				$db->setQuery($query);
+				$db->query();
 			}// end of the interval chk if
 		}// end of foreach of queue
 	}

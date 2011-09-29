@@ -23,16 +23,6 @@ class BroadcastModelconfig extends JModel
 	 	return $sub_list;
 	}
 	
-	
-	function getrsslinks()
-	{
-			$user 	= JFactory::getUser();
-			$qry 	= "SELECT	broadcast_rss_url  FROM #__broadcast_config    WHERE  user_id  = {$user->id}";
-			$this->_db->setQuery($qry);
-		 	$rss_list 	= $this->_db->loadObjectList();
-		 	return $rss_list;
-	}
-
 	/**** Start Added & Modified By - Deepak */
 	function save()
 	{	

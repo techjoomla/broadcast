@@ -48,6 +48,13 @@ class BroadcastModelbroadcast extends JModel
 			return TRUE;
 		}
 	}
+	function checkuserconfig($userid){
+		$sub_list = '';
+		$qry 	= "SELECT broadcast_activity_config FROM #__broadcast_config WHERE user_id  = {$userid}";
+		$this->_db->setQuery($qry);
+	 	$sub_list 	= $this->_db->loadResult();		 	
+	 	return $sub_list;
+	}
 	/*trigger to destroy the token of a user*/
 	function removeToken($api_used){
 		$dispatcher = &JDispatcher::getInstance();

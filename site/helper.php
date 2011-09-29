@@ -26,20 +26,23 @@ class combroadcastHelper
 
 		if(!$count)	$count = 1;
 	    $db =& JFactory::getDBO();
-		$obj		   = new StdClass();
-		$obj->id	   = '';
-		$obj->status   = $newstatus;
-		$obj->userid   = $userid;
-		$obj->flag 	   = 0;
-		$obj->count	   = $count;
-		$obj->interval = $interval;
-		$obj->api = implode(',',$broadcast_config['api']);
-		$obj->supplier	   = $supplier ;
-			
-		if(!$db->insertObject('#__broadcast_queue', $obj)){
-      			$db->stderr();
-      			return false;
-  		}
+		foreach($broadcast_config['api'] as $api){
+			$obj		   	= new StdClass();
+			$obj->id	   	= '';
+			$obj->status   	= $newstatus;
+			$obj->userid   	= $userid;
+			$obj->flag 	   	= 0;
+			$obj->count	   	= $count;
+			$obj->org_count	= $count;
+			$obj->interval	= $interval;
+			$obj->api 		= $api;
+			$obj->supplier	= $supplier ;
+				
+			if(!$db->insertObject('#__broadcast_queue', $obj)){
+	      			$db->stderr();
+	      			return false;
+	  		}
+	    }
   		return true;
 	}
 	
