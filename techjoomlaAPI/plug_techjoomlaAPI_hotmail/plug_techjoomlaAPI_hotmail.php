@@ -86,7 +86,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 			return 0;
 	}
 	
-	function get_request_token() 
+	function get_request_token($callback) 
 	{
 			try{
 				$url=$this->import_live->getWLLLink();
@@ -104,7 +104,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 		
 	}
 	
-	function get_access_token($get) 
+	function get_access_token($get,$client,$callback) 
 	{	
 		
 		$return=$this->raiseLog($_REQUEST,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0);
