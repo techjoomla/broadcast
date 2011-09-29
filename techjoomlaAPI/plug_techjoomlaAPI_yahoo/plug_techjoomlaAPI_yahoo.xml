@@ -22,25 +22,28 @@
 			<language tag="en-GB">en-GB/en-GB.plug_techjoomlaAPI_yahoo.ini</language>
 	</languages>
 	<!-- parameters for Joomla 1.5.x -->
-	<params>
+	<params addpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_yahoo/element">
 		<param name="appKey" type="text" default="" label="Enter Yahoo consumer key" description="Enter Yahoo consumer key" />
 		<param name="appSecret" type="text" default="" label="Enter Yahoo consumer secret key" description="Enter Yahoo consumer secret key" />
 		<param name="appId" type="text" default="" label="Enter YahooApplication ID:" description="Enter Yahoo Application ID" />
 		<param name="no_allowed_message" type="text" default="10" label="Enter no of allowed messages" description="Enter no of allowed messages" />
 			<param name="log_file_path" type="text" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored" />		
 		<param name="broadcast_limit" type="text" default="50" label="Limit for Broadcast" description="Enter the Limit for no of statuses to get" />								
+		<param name="path_api_yahoo" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />	
+		<param name="throttle_limit_yahoo" type="text" label="Throttle Limit of yahoo API" description="This is Throttle Limit per day per application" />		
 	</params>
 	
 	<!-- Fields for Joomla 1.6.x and onwards -->
 	<config name="params">
   	<fields name="params">
-    	<fieldset name="basic">
+    	<fieldset name="basic"	addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_yahoo/plug_techjoomlaAPI_yahoo/element">
 				<field name="appKey" type="text" default="" label="Enter Yahoo consumer key" description="Enter Yahoo consumer key"/>
 				<field name="appSecret" type="text" default="" label="Enter Yahoo consumer secret key" description="Enter Yahoo consumer secret key" />
 				<field name="appId" type="text" default="" label="Enter Yahoo Application ID:" description="Enter Application ID:" />
 				<field name="no_allowed_message" type="text" default="10" label="Enter no of allowed messages" description="Enter no of allowed messages"/>
 				<field name="log_file_path" type="text" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored"/>		
 				<field name="broadcast_limit" type="text" default="50" label="Limit for Broadcast" description="Enter the Limit for no of statuses to get" />						
+				<field name="throttle_limit_yahoo" type="text" label="Throttle Limit of yahoo API" description="This is Throttle Limit per day per application" />		
 			</fieldset>
 		</fields>
 	</config>
