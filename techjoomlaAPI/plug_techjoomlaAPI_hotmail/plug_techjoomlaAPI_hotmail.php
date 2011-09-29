@@ -29,7 +29,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 		$appSecret	=& $this->params->get('appSecret');
 		$this->db=JFactory::getDBO();
 		$this->callbackUrl='';
-		$this->errorlogfile='linkedin_error_log.php';
+		$this->errorlogfile='hotmail_error_log.php';
 		$this->user =& JFactory::getUser();
 		
 		$this->API_CONFIG=array(
@@ -241,6 +241,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 		return $r_connections;
 	}
 	
+	function plug_techjoomlaAPI_hotmailget_profile()
+	{
+
+  }
 	function plug_techjoomlaAPI_hotmailsend_message($post)
 	{
 	
@@ -265,31 +269,42 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 		return;
 	}
 	
-	function raiseLog($status,$desc="",$userid="",$display="")
+	function raiseLog($status_log,$desc="",$userid="",$display="")
 	{
+		
 		$params=array();		
 		$params['desc']	=	$desc;
-		if(isset($status['info']['http_code']))
+		if(is_object($status))
+		$status=JArrayHelper::fromObject($status_log,true);
+		
+		if(is_array($status))
 		{
-			$params['http_code']		=	$status['info']['http_code'];
-			if(!$status['success'])
+			if(isset($status['info']['http_code']))
 			{
-				$response_error=techjoomlaHelperLogs::xml2array($status['linkedin']);
+				$params['http_code']		=	$status['info']['http_code'];
+				if(!$status['success'])
+				{
+							if(isset($status['hotmail'])				
+							$response_error=techjoomlaHelperLogs::xml2array($status['hotmail']);
+				
 			
-				$params['success']			=	false;
-				$this->raiseException($response_error['error']['message'],$userid,$display,$params);
-				return false;
+					$params['success']			=	false;
+					$this->raiseException($response_error['error']['message'],$userid,$display,$params);
+					return false;
 		
-			}
-			else
-			{
-				$params['success']	=	true;
-				$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
-				return true;
+				}
+				else
+				{
+					$params['success']	=	true;
+					$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
+					return true;
 		
+				}
+			
 			}
 		}
 		$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);	
 		return true;	
 	}
+	
 }//end class

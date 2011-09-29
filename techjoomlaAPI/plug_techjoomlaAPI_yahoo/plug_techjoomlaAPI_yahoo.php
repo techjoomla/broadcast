@@ -254,7 +254,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 			$contacts=$this->renderContacts($emails);
 			if(count($contacts)==0)
 			$this->raiseException(JText::_('NO_CONTACTS'));
-
+			$return=$this->raiseLog(JText::_('LOG_GET_CONTACTS'),JText::_('LOG_GET_CONTACTS'),$this->user->id,0);
     }
     
     	return $contacts;
@@ -315,32 +315,39 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 		return;
 	}
 	
-	function raiseLog($status,$desc="",$userid="",$display="")
+	function raiseLog($status_log,$desc="",$userid="",$display="")
 	{
 		
 		$params=array();		
 		$params['desc']	=	$desc;
+		if(is_object($status))
+		$status=JArrayHelper::fromObject($status_log,true);
 		
-		if(isset($status['info']['http_code']))
+		if(is_array($status))
 		{
-			$params['http_code']		=	$status['info']['http_code'];
-			if(!$status['success'])
+			if(isset($status['info']['http_code']))
 			{
-				$response_error=techjoomlaHelperLogs::xml2array($status['yahoo']);
+				$params['http_code']		=	$status['info']['http_code'];
+				if(!$status['success'])
+				{
+						if(isset($status['yahoo'])				
+							$response_error=techjoomlaHelperLogs::xml2array($status['yahoo']);
+				}
 			
-				$params['success']			=	false;
-				$this->raiseException($response_error['error']['message'],$userid,$display,$params);
-				return false;
+					$params['success']			=	false;
+					$this->raiseException($response_error['error']['message'],$userid,$display,$params);
+					return false;
 		
-			}
-			else
-			{
-				$params['success']	=	true;
-				$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
-				return true;
+				}
+				else
+				{
+					$params['success']	=	true;
+					$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
+					return true;
 		
-			}
+				}
 			
+			}
 		}
 		$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);	
 		return true;	

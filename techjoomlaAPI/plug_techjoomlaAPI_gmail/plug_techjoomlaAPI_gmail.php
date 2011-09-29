@@ -242,6 +242,10 @@ jimport('joomla.plugin.plugin');
 		return $r_connections;
 	}
 	
+	function plug_techjoomlaAPI_gmailget_profile()
+	{
+
+  }
 	function plug_techjoomlaAPI_gmailsend_message($post)
 	{
 	
@@ -266,34 +270,42 @@ jimport('joomla.plugin.plugin');
 		return;
 	}
 	
-	function raiseLog($status,$desc="",$userid="",$display="")
+	function raiseLog($status_log,$desc="",$userid="",$display="")
 	{
 		
 		$params=array();		
 		$params['desc']	=	$desc;
+		if(is_object($status))
+		$status=JArrayHelper::fromObject($status_log,true);
 		
-		if(isset($status['info']['http_code']))
+		if(is_array($status))
 		{
-			$params['http_code']		=	$status['info']['http_code'];
-			if(!$status['success'])
+			if(isset($status['info']['http_code']))
 			{
-				$response_error=techjoomlaHelperLogs::xml2array($status['gmail']);
+				$params['http_code']		=	$status['info']['http_code'];
+				if(!$status['success'])
+				{
+						if(isset($status['gmail'])				
+							$response_error=techjoomlaHelperLogs::xml2array($status['gmail']);
+				
 			
-				$params['success']			=	false;
-				$this->raiseException($response_error['error']['message'],$userid,$display,$params);
-				return false;
+					$params['success']			=	false;
+					$this->raiseException($response_error['error']['message'],$userid,$display,$params);
+					return false;
 		
-			}
-			else
-			{
-				$params['success']	=	true;
-				$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
-				return true;
+				}
+				else
+				{
+					$params['success']	=	true;
+					$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
+					return true;
 		
-			}
+				}
 			
+			}
 		}
 		$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);	
 		return true;	
 	}
+	
 }//end class
