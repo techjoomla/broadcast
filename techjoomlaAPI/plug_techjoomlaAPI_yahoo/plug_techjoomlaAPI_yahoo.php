@@ -85,7 +85,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 	}
 	
 	
-	function get_request_token() 
+	function get_request_token($callback) 
 	{
 		$session = JFactory::getSession();
 		$YahooLogger=new YahooLogger;
@@ -104,8 +104,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 			$hasSession = YahooSession::hasSession($this->API_CONFIG['appKey'], $this->API_CONFIG['appSecret'], $this->API_CONFIG['appId']);
 		
 			if(!$hasSession) {
-				// create the callback url,
-				$callback=$this->API_CONFIG['callbackUrl']=JURI::base().'index.php?option=com_invitex&controller=invites&task=get_access_token&Itemid='.JRequest::getVar('Itemid');
 				// pass the credentials to get an auth url.
 				// this URL will be used for the pop-up.		
 				YahooSession::clearSession();
