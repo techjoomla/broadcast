@@ -17,8 +17,8 @@ if(JVERSION >='1.6.0')
 }
 else
 {
-	require_once('plug_techjoomlaAPI_twitter'.DS.'lib'.DS.'tmhOAuth.php');
-	require_once('plug_techjoomlaAPI_twitter'.DS.'lib'.DS.'tmhUtilities.php');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_twitter'.DS.'lib'.DS.'tmhOAuth.php');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_twitter'.DS.'lib'.DS.'tmhUtilities.php');
 }
 	//Helper class to write log file//
 require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'helper.php');
