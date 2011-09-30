@@ -34,7 +34,7 @@
 	<!-- Fields for Joomla 1.6.x and onwards -->
 	<config name="params">
   	<fields name="params">
-    	<fieldset name="basic" name="basic" label="Plugin Parameters" addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_facebook/plug_techjoomlaAPI_facebook/element">
+    	<fieldset name="basic"  label="Plugin Parameters" addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_facebook/plug_techjoomlaAPI_facebook/element">
 				<field name="appKey" type="text" default="" label="Enter Facebook App ID:" description="Enter Facebook App ID:"/>
 				<field name="appSecret" type="text" default="" label="Enter Facebook App Secret:" description="Enter Facebook App Secret:" />
 				<field name="no_allowed_message" type="text" default="10" label="Enter no of allowed messages" description="Enter no of allowed messages"/>
