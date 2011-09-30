@@ -11,9 +11,9 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.plugin.plugin');
 
 if(JVERSION >='1.6.0')
-	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_yahoo'.DS.'plug_techjoomlaAPI_yahoo'.DS.'lib'.DS.'Yahoo.inc');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_yahoo'.DS.'plug_techjoomlaAPI_yahoo'.DS.'lib'.DS.'techjoomlaYahoo.inc');
 else
-	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_yahoo'.DS.'lib'.DS.'Yahoo.inc');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_yahoo'.DS.'lib'.DS.'techjoomlaYahoo.inc');
 	
 
 $lang = & JFactory::getLanguage();
@@ -62,7 +62,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
     $plug=array(); 
    	$plug['name']="Yahoo";
   	//check if keys are set
-		if($this->API_CONFIG['appKey']=='' || $this->API_CONFIG['appSecret']=='' || $this->API_CONFIG['appId']=='' || !in_array($this->_name,$config))
+		if($this->API_CONFIG['appKey']=='' || $this->API_CONFIG['appSecret']=='' || $this->API_CONFIG['appId']=='')// || !in_array($this->_name,$config))
 		{
 			$plug['error_message']=true;		
 			return $plug;
@@ -87,6 +87,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 	
 	function get_request_token($callback) 
 	{
+		unset($_SESSION['techjoomla_yahoo_exception']);	
 		$session = JFactory::getSession();
 		$YahooLogger=new YahooLogger;
 		$YahooLogger->setDebug(true);	
@@ -121,7 +122,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 			return false;
 		}
 		
-		$return=$this->raiseLog($hasSession,JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0);
+		
+			if(isset($_SESSION['techjoomla_yahoo_exception']))
+			{
+				$this->raiseLog($_SESSION['techjoomla_yahoo_exception']['responseBody'],JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0);
+				$this->raiseException($_SESSION['techjoomla_yahoo_exception']['responseBody']);
+				return false;
+			}
 			if($res)
 			return true;	
 			
@@ -129,7 +136,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 	
 	function get_access_token($get,$client,$callback)  
 	{
-		unset($_SESSION['yahoo_exception']);			
+		unset($_SESSION['techjoomla_yahoo_exception']);			
 		$session = JFactory::getSession();	
 		try{
 		$session_yahoo = YahooSession::requireSession($this->API_CONFIG['appKey'], $this->API_CONFIG['appSecret'],$this->API_CONFIG['appId']);
@@ -149,6 +156,12 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 				$response_data['yahoo_oauth']= json_encode($user);		
 				$this->store($client,$response_data);
 				$contacts = $user->getContacts(0, 1000);
+				if(isset($_SESSION['techjoomla_yahoo_exception']))
+				{
+					$this->raiseLog($_SESSION['techjoomla_yahoo_exception']['responseBody'],JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0);
+					$this->raiseException($_SESSION['techjoomla_yahoo_exception']['responseBody']);
+					return false;
+				}
 				}
 				catch(YahooException $e)
 				{ 

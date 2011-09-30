@@ -129,14 +129,14 @@ class YahooLogger {
             if($GLOBAL_YAHOO_LOGGER_DEBUG_DESTINATION == "CONSOLE") {
                 //print("DEBUG - $message\n");
                 if(!is_null($object)) {
-                		//$_SESSION['yahoo_exception']=$object;
-                    print("DEBUG OBJECT - " . print_r($object, true) . "\n");
+                		$_SESSION['techjoomla_yahoo_exception']=$object;
+                    //print("DEBUG OBJECT - " . print_r($message, true) . "\n");
                 }
             }
             else if($GLOBAL_YAHOO_LOGGER_DEBUG_DESTINATION == "LOG") {
-                error_log("DEBUG - $message");
+                //error_log("DEBUG - $message");
                 if(!is_null($object)) {
-                    error_log("DEBUG OBJECT - " . print_r($object, true));
+                    //error_log("DEBUG OBJECT - " . print_r($object, true));
                 }
             }
         }
@@ -152,14 +152,14 @@ class YahooLogger {
         if($GLOBAL_YAHOO_LOGGER_DEBUG_DESTINATION == "CONSOLE") {
             //print("INFO - $message\n");
             if(!is_null($object)) {
-                print("INFO OBJECT - " . print_r($object, true) . "\n");
-                //$_SESSION['yahoo_exception']=$object;
+                //print("INFO OBJECT - " . print_r($object, true) . "\n");
+                $_SESSION['yahoo_exception']=$object;
             }
         }
         else if($GLOBAL_YAHOO_LOGGER_DEBUG_DESTINATION == "LOG") {
-            error_log("INFO - $message");
+            //error_log("INFO - $message");
             if(!is_null($object)) {
-                error_log("INFO OBJECT - " . print_r($object, true));
+                //error_log("INFO OBJECT - " . print_r($object, true));
             }
         }
     }
@@ -174,13 +174,14 @@ class YahooLogger {
         if($GLOBAL_YAHOO_LOGGER_DEBUG_DESTINATION == "CONSOLE") {
             //print("ERROR - $message\n");
             if(!is_null($object)) {
-                print("ERROR OBJECT - " . print_r($object, true) . "\n");
+                //print("ERROR OBJECT - " . print_r($object, true) . "\n");
+                $_SESSION['yahoo_exception']=$message;
             }
         }
         else if($GLOBAL_YAHOO_LOGGER_DEBUG_DESTINATION == "LOG") {
-            error_log("ERROR - $message");
+            //error_log("ERROR - $message");
             if(!is_null($object)) {
-                error_log("ERROR OBJECT - " . print_r($object, true));
+                //error_log("ERROR OBJECT - " . print_r($object, true));
             }
         }
     }
@@ -207,6 +208,7 @@ class YahooLogger {
         if($destination == "LOG" || $destination == "CONSOLE" ||
                 $destination == "NULL") {
             $GLOBAL_YAHOO_LOGGER_DEBUG_DESTINATION = $destination;
+            
             return true;
         }
         else {
@@ -348,6 +350,7 @@ class YahooSession {
         else {
       // TODO: throw a YahooException
             YahooLogger::error("Failed to create authorization URLs");
+            techjoomlaHelperLogs::simpleLog("Failed to create authorization URLs");
         }
     }
 
