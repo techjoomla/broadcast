@@ -16,7 +16,7 @@ else
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_facebook'.DS.'lib'.DS.'facebook.php');
 
 $lang = & JFactory::getLanguage();
-$lang->load('plug_techjoomlaAPI_linkedin', JPATH_ADMINISTRATOR);
+$lang->load('plug_techjoomlaAPI_facebook', JPATH_ADMINISTRATOR);
 	
 class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 { 
@@ -94,7 +94,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			return false;
 		}	
 			$response=header('Location:'.$loginUrl);
-			 
+			$return=$this->raiseLog($user,JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0);
 			
 		
 			return true; 
@@ -113,8 +113,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			$this->raiseException($e->getMessage());
 			return false;
     }	
-    $return=$this->raiseLog($response,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0); 
+    
 		$data = array('facebook_uid'=>$uid,'facebook_secret'=>$facebook_secret);
+		$return=$this->raiseLog($data,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0); 
 		$this->store($client,$data);		
 		return true;
 		
@@ -182,7 +183,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			return false;
     }	
 		
-		$return=$this->raiseLog($response,JText::_('LOG_GET_CONTACTS'),$this->user->id,0);
+		
 		
 		$connections =$friends;	
 		
@@ -200,7 +201,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			
 			$contacts=$this->renderContacts($emails);
 			if(count($contacts)==0)
+			{
 				$this->raiseException(JText::_('NO_CONTACTS'));
+				$this->raiseLog(JText::_('NO_CONTACTS'),JText::_('LOG_GET_CONTACTS'),$this->user->id,0);
+			}
+			else
+			
+			$this->raiseLog(JText::_('CONTACTS_FOUND'),JText::_('LOG_GET_CONTACTS'),$this->user->id,0);
 		
 		return $contacts;
 		
@@ -317,15 +324,61 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	
 	}
 	
-	function raiseException($exception)
+	function raiseException($exception,$userid='',$display=1,$params=array())
 	{
-		$params=array(
-		'name'=>$this->_name,
-		'group'=>$this->_type,	
-		);	
-		techjoomlaHelperLogs::simpleLog($exception,'plugin',$this->errorlogfile,$path='',$display=1,$params);
+		$path="";
+		$params['name']=$this->_name;
+		$params['group']=$this->_type;	
+		if($this->params->get('log_file_path'))
+		$path=& $this->params->get('log_file_path');
+		techjoomlaHelperLogs::simpleLog($exception,$userid,'plugin',$this->errorlogfile,$path,$display,$params);
 		return;
 	}
 	
+	function raiseLog($status_log,$desc="",$userid="",$display="")
+	{
+		
+		$params=array();		
+		$params['desc']	=	$desc;
+		if(is_object($status_log))
+		$status=JArrayHelper::fromObject($status_log,true);
+		
+		
+		
+		if(is_array($status_log))
+		{
+			$status=$status_log;
+			if(isset($status['info']['http_code']))
+			{
+				$params['http_code']		=	$status['info']['http_code'];
+				if(!$status['success'])
+				{
+						if(isset($status['linkedin']))				
+							$response_error=techjoomlaHelperLogs::xml2array($status['linkedin']);
+				
+			
+					$params['success']			=	false;
+					$this->raiseException($response_error['error']['message'],$userid,$display,$params);
+					return false;
+		
+				}
+				else
+				{
+					$params['success']	=	true;
+					$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
+					return true;
+		
+				}
+			
+			}
+		}
+		$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);	
+		return true;	
+	}
+	
+	function plug_techjoomlaAPI_facebookget_profile()
+	{
+
+  }
 
 }//end class

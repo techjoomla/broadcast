@@ -15,7 +15,7 @@
 		function fetchElement($name, $value, &$node, $control_name)
 		{
 
-			return '<a href="http://techjoomla.com/documentation-for-socialads/configuring-payment-plugins-for-socialads.html" target="_blank">'.JText::_('CLK_HERE_API_KEY').'</a>';
+			return '<a href="https://developers.facebook.com/apps" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
 		}
 	}
 ?>
