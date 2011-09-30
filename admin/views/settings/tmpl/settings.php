@@ -181,17 +181,17 @@ else
 		</tr>	
 		<tr>
 			<td align="left" width="20%"><?php echo JHTML::tooltip(JText::_('CRON_URL_GET_DESC'), JText::_('CRON_URL_GET'), '', JText::_('CRON_URL_GET'));?></td>
-			<td><?php echo str_replace('administrator/', '', JURI::base()).'index.php?option=com_broadcast&controller=broadcast&task=get_status&pkey='.$broadcast_config['private_key_cronjob'];?>
+			<td><?php echo str_replace('administrator/', '', JURI::base()).'index.php?option=com_broadcast&controller=broadcast&task=get_status&tmpl=component&pkey='.$broadcast_config['private_key_cronjob'];?>
 			</td>	
 		</tr>
 		<tr>
 			<td align="left" width="20%"><?php echo JHTML::tooltip(JText::_('CRON_URL_SET_DESC'), JText::_('CRON_URL_SET'), '', JText::_('CRON_URL_SET'));?></td>
-			<td><?php echo str_replace('administrator/', '', JURI::base()).'index.php?option=com_broadcast&controller=broadcast&task=set_status&pkey='.$broadcast_config['private_key_cronjob'];?>
+			<td><?php echo str_replace('administrator/', '', JURI::base()).'index.php?option=com_broadcast&controller=broadcast&task=set_status&tmpl=component&pkey='.$broadcast_config['private_key_cronjob'];?>
 			</td>
 		</tr>
 		<tr>
 			<td align="left" width="20%"><?php echo JHTML::tooltip(JText::_('CRON_URL_RSS_DESC'), JText::_('CRON_URL_RSS'), '', JText::_('CRON_URL_RSS'));?></td>
-			<td><?php echo str_replace('administrator/', '', JURI::base()).'index.php?option=com_broadcast&task=getrssdata&controller=rss&pkey='.$broadcast_config['private_key_cronjob'];?>
+			<td><?php echo str_replace('administrator/', '', JURI::base()).'index.php?option=com_broadcast&task=getrssdata&controller=rss&tmpl=component&pkey='.$broadcast_config['private_key_cronjob'];?>
 			</td>
 		</tr>					
 	</table>
