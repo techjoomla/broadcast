@@ -117,7 +117,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			}
 			else
 			{
-				
+				$return=$this->raiseException($response['linkedin']['oauth_problem']."<BR>".$response['error']);
 				return false;
 			}
 			return $return;
@@ -265,31 +265,37 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					foreach($conns as $connection)
 					{
 						$connection  = (array) $connection;
-						$r_connections[$count]->id  =$connection['id'];
-						$r_connections[$count]->name =$connection['first-name'].' '.$connection['last-name'];
-						if(array_key_exists('picture-url',$connection))
+						if($connection['id'])
 						{
-							$r_connections[$count]->picture_url=$connection['picture-url'];
+							$r_connections[$count]->id  =$connection['id'];
+							$r_connections[$count]->name =$connection['first-name'].' '.$connection['last-name'];
+							if(array_key_exists('picture-url',$connection))
+							{
+								$r_connections[$count]->picture_url=$connection['picture-url'];
+							}
+							else
+							{
+								$r_connections[$count]->picture_url='';
+							}
+							$count++;
 						}
-						else
-						{
-							$r_connections[$count]->picture_url='';
-						}
-						$count++;
 					}
 				}
 				else//only 1 connection
 				{	
 					$connection  = (array) $conns;
-					$r_connections[0]->id  =$connection['id'];
-					$r_connections[0]->first_name =$connection['first-name'].' '.$connection['last-name'];
-					if($connection['picture-url']	)
+					if($connection['id'])
 					{
-						$r_connections[0]->picture_url=$connection['picture-url'];
-					}
-					else
-					{
-						$r_connections[0]->picture_url='';
+						$r_connections[0]->id  =$connection['id'];
+						$r_connections[0]->first_name =$connection['first-name'].' '.$connection['last-name'];
+						if($connection['picture-url']	)
+						{
+							$r_connections[0]->picture_url=$connection['picture-url'];
+						}
+						else
+						{
+							$r_connections[0]->picture_url='';
+						}
 					}
 				}
 				return $r_connections;
