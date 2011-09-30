@@ -263,22 +263,33 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 			$count=0;
 			foreach($emails as $connection)
 			{
-				
-				$r_connections[$count]->id  =$connection['id'];
-				$first_name ='';
-				$last_name ='';
-				if(array_key_exists('first-name',$connection))
-					$first_name =$connection['first-name'];
-				if(array_key_exists('last-name',$connection))
-					$last_name  =$connection['last-name'];
-				if(array_key_exists('first-name',$connection) or array_key_exists('last-name',$connection))											
-				$r_connections[$count]->name=$first_name.' '.$last_name;
-				else if(array_key_exists('name',$connection))
+				if($connection['id'])	
 				{
-					if($connection['name'])
-					$r_connections[$count]->name=$connection['name'];
+					$r_connections[$count]->id  =$connection['id'];
+					$first_name ='';
+					$last_name ='';
+					if(array_key_exists('first-name',$connection))
+						$first_name =$connection['first-name'];
+					if(array_key_exists('last-name',$connection))
+						$last_name  =$connection['last-name'];
+					if(array_key_exists('first-name',$connection) or array_key_exists('last-name',$connection))											
+					$r_connections[$count]->name=$first_name.' '.$last_name;
+					else if(array_key_exists('name',$connection))
+					{
+						if($connection['name'])
+						$r_connections[$count]->name=$connection['name'];
+					}
+					if(array_key_exists('picture-url',$connection))
+					{
+								$r_connections[$count]->picture_url=$connection['picture-url'];
+					}
+					else
+					{
+								$r_connections[$count]->picture_url='';
+					}
 				}
-				
+				else
+				continue;
 				$count++;
 			}
 		
