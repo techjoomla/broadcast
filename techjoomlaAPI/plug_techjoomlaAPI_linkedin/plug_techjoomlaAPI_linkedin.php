@@ -49,7 +49,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		$plug=array(); 
    	$plug['name']="Linkedin";
   	//check if keys are set
-		if($this->API_CONFIG['appKey']=='' || $this->API_CONFIG['appSecret']=='' || !in_array($this->_name,$config)) #TODO add condition to check config
+		if($this->API_CONFIG['appKey']=='' || $this->API_CONFIG['appSecret']=='')// || !in_array($this->_name,$config)) #TODO add condition to check config
 		{	
 			$plug['error_message']=true;		
 			return $plug;
@@ -158,6 +158,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					$this->store($client,$response_data);
 					
 				
+				}
+				else
+				{
+				$return=$this->raiseException($response['linkedin']['oauth_problem']."<BR>".$response['error']);
+				return false;
 				}
 				return $return;
 				
