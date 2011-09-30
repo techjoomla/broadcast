@@ -98,6 +98,7 @@ jimport('joomla.plugin.plugin');
 		}
 		else
 		{
+			$this->raiseException("consumer key unknown");
 			return false;
 		}
 		
@@ -234,10 +235,26 @@ jimport('joomla.plugin.plugin');
 		$count=0;
 		foreach($connections as $conn)
 		{
-			if(isset($conn['gd$email']))
-			$r_connections[$count]->id = $conn['gd$email'][0]['address'];
-			$r_connections[$count]->name =$conn['title']['$t'];
+			if(isset($conn['gd$email']) || isset($conn['title']['$t']))
+			{
+				if(isset($conn['gd$email']))
+				$r_connections[$count]->id = $conn['gd$email'][0]['address'];
+				if(isset($conn['title']['$t']))
+				$r_connections[$count]->name =$conn['title']['$t'];
+			
+				if(array_key_exists('picture-url',$conn))
+				{
+								$r_connections[$count]->picture_url=$conn['picture-url'];
+				}
+				else
+				{
+								$r_connections[$count]->picture_url='';
+				}
+			}
+			else 
+			continue;
 			$count++;
+		
 		}
 		return $r_connections;
 	}

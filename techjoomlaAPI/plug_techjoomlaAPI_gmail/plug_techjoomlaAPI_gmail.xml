@@ -24,7 +24,7 @@
 	<params addpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_gmail/element">
 		<param name="appKey" type="text" default="" label="Enter Gmail application key" description="Enter Gmail application key" />
 		<param name="appSecret" type="text" default="" label="Enter Gmail secret key" description="Enter Gmail secret key" />
-		<param name="log_file_path" type="text" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored" />		
+		<param name="log_file_path" type="hidden" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored" />		
 		<param name="broadcast_limit" type="text" default="50" label="Limit for Broadcast" description="Enter the Limit for no of statuses to get" />								
 		<param name="path_api_gmail" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />
 		<param name="throttle_limit_gmail" type="text" label="Throttle Limit of gmail API" description="This is Throttle Limit per day per application" />		
@@ -36,7 +36,7 @@
     	<fieldset name="basic" addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_gmail/plug_techjoomlaAPI_gmail/element">
 				<field name="appKey" type="text" default="" label="Enter Gmail application key" description="Enter Gmail application key"/>
 				<field name="appSecret" type="text" default="" label="Enter Gmail secret key" description="Enter Gmail secret key" />
-				<field name="log_file_path" type="text" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored"/>		
+				<field name="log_file_path" type="hidden" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored"/>		
 				<field name="broadcast_limit" type="text" default="50" label="Limit for Broadcast" description="Enter the Limit for no of statuses to get" />
 				<field name="path_api_gmail" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />
 				<field name="throttle_limit_gmail" type="text" label="Throttle Limit of gmail API" description="This is Throttle Limit per day per application" />		
