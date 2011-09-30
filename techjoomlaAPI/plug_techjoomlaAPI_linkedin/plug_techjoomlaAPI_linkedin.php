@@ -392,6 +392,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	
 		//To do use json encode decode for this	
 		$oauth_key = $this->getToken($userid); 
+		if(!isset($oauth_key))
+		return false;
 		$oauth_token		 	= json_decode($oauth_key[0]->token);
 		$oauth	=	json_decode($oauth_token->linkedin_oauth, true);
 		

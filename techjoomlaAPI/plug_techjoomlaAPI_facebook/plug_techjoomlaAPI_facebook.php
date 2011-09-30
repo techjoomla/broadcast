@@ -271,8 +271,19 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 				$this->raiseException($e->getMessage());
 				return false;
 		  }	
+		  
 			$returndata[$i]['user_id'] = $oauth_key->user_id;
 			$returndata[$i]['status'] = $this->renderstatus($json_facebook['data']);
+			if($returndata[$i]['status'])
+			{
+				
+				$response=$this->raiseLog(JText::_('LOG_GET_STATUS_SUCCESS'),JText::_('LOG_GET_STATUS'),$oauth_key->user_id,1);
+			}
+			else
+			{
+				$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL'),JText::_('LOG_GET_STATUS'),$oauth_key->user_id,0);
+			}
+			
 			$i++;
 		}
 			
@@ -290,6 +301,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			if(isset($totalresponse[$i]['message'])){
 				$status[$j]['comment'] =  $totalresponse[$i]['message'];
 				$status[$j]['timestamp'] = strtotime($totalresponse[$i]['updated_time']);
+				
+				
 				$j++;
 			}
 		  }
@@ -300,9 +313,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	{
 		if(!$userid)
 		{
-			$this->raiseException($this->raiseException(JText::_( 'SESSION_TIMEOUT' )));
+			$this->raiseException(JText::_( 'SESSION_TIMEOUT' ));
      	return array();
 		}
+		if(!isset($oauth_key))
+		return false;
 		$oauth_key = $this->getToken($userid);
 		$token =json_decode($oauth_key->token);	
 		$post=array();
@@ -320,7 +335,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
      return false;
     }
 		
-		return true;
+		$response=$this->raiseLog($post,JText::_('LOG_SET_STATUS'),$userid,1);
+		return $response;
 	
 	}
 	
@@ -353,13 +369,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 				$params['http_code']		=	$status['info']['http_code'];
 				if(!$status['success'])
 				{
-						if(isset($status['linkedin']))				
-							$response_error=techjoomlaHelperLogs::xml2array($status['linkedin']);
-				
-			
-					$params['success']			=	false;
-					$this->raiseException($response_error['error']['message'],$userid,$display,$params);
-					return false;
+						if(isset($status['facebook']))				
+							$response_error=techjoomlaHelperLogs::xml2array($status['facebook']);
+							$params['success']			=	false;
+							$this->raiseException($response_error['error']['message'],$userid,$display,$params);
+							return false;
 		
 				}
 				else
@@ -372,7 +386,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			
 			}
 		}
-		$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);	
+		$this->raiseException($status_log,$userid,$display,$params);	
 		return true;	
 	}
 	
