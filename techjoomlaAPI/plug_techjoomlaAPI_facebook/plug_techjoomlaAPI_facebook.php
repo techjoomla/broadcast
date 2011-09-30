@@ -219,27 +219,29 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			$count=0;
 			foreach($emails as $connection)
 			{
-						
-				$r_connections[$count]->id  =$connection['id'];
-				$first_name ='';
-				$last_name ='';
-				if(array_key_exists('first-name',$connection))
-					$first_name =$connection['first-name'];
-				if(array_key_exists('last-name',$connection))
-					$last_name  =$connection['last-name'];
-				if(array_key_exists('first-name',$connection) or array_key_exists('last-name',$connection))											
-				$r_connections[$count]->name=$first_name.' '.$last_name;
-				else if(array_key_exists('name',$connection))
-				$r_connections[$count]->name=$connection['name'];
-				if($connection['picture-url']	)
-				{
-					$r_connections[$count]->picture_url=$connection['picture-url'];
+				if($connection['id'])	
+				{	
+					$r_connections[$count]->id  =$connection['id'];
+					$first_name ='';
+					$last_name ='';
+					if(array_key_exists('first-name',$connection))
+						$first_name =$connection['first-name'];
+					if(array_key_exists('last-name',$connection))
+						$last_name  =$connection['last-name'];
+					if(array_key_exists('first-name',$connection) or array_key_exists('last-name',$connection))											
+					$r_connections[$count]->name=$first_name.' '.$last_name;
+					else if(array_key_exists('name',$connection))
+					$r_connections[$count]->name=$connection['name'];
+					if($connection['picture-url']	)
+					{
+						$r_connections[$count]->picture_url=$connection['picture-url'];
+					}
+					else
+					{
+						$r_connections[$count]->picture_url='';
+					}
+					$count++;
 				}
-				else
-				{
-					$r_connections[$count]->picture_url='';
-				}
-				$count++;
 			}
 		return $r_connections;
 	}
@@ -259,7 +261,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		$facebook_profile_limit=10;
 		$returndata = array();
 		if(!$oauth_keys)
-		return array();
+		return false;
 	 	foreach($oauth_keys as $oauth_key){	
 	 	
 			$token =json_decode($oauth_key->token);	
@@ -281,6 +283,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			}
 			else
 			{
+				
 				$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL'),JText::_('LOG_GET_STATUS'),$oauth_key->user_id,0);
 			}
 			
@@ -298,13 +301,16 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	 	$j=0;
 		for($i=0; $i <= count($totalresponse); $i++ )
 		{			
-			if(isset($totalresponse[$i]['message'])){
-				$status[$j]['comment'] =  $totalresponse[$i]['message'];
-				$status[$j]['timestamp'] = strtotime($totalresponse[$i]['updated_time']);
-				
-				
-				$j++;
-			}
+				if(isset($totalresponse[$i]['message']))
+				{
+					$status[$j]['comment'] =  $totalresponse[$i]['message'];
+					$status[$j]['timestamp'] = strtotime($totalresponse[$i]['updated_time']);
+					$config =& JFactory::getConfig();
+					$offset = $config->getValue('config.offset'); 
+					$get_date= & JFactory::getDate($status[$j]['timestamp'],$offset);		
+					$status[$j]['timestamp'] = strtotime($get_date);		
+					$j++;
+				}
 		  }
 		return $status;
 	}
