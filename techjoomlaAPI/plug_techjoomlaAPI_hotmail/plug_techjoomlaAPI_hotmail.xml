@@ -25,7 +25,7 @@
 		<param name="appKey" type="text" default="" label="Enter Hotmail Client ID" description="Enter Hotmail Client ID" />
 		<param name="appSecret" type="text" default="" label="Enter Hotmail Client secret" description="Enter Hotmail Client secret" />
 		<param name="no_allowed_message" type="text" default="10" label="Enter no of allowed messages" description="Enter no of allowed messages" />
-		<param name="log_file_path" type="text" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored" />		
+		<param name="log_file_path" type="hidden" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored" />		
 		<param name="broadcast_limit" type="text" default="50" label="Limit for Broadcast" description="Enter the Limit for no of statuses to get" />								
 		<param name="path_api_hotmail" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />	
 		<param name="throttle_limit_hotmail" type="text" label="Throttle Limit of hotmail API" description="This is Throttle Limit per day per application" />		
@@ -38,7 +38,7 @@
 				<field name="appKey" type="text" default="" label="Enter Hotmail Client ID" description="Enter Hotmail Client ID"/>
 				<field name="appSecret" type="text" default="" label="Enter Hotmail Client secret" description="Enter Hotmail Client secret" />
 				<field name="no_allowed_message" type="text" default="10" label="Enter no of allowed messages" description="Enter no of allowed messages"/>
-				<field name="log_file_path" type="text" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored"/>		
+				<field name="log_file_path" type="hidden" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored"/>		
 				<field name="broadcast_limit" type="text" default="50" label="Limit for Broadcast" description="Enter the Limit for no of statuses to get" />						
 				<field name="path_api_hotmail" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />	
 				<field name="throttle_limit_hotmail" type="text" label="Throttle Limit of hotmail API" description="This is Throttle Limit per day per application" />		

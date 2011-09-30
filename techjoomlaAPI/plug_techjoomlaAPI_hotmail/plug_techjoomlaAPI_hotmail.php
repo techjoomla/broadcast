@@ -96,8 +96,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 				$this->raiseException($e->getMessage());
 				return false;
 			}
+
+			$response=header('Location:'.$url);
 			
-			$response=header('Location:'.$url);	
 			$return=$this->raiseLog($response,JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0);		
 			
 			return true;
@@ -106,8 +107,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 	
 	function get_access_token($get,$client,$callback) 
 	{	
+		if(!$_REQUEST)
+			$this->raiseException("consumer key Unknown");
 		
-		$return=$this->raiseLog($_REQUEST,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0);
+			$return=$this->raiseLog($_REQUEST,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0);
 		$response_data['hotmail_oauth']		= json_encode($get);	
 		try{
 		$this->imported_contacts = $this->import_live->getContacts();
@@ -213,7 +216,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 			$count=0;
 			foreach($emails as $connection)
 			{
-				
+				if($connection['id'])
+				{
 				$r_connections[$count]->id  =$connection['id'];
 				$first_name ='';
 				$last_name ='';
@@ -231,8 +235,17 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 						$r_connections[$count]->name=$connection['name'];				
 					}
 				}
+				if(array_key_exists('picture-url',$connection))
+				{
+							$r_connections[$count]->picture_url=$connection['picture-url'];
+				}
+				else
+				{
+							$r_connections[$count]->picture_url='';
+				}
 				
 				$count++;
+			}
 			}
 		
 		return $r_connections;
