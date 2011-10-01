@@ -21,7 +21,7 @@
 			<language tag="en-GB">en-GB/en-GB.plug_techjoomlaAPI_twitter.ini</language>
 	</languages>
 	<!-- parameters for Joomla 1.5.x -->
-	<params>
+	<params addpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_twitter/element">
 		<param name="appKey" type="text" default="" label="Enter Twitter App ID:" description="Enter Twitter App ID" />
 		<param name="appSecret" type="text" default="" label="Enter Twitter App Secret: " description="Enter Twitter App Secret: " />
 		<param name="no_allowed_message" type="text" default="10" label="Enter no of allowed messages" description="Enter no of allowed messages" />
@@ -34,7 +34,7 @@
 	<!-- Fields for Joomla 1.6.x and onwards -->
 	<config name="params">
   	<fields name="params">
-    	<fieldset name="basic">
+    	<fieldset name="basic" label="Plugin Parameters" addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_twitter/plug_techjoomlaAPI_twitter/element">
 				<field name="appKey" type="text" default="" label="Enter Twitter App ID:" description="Enter Twitter App ID:"/>
 				<field name="appSecret" type="text" default="" label="Enter Twitter App Secret:" description="Enter Twitter App Secret:" />
 				<field name="no_allowed_message" type="text" default="10" label="Enter no of allowed messages" description="Enter no of allowed messages"/>
