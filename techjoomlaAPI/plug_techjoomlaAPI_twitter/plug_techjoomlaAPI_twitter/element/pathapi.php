@@ -11,7 +11,7 @@
 	jimport("joomla.html.parameter.element");
 	$lang = & JFactory::getLanguage();
 	$lang->load('plug_techjoomlaAPI_twitter', JPATH_ADMINISTRATOR);
-	class JElementPathapi extends JElement
+	class JElementpathapi extends JElement
 	{
 		var $_name = 'Pathapi';
 		function fetchElement($name, $value, &$node, $control_name)
