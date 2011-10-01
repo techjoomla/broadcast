@@ -307,8 +307,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 					$status[$j]['timestamp'] = strtotime($totalresponse[$i]['updated_time']);
 					$config =& JFactory::getConfig();
 					$offset = $config->getValue('config.offset'); 
-					$get_date= & JFactory::getDate($status[$j]['timestamp'],$offset);		
-					$status[$j]['timestamp'] = strtotime($get_date);		
+					$get_date= & JFactory::getDate($totalresponse[$i]['updated_time'],$offset);				
+					$status[$j]['timestamp'] = strtotime($get_date->toFormat());	
 					$j++;
 				}
 		  }
@@ -317,31 +317,31 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 
 	function plug_techjoomlaAPI_facebooksetstatus($userid='',$content='')
 	{
-		if(!$userid)
-		{
-			$this->raiseException(JText::_( 'SESSION_TIMEOUT' ));
-     	return array();
-		}
-		if(!isset($oauth_key))
-		return false;
 		$oauth_key = $this->getToken($userid);
+		if(!isset($oauth_key->token))
+		return false;
+		else
 		$token =json_decode($oauth_key->token);	
+		
 		$post=array();
 		if(!$content)
 		return array();
 		
 		try{
+		if(isset($token))
 		$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $content));
 		
 		} 
 		catch (FacebookApiException $e) 
 		{
-  
-     $this->raiseException($e->getMessage());
-     return false;
+			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL'),$e->getMessage(),$userid,1);
+		  return false;
     }
-		
-		$response=$this->raiseLog($post,JText::_('LOG_SET_STATUS'),$userid,1);
+		if($post)
+			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS'),$content,$userid,1);
+		else
+			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL'),$e->getMessage(),$userid,1);
+			
 		return $response;
 	
 	}
