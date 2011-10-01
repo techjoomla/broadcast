@@ -317,11 +317,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 
 	function plug_techjoomlaAPI_facebooksetstatus($userid='',$content='')
 	{
+	
 		$oauth_key = $this->getToken($userid);
-		if(!isset($oauth_key->token))
+		
+		if(!$oauth_key)
 		return false;
 		else
-		$token =json_decode($oauth_key->token);	
+		$token =json_decode($oauth_key[0]->token);	
 		
 		$post=array();
 		if(!$content)
@@ -334,13 +336,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		} 
 		catch (FacebookApiException $e) 
 		{
-			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL'),$e->getMessage(),$userid,1);
+			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_GET_STATUS'),$e->getMessage(),$userid,1);
 		  return false;
     }
 		if($post)
-			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS'),$content,$userid,1);
+			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS').JText::_('LOG_GET_STATUS'),$content,$userid,1);
 		else
-			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL'),$e->getMessage(),$userid,1);
+			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_GET_STATUS'),$e->getMessage(),$userid,1);
 			
 		return $response;
 	
