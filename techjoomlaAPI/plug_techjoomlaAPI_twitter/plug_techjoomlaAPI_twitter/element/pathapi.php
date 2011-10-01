@@ -11,13 +11,13 @@
 	jimport("joomla.html.parameter.element");
 	$lang = & JFactory::getLanguage();
 	$lang->load('plug_techjoomlaAPI_twitter', JPATH_ADMINISTRATOR);
-	class JElementpathapi extends JElement
+	class JElementPathapi extends JElement
 	{
 		var $_name = 'Pathapi';
 		function fetchElement($name, $value, &$node, $control_name)
 		{
 
-			return '<a href="http://techjoomla.com/documentation-for-socialads/configuring-payment-plugins-for-socialads.html" target="_blank">'.JText::_('CLK_HERE_API_KEY').'</a>';
+			return '<a href="https://dev.twitter.com/apps/" target="_blank">'.JText::_('CLK_HERE_API_KEY').'</a>';
 		}
 	}
 ?>
