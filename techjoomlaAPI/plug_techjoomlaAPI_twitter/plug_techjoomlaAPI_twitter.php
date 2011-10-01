@@ -20,8 +20,9 @@ else
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_twitter'.DS.'lib'.DS.'tmhOAuth.php');
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_twitter'.DS.'lib'.DS.'tmhUtilities.php');
 }
-	//Helper class to write log file//
-require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'helper.php');
+
+$lang = & JFactory::getLanguage();
+$lang->load('plug_techjoomlaAPI_twitter', JPATH_ADMINISTRATOR);
 	
 class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 { 
@@ -31,12 +32,17 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		parent::__construct($subject, $config);
 		$this->appKey	=& $this->params->get('appKey');
 		$this->appSecret	=& $this->params->get('appSecret');
+		$this->errorlogfile='twitter_error_log.php';
+		$this->user =& JFactory::getUser();		
+		$this->db=JFactory::getDBO();
+		
 		 $this->twitter = new tmhOAuth(array(
-  'consumer_key'    => $this->appKey,
-  'consumer_secret' => $this->appSecret,
+  	'consumer_key'    => $this->appKey,
+  	'consumer_secret' => $this->appSecret,
 		));
 			
-
+		
+		
 	}
 	
 	/*
@@ -50,7 +56,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
     $plug=array(); 
    	$plug['name']="Twitter";
   	//check if keys are set
-		if($this->appKey=='' || $this->appSecret=='')
+		if($this->appKey=='' || $this->appSecret=='') // || !in_array($this->_name,$config)) #TODO add condition to check config
 		{
 			$plug['error_message']=true;		
 			return $plug;
@@ -58,36 +64,33 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		$plug['api_used']=$this->_name; 
 		$plug['message_type']='pm';               
 		$plug['img_file_name']="twitter.png"; 
-		//dipti
 		$plug['apistatus'] = $this->status();
-		//eoc            
+	
 		return $plug; 
 	}
 	
 	function status(){
-		$user = JFactory::getUser();
-		$db = JFactory::getDBO();
-		$query = "SELECT 	twitter_oauth,twitter_secret FROM #__broadcast_users WHERE user_id = {$user->id}";
-		$db->setQuery($query);
-		$uaccess = $db->loadObject();
-		if ($uaccess->facbook_uid && $uaccess->twitter_secret)
+	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE user_id = {$this->user->id}  AND api='{$this->_name}'";
+		$this->db->setQuery($query);
+		$result	= $this->db->loadResult();		
+		if ($result)
 			return 1;
 		else
 			return 0;
 	}
 	
 	
-	function get_request_token($callback='') 
+	function get_request_token($callback) 
 	{
+	
 	$params = array('oauth_callback'=> $callback);
 	//echo $callback;
- echo  $code = $this->twitter->request('POST', $this->twitter->url('oauth/request_token', ''), $params);
+  $code = $this->twitter->request('POST', $this->twitter->url('oauth/request_token', ''), $params);
   if ($code == 200) {
     $_SESSION['oauth'] = $this->twitter->extract_params($this->twitter->response['response']);
     $authurl = $this->twitter->url("oauth/authorize", '') .  "?oauth_token={$_SESSION['oauth']['oauth_token']}";
-  } else {
- 
- 	$this->outputError($this->twitter);
+  } else { 
+ 			$this->outputError($this->twitter);
   }
 
 			return true;
@@ -96,32 +99,23 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	function get_access_token($get,$client='',$callback='') 
 	{
 			
-			if(isset($get['oauth_verifier'])) {
+		if(isset($get['oauth_verifier'])) {
 			$this->twitter->config['user_token']  = $_SESSION['oauth']['oauth_token'];
 			$this->twitter->config['user_secret'] = $_SESSION['oauth']['oauth_token_secret'];
 
-  		$code = $this->twitter->request('POST', $this->twitter->url('oauth/access_token', ''), array(
-    'oauth_verifier' => $get['oauth_verifier']
-  ));
-	if ($code == 200) {
-		$_SESSION['access_token'] = $this->twitter->extract_params($this->twitter->response['response']);
-		unset($_SESSION['oauth']);
-		header("Location: {$here}");
-	} else {
-		$this->outputError($code);
-	}
-	print_r($_SESSION['access_token']);die;
-// start the OAuth dance
-}
+  		$code = $this->twitter->request('POST', $this->twitter->url('oauth/access_token', ''),
+  					 array('oauth_verifier' => $get['oauth_verifier']));
+			if ($code == 200) 
+			{
+				$_SESSION['access_token'] = $this->twitter->extract_params($this->twitter->response['response']);
+				unset($_SESSION['oauth']);
+				header("Location: {$here}");
+			} 
+			else{
+					$this->outputError($code);
+			}
+		}	
 
- 		
-			
-			
-			
-			
-		
-		
-		
 	}
 	
 	function store($client,$data) #TODO insert client also in db 
@@ -147,22 +141,30 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 			$db->insertObject('#__broadcast_users', $row);
 		 }
 	}
+	function getToken($user=''){
+		$user=$this->user->id;
+		$where = '';
+		if($user)
+			$where = ' AND user_id='.$user;
+			
+		$query = "SELECT user_id,token
+		FROM #__techjoomlaAPI_users 
+		WHERE token<>'' AND api='{$this->_name}' ".$where ;
+		$this->db->setQuery($query);
+		return $this->db->loadObjectlist();
+	}
 	function remove_token($client)
 	{ 
-		$db	 = & JFactory::getDBO();
-		$user 	= JFactory::getUser();
+		if($client!='')
+		$where="AND client='{$client}' AND api='{$this->_name}'";
+		
 		#TODO add condition for client also
-		$qry 	= "UPDATE #__broadcast_users SET twitter_oauth='',twitter_secret='' WHERE user_id = {$user->id}";//twitter_oauth,twitter_secret
-		$db->setQuery($qry);	
-		$db->query();
+		$qry 	= "UPDATE #__techjoomlaAPI_users SET token='' WHERE user_id = {$this->user->id} ".$where;
+		$this->db->setQuery($qry);	
+		$this->db->query();
 	}
 	
-	function get_profile()
-	{
-
-  }
-          
-	function get_contacts() 
+	function plug_techjoomlaAPI_twitterget_contacts()
 	{
 		$friends= $this->twitter->api('/me/friends');
 		if(!$friends)
@@ -224,22 +226,16 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		return $r_connections;
 	}
 	
-	function send_message($post)
+	function plug_techjoomlaAPI_twittersend_message($post)
 	{
 	
   }//end send message
   
   
-	function getstatus($oauth_key)
+	function plug_techjoomlaAPI_twittergetstatus($oauth_key)
 	{ 
 	 
-	/*$token=Array
-	(
-		  ['oauth_token'] => '227916664-yanJsIHVPWMhecwWxPHXUPOkXCtGvWBzzLhN0Gci'
-		  ['oauth_token_secret'] => 'PShd1v3XOmhnt3FliP2opg3lWM4PDhBfhIdFKodWQ'
-		  ['user_id'] => '227916664'
-		  ['screen_name'] => 'sagarchinchavad'
-	);*/
+	
 
 		$access_token =$oauth_key->twitter_secret;	
 		$today=date('Y-m-d');
@@ -280,7 +276,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	
 	}
 
-	function setstatus($oauth_key,$content='')
+	function plug_techjoomlaAPI_twittersetstatus($oauth_key,$content='')
 	{	
 		$post=array();
 		if(!$content)
@@ -296,19 +292,65 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	
 	}
 
-function raiseException($exception)
+function raiseException($exception,$userid='',$display=1,$params=array())
 	{
-		$params=array(
-		'name'=>$this->_name,
-		'group'=>$this->_type,	
-		);	
-		techjoomlaHelperLogs::simpleLog($exception,'plugin',$this->errorlogfile,$path='',$display=1,$params);
+		$path="";
+		$params['name']=$this->_name;
+		$params['group']=$this->_type;	
+		if($this->params->get('log_file_path'))
+		$path=& $this->params->get('log_file_path');
+		techjoomlaHelperLogs::simpleLog($exception,$userid,'plugin',$this->errorlogfile,$path,$display,$params);
 		return;
 	}
-function outputError($tmhOAuth) {
-			return JError::raiseWarning( 500,$tmhOAuth->response['response']);
-  tmhUtilities::pr($tmhOAuth);
-}
+	
+	function raiseLog($status_log,$desc="",$userid="",$display="")
+	{
+		
+		$params=array();		
+		$params['desc']	=	$desc;
+		if(is_object($status_log))
+		$status=JArrayHelper::fromObject($status_log,true);
+		
+		
+		
+		if(is_array($status_log))
+		{
+			$status=$status_log;
+			if(isset($status['info']['http_code']))
+			{
+				$params['http_code']		=	$status['info']['http_code'];
+				if(!$status['success'])
+				{
+						if(isset($status['facebook']))				
+							$response_error=techjoomlaHelperLogs::xml2array($status['facebook']);
+							$params['success']			=	false;
+							$this->raiseException($response_error['error']['message'],$userid,$display,$params);
+							return false;
+		
+				}
+				else
+				{
+					$params['success']	=	true;
+					$this->raiseException(JText::_('LOG_SUCCESS'),$userid,$display,$params);		
+					return true;
+		
+				}
+			
+			}
+		}
+		$this->raiseException($status_log,$userid,$display,$params);	
+		return true;	
+	}
+	
+	function plug_techjoomlaAPI_twitterget_profile()
+	{
+
+  }
+  
+	function outputError($tmhOAuth) {
+				return JError::raiseWarning( 500,$tmhOAuth->response['response']);
+		tmhUtilities::pr($tmhOAuth);
+	}
 	
 	
 
