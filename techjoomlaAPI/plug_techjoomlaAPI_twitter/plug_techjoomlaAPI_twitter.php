@@ -88,18 +88,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
   $code = $this->twitter->request('POST', $this->twitter->url('oauth/request_token', ''), $params);
  
   if ($code == 200) {
-  	$this->raiseLog(JText::_('LOG_GET_REQUEST_TOKEN_SUCCESS'),JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0);
-  	
-    $_SESSION['oauth'] = $this->twitter->extract_params($this->twitter->response['response']);
-    
-    $authurl = $this->twitter->url("oauth/authorize", '') .  "?oauth_token=".$_SESSION['oauth']['oauth_token'];
-    $response=header('Location:'.$authurl);
+  $_SESSION['oauth'] = $this->twitter->extract_params($this->twitter->response['response']);
+  $authurl = $this->twitter->url("oauth/authorize", '') .  "?oauth_token=".$_SESSION['oauth']['oauth_token'];
+  $response=header('Location:'.$authurl);
+  $this->raiseLog(JText::_('LOG_GET_REQUEST_TOKEN_SUCCESS'),JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0,$code);
      
-  } else { 
-  		$this->raiseException(JText::_('LOG_GET_REQUEST_TOKEN_FAIL'),$this->user->id,1);
-  		$this->raiseLog(JText::_(JText::_('LOG_GET_REQUEST_TOKEN_FAIL'),'LOG_GET_REQUEST_TOKEN'),$this->user->id,0,$code);
-  		return false;
- 	
+  } else{ 
+	$this->raiseException(JText::_('LOG_GET_REQUEST_TOKEN_FAIL'),$this->user->id,1);
+	$this->raiseLog(JText::_(JText::_('LOG_GET_REQUEST_TOKEN_FAIL'),'LOG_GET_REQUEST_TOKEN'),$this->user->id,0,$code);
+	return false;
   }
 
 			return true;
@@ -354,8 +351,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 			$code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' => $content));
 			if($code=200)
 			{
-					$status['info']['http_code']='200';
-					
 					$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS'),JText::_('LOG_SET_STATUS'),$userid,1,200);
 			}
 			else
