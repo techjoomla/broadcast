@@ -25,10 +25,11 @@ if(isset($this->subscribedlists->broadcast_rss_url) )
 {
 	$rsslists = explode('|', $this->subscribedlists->broadcast_rss_url);
 }
+
 $user=JFactory::getUser();
 if(!$user->id){
-echo JText::_('BC_LOGIN');
-return false;
+	echo JText::_('BC_LOGIN');
+	return false;
 }
 ?>
 
@@ -52,75 +53,101 @@ return false;
 	<?php
 	}
 	?>
+	function divhide(thischk){
 
+		if(document.getElementById(thischk.id+'1').style.display == "none" ){
+			document.getElementById(thischk.id+'1').style.display="block";
+		}
+		else{
+			document.getElementById(thischk.id+'1').style.display="none";
+		}
+	}
+	
 	
 </script>
 
 	<h1 class="contentheading">											
 			 <?php echo JText::_('BC_SETT');?>
 	</h1>
+	<div class="bc_connect">
+		<div class="box-container-t">
+			<div class="box-tl"></div>
+			<div class="box-tr"></div>
+			<div class="box-t"></div>
+		</div>									
+		<div class="content_cover">	
+				<div id="broadcast_connect" onclick="divhide(this);" > <b> <?php echo JText::_('CONN_SER')?> </b></div>	
+			
+			<div id="broadcast_connect1"  class="broadcast-expands">
+			<div> <?php echo JText::_('BC_SER_MSG')?>	</div>	
+				<?php 
+				include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+				$lang = & JFactory::getLanguage();
+				$lang->load('mod_jomsocialbroadcast', JPATH_SITE);
+				$apidata = combroadcastHelper::getapistatus();
+				$align=1;			
+				ob_start();
+					include(JModuleHelper::getLayoutPath('mod_jomsocialbroadcast'));
+					$html = ob_get_contents();
+				ob_end_clean();
+				echo $html ;	
+				?>
+			</div><!--End of Div Broadcast_Connect -->
+		</div>
+		<div class="content_bottom">
+			<div class="box-bl"></div>
+			<div class="box-br"></div>
+			<div class="box-b"></div>
+		</div>
+	</div>
 
-	<fieldset class="fieldsetstyle">
-		<legend class="legendstyle"><?php echo JText::_('CONN_SER')?></legend>
-		<div class="check_connect_border"></div>
-		<div id="broadcast_connect">
-			<div class="content_cover" id="check_rss_label" style="padding-left: 8px;"><?php echo JText::_('BC_SER_MSG')?></div>
-			<?php 
-			include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
-			$lang = & JFactory::getLanguage();
-			$lang->load('mod_jomsocialbroadcast', JPATH_SITE);
-			$apidata = combroadcastHelper::getapistatus();
-			$align=1;			
-			ob_start();
-				include(JModuleHelper::getLayoutPath('mod_jomsocialbroadcast'));
-				$html = ob_get_contents();
-			ob_end_clean();
-			echo $html ;	
-			?>
-		</div><!--End of Div Broadcast_Connect -->
-	</fieldset>
-
-
-<?php
-$user	=	JFactory::getUser();
-
- if($user->id)
- {
-	
-?>
 <form action=""  method="POST" name="manualform" >
 	<!-- **** Start Added & Modified By Deepak -->
-	<fieldset class="fieldsetstyle">
-		<legend class="legendstyle"><?php echo JText::_('BC_ACT')?></legend>             
-		<div id="broadcast_activity" >
-			<table>
-				<tr>
-				    <td style="padding-left: 8px;">		
-						<?php
-							$brodfile 	= JPATH_SITE."/components/com_broadcast/broadcast.ini";
-							$activities = parse_ini_file($brodfile);
-							$lists 	= array();	
-							if (isset($this->subscribedlists->broadcast_activity_config))
-								$lists 	=  explode('|', $this->subscribedlists->broadcast_activity_config);
-							foreach($activities as $v=>$bractive)
-							{								
-								if(in_array($v, $lists))
-									$brchecked = 'checked="checked"';
-								else
-									$brchecked = '';
-												
-								if($bractive != '')							
-									echo '<input type="checkbox" name="broadcast_activity[]" '.$brchecked.' value="'.$v.'" >'.$bractive.'<br />';								
-							}
-						?>
-				</td>                                       
-				</tr>	
-			</table>	
+	<div class="bc_connect">
+		<div class="box-container-t">
+			<div class="box-tl"></div>
+			<div class="box-tr"></div>
+			<div class="box-t"></div>
+		</div>									
+		<div class="content_cover">	
+			<div id="broadcast_activity" onclick="divhide(this);" ><b><?php echo JText::_('BC_ACT')?></b></div>	      
+			<div id="broadcast_activity1"  class="broadcast-expands">
+				<div style="padding-left: 8px;">		
+					<?php
+						$brodfile 	= JPATH_SITE."/components/com_broadcast/broadcast.ini";
+						$activities = parse_ini_file($brodfile);
+						$lists 	= array();	
+						if (isset($this->subscribedlists->broadcast_activity_config))
+							$lists 	=  explode('|', $this->subscribedlists->broadcast_activity_config);
+						foreach($activities as $v=>$bractive)
+						{								
+							if(in_array($v, $lists))
+								$brchecked = 'checked="checked"';
+							else
+								$brchecked = '';
+											
+							if($bractive != '')							
+								echo '<input type="checkbox" name="broadcast_activity[]" '.$brchecked.' value="'.$v.'" >'.$bractive.'<br />';								
+						}
+					?>
+				</div>	
+				<div style="padding-left: 8px;"><?php echo JText::_('BC_ACT_MSG')?></div>
+			</div>
 		</div>
-	<div class="content_cover" style="padding-left: 8px;"><?php echo JText::_('BC_ACT_MSG')?></div>
-	</fieldset>			
-	<fieldset class="fieldsetstyle">
-		<legend class="legendstyle"><?php echo JText::_('ACT_RSS')?></legend>
+		<div class="content_bottom">
+			<div class="box-bl"></div>
+			<div class="box-br"></div>
+			<div class="box-b"></div>
+		</div>
+	</div>		
+	<div class="bc_connect">
+		<div class="box-container-t">
+			<div class="box-tl"></div>
+			<div class="box-tr"></div>
+			<div class="box-t"></div>
+		</div>									
+		<div class="content_cover">	
+		<div id="check_rss_label" onclick="divhide(this);" ><b> <?php echo JText::_('ACT_RSS')?></b></div>
 		<script type="text/javascript">
 			var latestId = counter+1;
 			function addNewItem() {
@@ -162,43 +189,44 @@ $user	=	JFactory::getUser();
 				//Now we just need to insert our new element into the containing element
 			  	container1.appendChild(newElement, container1);	
 			}
-		</script>		
-		<div class="content_cover" id="check_rss_label" style="padding-left: 8px;"><?php echo JText::_('ACT_RSS_MSG')?></div>
-<br />		
-<div id="broadcast_rss">
-			<div id="container1" style="padding-left: 20px;">
-				<?php 
-					if(isset($this->subscribedlists->broadcast_rss_url) )
-					{
-						$rsslists = explode('|', $this->subscribedlists->broadcast_rss_url);						
-						$i=0;
-						foreach($rsslists as $rss)
+		</script>
+		
+		<div id="check_rss_label1" class="broadcast-expands" style="padding-left: 8px;">
+			<?php echo JText::_('ACT_RSS_MSG')?>
+			<br />		
+			<div id="broadcast_rss">
+				<div id="container1" style="padding-left: 20px;">
+					<?php 
+						if(isset($this->subscribedlists->broadcast_rss_url) )
 						{
-							echo '<div id="element'.$i.'">';													
-							echo '<input size="50" type="text" class="inputbox" name="rss_link['.$i.']" value="'.$rss.'" />';
-							echo '<a href="javascript:removeItem('.$i.');" > ['.JText::_('REM_RSS').']</a>'."<br />";
-							echo '</div>';
-							$i++;
+							$rsslists = explode('|', $this->subscribedlists->broadcast_rss_url);						
+							$i=0;
+							foreach($rsslists as $rss)
+							{
+								echo '<div id="element'.$i.'">';													
+								echo '<input size="50" type="text" class="inputbox" name="rss_link['.$i.']" value="'.$rss.'" />';
+								echo '<a href="javascript:removeItem('.$i.');" > ['.JText::_('REM_RSS').']</a>'."<br />";
+								echo '</div>';
+								$i++;
+							}
 						}
-					}
-				?>
-			</div><br />
-			<div style="text-align: left; padding-left:8px;"><a id="addButton" href="javascript:addNewItem();">[<?php echo JText::_('ADD_RSS')?>]</a></div>			
+					?>
+				</div><br />
+				<div style="text-align: left; padding-left:8px;"><a id="addButton" href="javascript:addNewItem();">[<?php echo JText::_('ADD_RSS')?>]</a></div>			
+			</div>
 		</div>	
-	</fieldset>	
+		</div>
+		<div class="content_bottom">
+			<div class="box-bl"></div>
+			<div class="box-br"></div>
+			<div class="box-b"></div>
+		</div>
+	</div>
 	<!-- **** End Added & Modified By Deepak -->
-	
-	<table cellspacing='5'  align='center' width="40%">	
-		<tr>	
-			<td align='left' colspan="2">
-				<input type="hidden" name="option" value="com_broadcast">		
-				<input type="hidden" id="task" name="task" value="save">
-				<input type="button" value="<?php echo JText::_('BC_SAVE')?>" onclick="submit(this.form);">
-			</td>
-		</tr>
-	</table>
 
+	<div id="manual_div" align="left" style="display:block; padding-top: 10px;">
+		<input type="hidden" name="option" value="com_broadcast">		
+		<input type="hidden" id="task" name="task" value="save">
+		<input type="button" value="<?php echo JText::_('BC_SAVE')?>" onclick="submit(this.form);">
+	</div>
  </form>
-<?php
- }
-?>
