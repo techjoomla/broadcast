@@ -40,7 +40,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
   	'consumer_key'    => $this->appKey,
   	'consumer_secret' => $this->appSecret,
 		));
-			
+		$this->streaming_callback=array();
 		
 		
 	}
@@ -56,7 +56,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
     $plug=array(); 
    	$plug['name']="Twitter";
   	//check if keys are set
-		if($this->appKey=='' || $this->appSecret=='') // || !in_array($this->_name,$config)) #TODO add condition to check config
+		if($this->appKey=='' || $this->appSecret=='') //|| !in_array($this->_name,$config)) #TODO add condition to check config
 		{
 			$plug['error_message']=true;		
 			return $plug;
@@ -86,10 +86,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	$params = array('oauth_callback'=> $callback);
 	//echo $callback;
   $code = $this->twitter->request('POST', $this->twitter->url('oauth/request_token', ''), $params);
+ 
   if ($code == 200) {
     $_SESSION['oauth'] = $this->twitter->extract_params($this->twitter->response['response']);
-    $authurl = $this->twitter->url("oauth/authorize", '') .  "?oauth_token={$_SESSION['oauth']['oauth_token']}";
+    
+    $authurl = $this->twitter->url("oauth/authorize", '') .  "?oauth_token=".$_SESSION['oauth']['oauth_token'];
+    $response=header('Location:'.$authurl);
+     
   } else { 
+  		//print_r($this->twitter->response['response']);die;
  			$this->outputError($this->twitter);
   }
 
@@ -108,8 +113,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 			if ($code == 200) 
 			{
 				$_SESSION['access_token'] = $this->twitter->extract_params($this->twitter->response['response']);
-				unset($_SESSION['oauth']);
-				header("Location: {$here}");
+				$data = $_SESSION['access_token'];
+				$return=$this->raiseLog($data,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0); 
+				$this->store($client,$data);
+				return true;
+				
 			} 
 			else{
 					$this->outputError($code);
@@ -120,27 +128,30 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	
 	function store($client,$data) #TODO insert client also in db 
 	{
-		$db	 	=  & JFactory::getDBO();
-		$user = JFactory::getUser();
-		$qry = "SELECT user_id FROM #__broadcast_users WHERE user_id = {$user->id}";
-		$db->setQuery($qry);
-		$exists = $db->loadResult();
+		
+		$qry = "SELECT id FROM #__techjoomlaAPI_users WHERE user_id ={$this->user->id} AND client='{$client}' AND api='{$this->_name}' ";
+		$this->db->setQuery($qry);
+		$id	=$exists = $this->db->loadResult();
 		$row = new stdClass;
-		$row->user_id = $user->id;
-		foreach ($data as $k=>$v)
+		$row->id=NULL;
+		$row->user_id = $this->user->id;
+		$row->api 		= $this->_name;
+		$row->client=$client;
+		$row->token=json_encode($data);
+		
+		if($exists)
 		 {
-			$row->$k = $v;
-	   }		
-
-		if ($exists)
-		 {
-				$db->updateObject('#__broadcast_users', $row, 'user_id');
+		 		$row->id=$id;
+	 			$this->db->updateObject('#__techjoomlaAPI_users', $row, 'id');
 		 }
 		 else
 		 {
-			$db->insertObject('#__broadcast_users', $row);
+		 			
+				$status=$this->db->insertObject('#__techjoomlaAPI_users', $row);
 		 }
+		
 	}
+	
 	function getToken($user=''){
 		$user=$this->user->id;
 		$where = '';
@@ -232,10 +243,62 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
   }//end send message
   
   
-	function plug_techjoomlaAPI_twittergetstatus($oauth_key)
+	function plug_techjoomlaAPI_twittergetstatus()
 	{ 
-	 
-	
+	 $oauth_keys =array();
+	 $oauth_keys = $this->getToken();
+	 //$this->plug_techjoomlaAPI_twittersetstatus('62','test for broadcast1');die;
+	 if(!$oauth_keys)
+		return false;
+	 	foreach($oauth_keys as $oauth_key){	
+	 		
+			$token =	json_decode($oauth_key->token,true);	
+			//$this->twitter->config['user_token']=$token['oauth_token'];
+			//$this->twitter->config['user_token_secret']=$token['oauth_token_secret'];
+			//,$token['oauth_token_secret']
+			$tmhOAuth = new tmhOAuth(array(
+  		'consumer_key'    => $this->appKey,
+  		'consumer_secret' => $this->appSecret,
+			'user_token'      => $token['oauth_token'],
+			'user_secret'     => $token['oauth_token_secret'],));
+
+			$method = "https://userstream.twitter.com/2/user.json";
+			$params = array(
+				'limit'=>10,
+			);
+			$response=$tmhOAuth->streaming_request('POST', $method, $params,'my_streaming_callback_data');
+			print_r($response);die;
+			
+			echo "<br><------------->";
+			
+		  
+			
+			if($returndata[$i]['status'])
+			{
+				
+				
+			}
+			else
+			{
+				
+				
+			}
+			
+			$i++;
+			}
+			die;
+	 /*
+	 $this->twitter = new tmhOAuth(array(
+  	'consumer_key'    => $this->appKey,
+  	'consumer_secret' => $this->appSecret,
+  	
+  	
+		));
+		$method = "https://userstream.twitter.com/2/user.json";
+		$params = array(
+  	
+		);
+$tmhOAuth->streaming_request('POST', $method, $params, 'my_streaming_callback', false);
 
 		$access_token =$oauth_key->twitter_secret;	
 		$today=date('Y-m-d');
@@ -250,9 +313,14 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 			return $status_arr;
 		
 		
-		
+		*/
 			
 	}
+	public function my_streaming_callback_data($data)
+  {
+  	print_r($data);die('here1');
+  
+  }
 	function renderstatus($response)
 	{
 	return $response;
@@ -276,18 +344,30 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	
 	}
 
-	function plug_techjoomlaAPI_twittersetstatus($oauth_key,$content='')
+	function plug_techjoomlaAPI_twittersetstatus($userid='',$content='')
 	{	
-		$post=array();
-		if(!$content)
-		return array();
-		$access_token =$oauth_key->twitter_secret;	
-		try {
-		$post = $this->twitter->api($oauth_key->facbook_uid.'/feed', 'POST', array('access_token'=>$oauth_key->twitter_secret,'message' => $content));
-		}
-		catch(TwitterApiException $o ){
-    print_r($o);
-	}
+		$oauth_key = $this->getToken($userid);
+		
+		if(!$oauth_key)
+		return false;
+		else
+		$token =json_decode($oauth_key[0]->token,true);	
+		
+		$tmhOAuth = new tmhOAuth(array(
+  		'consumer_key'    => $this->appKey,
+  		'consumer_secret' => $this->appSecret,
+			'user_token'      => $token['oauth_token'],
+			'user_secret'     => $token['oauth_token_secret'],));
+
+			$method = "https://userstream.twitter.com/2/user.json";
+			$params = array(
+				// parameters go here
+			);
+			//$response=$tmhOAuth->streaming_request('POST', $method, $params,'',false);
+			echo $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array(
+  'status' => $content,
+	));die;
+
 	
 	
 	}
