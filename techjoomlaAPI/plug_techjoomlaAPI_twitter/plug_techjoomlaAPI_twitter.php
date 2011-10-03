@@ -88,14 +88,18 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
   $code = $this->twitter->request('POST', $this->twitter->url('oauth/request_token', ''), $params);
  
   if ($code == 200) {
+  	$this->raiseLog(JText::_('LOG_GET_REQUEST_TOKEN_SUCCESS'),JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0);
+  	
     $_SESSION['oauth'] = $this->twitter->extract_params($this->twitter->response['response']);
     
     $authurl = $this->twitter->url("oauth/authorize", '') .  "?oauth_token=".$_SESSION['oauth']['oauth_token'];
     $response=header('Location:'.$authurl);
      
   } else { 
-  		//print_r($this->twitter->response['response']);die;
- 			$this->outputError($this->twitter);
+  		$this->raiseException(JText::_('LOG_GET_REQUEST_TOKEN_FAIL'),$this->user->id,1);
+  		$this->raiseLog(JText::_(JText::_('LOG_GET_REQUEST_TOKEN_FAIL'),'LOG_GET_REQUEST_TOKEN'),$this->user->id,0,$code);
+  		return false;
+ 	
   }
 
 			return true;
@@ -113,14 +117,16 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 			if ($code == 200) 
 			{
 				$_SESSION['access_token'] = $this->twitter->extract_params($this->twitter->response['response']);
-				$data = $_SESSION['access_token'];
-				$return=$this->raiseLog($data,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0); 
+				$data = $_SESSION['access_token'];				
 				$this->store($client,$data);
+				
+				$this->raiseLog(JText::_('LOG_GET_ACCESS_TOKEN_SUCCESS'),JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,1,$code);
 				return true;
 				
 			} 
-			else{
-					$this->outputError($code);
+			else
+			{
+					$this->raiseLog(JText::_('LOG_GET_ACCESS_TOKEN_SUCCESS'),JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,1,$code);
 			}
 		}	
 
@@ -247,92 +253,72 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	{ 
 	 $oauth_keys =array();
 	 $oauth_keys = $this->getToken();
-	 //$this->plug_techjoomlaAPI_twittersetstatus('62','test for broadcast1');die;
 	 if(!$oauth_keys)
 		return false;
-	 	foreach($oauth_keys as $oauth_key){	
+		$i=0;
+	 	foreach($oauth_keys as $oauth_key)
+	 	{	
 	 		
-			$token =	json_decode($oauth_key->token,true);	
-			//$this->twitter->config['user_token']=$token['oauth_token'];
-			//$this->twitter->config['user_token_secret']=$token['oauth_token_secret'];
-			//,$token['oauth_token_secret']
-			$tmhOAuth = new tmhOAuth(array(
-  		'consumer_key'    => $this->appKey,
-  		'consumer_secret' => $this->appSecret,
-			'user_token'      => $token['oauth_token'],
-			'user_secret'     => $token['oauth_token_secret'],));
+				$token =	json_decode($oauth_key->token,true);	
+				$tmhOAuth = new tmhOAuth(array(
+				'consumer_key'    => $this->appKey,
+				'consumer_secret' => $this->appSecret,
+				'user_token'      => $token['oauth_token'],
+				'user_secret'     => $token['oauth_token_secret'],));
 
-			$method = "https://userstream.twitter.com/2/user.json";
-			$params = array(
-				'limit'=>10,
-			);
-			$response=$tmhOAuth->streaming_request('POST', $method, $params,'my_streaming_callback_data');
-			print_r($response);die;
-			
-			echo "<br><------------->";
-			
-		  
-			
-			if($returndata[$i]['status'])
-			{
-				
-				
-			}
-			else
-			{
-				
-				
-			}
-			
-			$i++;
-			}
-			die;
-	 /*
-	 $this->twitter = new tmhOAuth(array(
-  	'consumer_key'    => $this->appKey,
-  	'consumer_secret' => $this->appSecret,
-  	
-  	
-		));
-		$method = "https://userstream.twitter.com/2/user.json";
-		$params = array(
-  	
-		);
-$tmhOAuth->streaming_request('POST', $method, $params, 'my_streaming_callback', false);
 
-		$access_token =$oauth_key->twitter_secret;	
-		$today=date('Y-m-d');
-		$twitter_profile_limit=10;
-		try {
-			$response = $this->twitter->api($oauth_key->facbook_uid.'/statuses',array('access_token'=>$oauth_key->twitter_secret,'since'=>$today,'limit'=>$twitter_profile_limit));
+				$params1 = array('count'=>2,'user_id'=>$token['user_id'],'screen_name'=>$token['screen_name']);
+				try{
+				$tmhOAuth->request('GET', $tmhOAuth->url('1/statuses/user_timeline'));
+				}
+				catch (Exception $e) 
+				{
+					$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL'),JText::_('LOG_GET_STATUS'),$oauth_key->user_id,0);
+					return false;
+				}	
+				$content=json_decode($tmhOAuth->response['response'],true);
+				$data=$this->renderstatus($content);
+				if($data)
+				{
+					$returndata[$i]['user_id'] = $oauth_key->user_id;
+					$returndata[$i]['status']	 = $data;
+					$i++;
+					$this->raiseLog(JText::_('LOG_GET_STATUS_SUCCESS'),JText::_('LOG_GET_STATUS'),$oauth_key->user_id,1);
+				}
+				else
+				{
+	
+					$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL'),JText::_('LOG_GET_STATUS'),$oauth_key->user_id,0);
+				}
+	
 		}
-		catch(TwitterApiException $o ){
-		  print_r($o);
-		}
-			$status_arr=$this->renderstatus($response);
-			return $status_arr;
-		
-		
-		*/
+	 return $returndata;
 			
 	}
-	public function my_streaming_callback_data($data)
-  {
-  	print_r($data);die('here1');
-  
-  }
+	
 	function renderstatus($response)
 	{
-	return $response;
+		
 		if($response)
 		{
 			if(count($response)>=1)
 			{
-			$i=0;
+			$j=0;
 			foreach($response as $data)
 			{
-			$status[$i]=$data;
-			$i++;
+				if($j==10)
+				break;
+				if(isset($data['text']))
+				{
+					
+					$status[$j]['comment'] =  $data['text'];
+					$status[$j]['timestamp'] = strtotime($data['created_at']);
+					$config =& JFactory::getConfig();
+					$offset = $config->getValue('config.offset'); 
+					$get_date= & JFactory::getDate($status[$j]['timestamp'],$offset);				
+					$status[$j]['timestamp'] = $get_date->toFormat();
+					$j++;
+				}
 			
 			}
 			return $status;
@@ -346,6 +332,7 @@ $tmhOAuth->streaming_request('POST', $method, $params, 'my_streaming_callback', 
 
 	function plug_techjoomlaAPI_twittersetstatus($userid='',$content='')
 	{	
+	
 		$oauth_key = $this->getToken($userid);
 		
 		if(!$oauth_key)
@@ -363,12 +350,20 @@ $tmhOAuth->streaming_request('POST', $method, $params, 'my_streaming_callback', 
 			$params = array(
 				// parameters go here
 			);
-			//$response=$tmhOAuth->streaming_request('POST', $method, $params,'',false);
-			echo $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array(
-  'status' => $content,
-	));die;
 
-	
+			$code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' => $content));
+			if($code=200)
+			{
+					$status['info']['http_code']='200';
+					
+					$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS'),JText::_('LOG_SET_STATUS'),$userid,1,200);
+			}
+			else
+			{
+				$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL'),JText::_('LOG_SET_STATUS'),$userid,1,$code);
+			
+			}
+		return $response;
 	
 	}
 
@@ -383,7 +378,7 @@ function raiseException($exception,$userid='',$display=1,$params=array())
 		return;
 	}
 	
-	function raiseLog($status_log,$desc="",$userid="",$display="")
+	function raiseLog($status_log,$desc="",$userid="",$display="",$http_code="")
 	{
 		
 		$params=array();		
@@ -401,8 +396,7 @@ function raiseException($exception,$userid='',$display=1,$params=array())
 				$params['http_code']		=	$status['info']['http_code'];
 				if(!$status['success'])
 				{
-						if(isset($status['facebook']))				
-							$response_error=techjoomlaHelperLogs::xml2array($status['facebook']);
+						if(isset($status['twitter']))				
 							$params['success']			=	false;
 							$this->raiseException($response_error['error']['message'],$userid,$display,$params);
 							return false;
@@ -418,6 +412,9 @@ function raiseException($exception,$userid='',$display=1,$params=array())
 			
 			}
 		}
+		
+		if($http_code)
+		$params['http_code']	=$http_code;
 		$this->raiseException($status_log,$userid,$display,$params);	
 		return true;	
 	}
