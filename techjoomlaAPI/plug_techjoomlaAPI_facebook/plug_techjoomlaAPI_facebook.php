@@ -246,7 +246,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		return $r_connections;
 	}
 	
-	function send_message($post)
+	function plug_techjoomlaAPI_facebooksend_message($post)
 	{
 	
   }//end send message
@@ -257,8 +257,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	 	$oauth_keys = $this->getToken();
 	 
 	 	$i = 0;
-	 	$today=date('Y-m-d');
-		$facebook_profile_limit=10;
+	 	$facebook_profile_limit=10;
 		$returndata = array();
 		if(!$oauth_keys)
 		return false;
@@ -266,7 +265,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	 	
 			$token =json_decode($oauth_key->token);	
 			try{		
-				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'since'=>$today,'limit'=>$facebook_profile_limit));
+				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit));
 			}
 			catch (FacebookApiException $e) 
 			{
@@ -336,13 +335,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		} 
 		catch (FacebookApiException $e) 
 		{
-			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_GET_STATUS'),$e->getMessage(),$userid,1);
+			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_SET_STATUS'),$e->getMessage(),$userid,1);
 		  return false;
     }
 		if($post)
-			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS').JText::_('LOG_GET_STATUS'),$content,$userid,1);
+			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS').JText::_('LOG_SET_STATUS'),$content,$userid,1);
 		else
-			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_GET_STATUS'),$e->getMessage(),$userid,1);
+			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_SET_STATUS'),$e->getMessage(),$userid,1);
 			
 		return $response;
 	
