@@ -289,7 +289,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 				}
 	
 		}
+		if($returndata)
 	 return $returndata;
+	 else
+	 return false;
 			
 	}
 	
@@ -419,10 +422,6 @@ function raiseException($exception,$userid='',$display=1,$params=array())
 
   }
   
-	function outputError($tmhOAuth) {
-				return JError::raiseWarning( 500,$tmhOAuth->response['response']);
-		tmhUtilities::pr($tmhOAuth);
-	}
 	
 	
 
