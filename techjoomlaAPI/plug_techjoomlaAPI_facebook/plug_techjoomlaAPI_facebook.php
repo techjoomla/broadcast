@@ -304,10 +304,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 				{
 					$status[$j]['comment'] =  $totalresponse[$i]['message'];
 					$status[$j]['timestamp'] = strtotime($totalresponse[$i]['updated_time']);
-					$config =& JFactory::getConfig();
-					$offset = $config->getValue('config.offset'); 
-					$get_date= & JFactory::getDate($totalresponse[$i]['updated_time'],$offset);				
-					$status[$j]['timestamp'] = strtotime($get_date->toFormat());	
 					$j++;
 				}
 		  }
