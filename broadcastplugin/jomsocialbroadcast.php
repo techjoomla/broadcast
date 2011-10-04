@@ -37,14 +37,15 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	
 	function onBeforeStreamCreate($activity) ///trigger present in SOME versions of joomla
 	{ 
+		$bc_activity = clone $activity;
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_community'.DS.'libraries'.DS.'activities.php');
 		$user	= JFactory::getUser();	
 		$subscribedapp	= explode('|',$this->getusersetting($user->id)); 
-		if(in_array($activity->app,$subscribedapp))
+		if(in_array($bc_activity->app,$subscribedapp))
 		{	 
-			$title=$this->tag_replace($activity->actor,$activity->target,$activity->created,$activity);
+			$title=$this->tag_replace($bc_activity->actor,$bc_activity->target,$bc_activity->created,$bc_activity);
 			combroadcastHelper::inQueue($title, $user->id, 1,0,'com_community');
-			combroadcastHelper::intempAct($user->id, $title, date('Y-m-d',time()));
+			combroadcastHelper::intempAct($user->id, $title, date('Y-m-d H:i:s',time()));
 		}
 
 	return true;

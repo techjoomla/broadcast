@@ -103,7 +103,7 @@ class BroadcastModelbroadcast extends JModel
 					$status_content = combroadcastHelper::makelink($status_content);
 					$today_date	= & JFactory::getDate($status['timestamp']);
 					combroadcastHelper::inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toMySQL() );
-					combroadcastHelper::intempAct($userid, $status['comment'],date('Y-m-d',time()),$api );
+					combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toMySQL(),$api );
 					combroadcastHelper::updateJSstatus($userid, $status_content,$today_date->toMySQL() );
 				}
 			}

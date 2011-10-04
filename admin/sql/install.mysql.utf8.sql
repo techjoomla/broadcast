@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `#__broadcast_tmp_activities` (
   `uid` int(10) NOT NULL,
   `status` TEXT NOT NULL,
   `type` varchar(50) NOT NULL,
-  `created_date` date NOT NULL
+  `created_date` datetime NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 

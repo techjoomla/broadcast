@@ -99,7 +99,7 @@ class combroadcastHelper
 		$newstatus	=$db->getEscaped($newstatus);
 		$where = '';
 		if($api)
-			$where = ' AND type="'.$api.'"';
+			$where = ' AND (type="'.$api.'" OR type="") ';
 		$query = "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid} AND status = '{$newstatus}' ".$where ;
 		$db->setQuery($query);
 		if($db->loadResult())			

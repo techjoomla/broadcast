@@ -63,7 +63,7 @@ class BroadcastControllerrss extends JController
 						$currItem = & $feed->items[$j];      
 						if ( !is_null( $currItem->get_link() ) ) 
 						{       
-							$statuslog=$currItem->get_description();
+							$statuslog=$currItem->get_title();
 						 	if($statuslog != "")
 						 	{                
 								if(!combroadcastHelper::checkexist($statuslog,$userid,'rss'))
