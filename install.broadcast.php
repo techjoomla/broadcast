@@ -159,7 +159,7 @@ function com_install()
 	$img_ERROR = '<img src="images/publish_r.png" />';
 	$BR = '<br />';
 	$destination = JPATH_SITE . DS . 'administrator' . DS . 'components' . DS . 'com_broadcast' . DS . 'config' . DS ;
-	$data = "<?php \$broadcast_config=array(
+	$configarray = array(
 					'show_name' => '1',
 					'status_via' => '0',
 					'status_skip' => '#,@',
@@ -167,8 +167,8 @@ function com_install()
 					'show_status_rss' => '0',
 					'rss_link_limit' => '3',
 					'private_key_cronjob' => '1234'
-					); ?>";
-
+					); 
+	   
 	if(JFolder::exists($destination))
     {
         JFolder::create(JPATH_SITE.DS.'administrator'. DS . 'components' . DS . 'com_broadcast' . DS . 'oldconfig');
@@ -177,17 +177,9 @@ function com_install()
 		if(JFile::exists($destination.'config.php')){
 			JFile::move($destination.'config.php', $old_destination.'config.php');
 		}
-					
-		if(!JFile::exists($destination.'config.php'))
-		{
-			JFile::write($destination.'config.php',$data);
-		}
-		
-		$config1 = getConfig($destination.'config.php');
+
 		$config2 = getConfig($old_destination.'config.php');
-		
-		$result = array_merge($config1, $config2);
-		
+		$result = array_merge($configarray, $config2);
 		foreach($result as $k=>$v)
 		{
 			if(is_array($v))
@@ -205,22 +197,24 @@ function com_install()
 				$final[]= "'{$k}' => '{$v}'" ;
 		}
 						
-		$configarray = implode(",\n", $final);
+		$newconfigarray = implode(",\n", $final);
 		
 		if(JFile::exists($destination.'config.php'))
 		{
 		  JFile::delete($destination.'config.php');
-			$newdata = '<?php $broadcast_config = array('.print_r($configarray, true).') ?>';
-			JFile::write($destination.'config.php',$newdata);
 		}
+			$newdata = '<?php $broadcast_config = array('.print_r($newconfigarray, true).') ?>';
+			JFile::write($destination.'config.php',$newdata);
+		
 		JFolder::delete($old_destination);
     }
     				
 	else if(!JFile::exists($destination.'config.php'))
 	{
+		$data = '<?php $broadcast_config = array('.print_r($configarray, true).') ?>';
 		JFile::write($destination.'config.php',$data);
 	}
-	
+		
 	if(JFolder::exists(JPATH_SITE.'/components/com_community/assets/favicon/'))
 	{
 		JFolder::create(JPATH_SITE.'/components/com_community/assets/favicon/');
