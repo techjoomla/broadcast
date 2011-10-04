@@ -64,13 +64,16 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		$plug['api_used']=$this->_name; 
 		$plug['message_type']='pm';               
 		$plug['img_file_name']="twitter.png"; 
-		$plug['apistatus'] = $this->connectionstatus();
+		$plug['apistatus'] = $this->connectionstatus($config['client']);
 	
 		return $plug; 
 	}
 	
-	function connectionstatus(){
-	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE user_id = {$this->user->id}  AND api='{$this->_name}'";
+	function connectionstatus($client=''){
+		$where='';
+		if($client)
+		$where=" AND client=".$client
+	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE user_id = {$this->user->id}  AND api='{$this->_name}'".$where;
 		$this->db->setQuery($query);
 		$result	= $this->db->loadResult();		
 		if ($result)
@@ -82,7 +85,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	
 	function get_request_token($callback) 
 	{
-	$session = JFactory::getSession();	
+	 $session = JFactory::getSession();	
 	$session->set("['oauth']['twitter']['request']",'');
 	$session->set("['oauth']['twitter']['access']",'');
 	
