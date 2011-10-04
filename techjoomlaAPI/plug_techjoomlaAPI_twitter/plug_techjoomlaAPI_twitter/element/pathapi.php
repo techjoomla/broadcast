@@ -17,7 +17,7 @@
 		function fetchElement($name, $value, &$node, $control_name)
 		{
 
-			return '<a href="https://dev.twitter.com/apps/" target="_blank">'.JText::_('CLK_HERE_API_KEY').'</a>';
+			return '<a href="https://dev.twitter.com/apps/" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
 		}
 	}
-?>
+

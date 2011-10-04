@@ -49,8 +49,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
      * @return  string  The html form for this plugin
      * NOTE: all hidden inputs returned are very important
 	*/
- function renderPluginHTML($config=array(),$client='')
+ function renderPluginHTML($config=array())
 	{
+		
     $plug=array(); 
    	$plug['name']="Twitter";
   	//check if keys are set
@@ -62,7 +63,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		$plug['api_used']=$this->_name; 
 		$plug['message_type']='pm';               
 		$plug['img_file_name']="twitter.png"; 
-		$plug['apistatus'] = $this->connectionstatus($client);
+		$plug['apistatus'] = $this->connectionstatus($config['client']);
 	
 		return $plug; 
 	}
@@ -70,8 +71,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	function connectionstatus($client=''){
 		$where='';
 		if($client)
-		$where=" AND client=".$client
-	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE user_id = {$this->user->id}  AND api='{$this->_name}'".$where;
+		$where=" AND client='".$client."'";		
+	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE token<>'' AND user_id = {$this->user->id}  AND api='{$this->_name}'".$where;
 		$this->db->setQuery($query);
 		$result	= $this->db->loadResult();		
 		if ($result)
@@ -213,7 +214,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
     		//$status = $tmhOAuth->request('GET', $tmhOAuth->url('1/users/show/',array('user_id'=>$profile_id)));
     		$data_profile = json_decode($tmhOAuth->response['response'], true);
     		if ($tmhOAuth->response['code'] == 200) {
-    		$connection[$i]['id']=$profile_id;
+    		$connection[$i]['id']=$profile_id."|".$data_profile['screen_name'];
     		$connection[$i]['name']=$data_profile['name'];
     		$connection[$i]['picture-url']=$data_profile['profile_image_url_https'];
     			$i++;
@@ -263,7 +264,31 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	
 	function plug_techjoomlaAPI_twittersend_message($post)
 	{
-	$session = JFactory::getSession();
+		$session = JFactory::getSession();		
+		$token = $session->get("['oauth']['twitter']['access']",'');	
+		$tmhOAuth = new tmhOAuth(array(
+				'consumer_key'    => $this->appKey,
+				'consumer_secret' => $this->appSecret,
+				'user_token'      => $token['oauth_token'],
+				'user_secret'     => $token['oauth_token_secret']));
+				
+			$params=array();
+			$connection=array();
+			
+		
+    	foreach($post['contacts'] as $contact){
+    	
+    	$contact_arr=explode('|',$contact);
+    	$user_id=$contact_arr['0'];
+    	echo $screen_name=$contact_arr['1'];//urlencode($post['message_body']
+    	echo $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/direct_messages/new'), array('text' => 'hi whats up123','screen_name'=>$screen_name));
+		
+		//echo	$code = $tmhOAuth->request('POST', $tmhOAuth->url('1/direct_messages/new'), array('text' => 'hi hw r u??','user_id'=>$profile_id));die;
+    	
+    		print_r($tmhOAuth->response);die;
+    	
+    	}
+    
 	
   }//end send message
   

@@ -57,12 +57,16 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		$plug['api_used']=$this->_name; 
 		$plug['message_type']='pm';               
 		$plug['img_file_name']="linkedin.png";   
-		$plug['apistatus'] = $this->status();
+		$plug['apistatus'] = $this->connectionstatus($config['client']);
 		return $plug;   
 	}
 	
-	function status(){
-	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE user_id = {$this->user->id}  AND api='{$this->_name}'";
+	function connectionstatus($client=''){
+		$where='';
+		if($client)
+		$where=" AND client='".$client."'";		
+	
+	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE user_id = {$this->user->id}  AND api='{$this->_name}'".$where;
 		$this->db->setQuery($query);
 		$result	= $this->db->loadResult();		
 		if ($result)
