@@ -9,7 +9,8 @@
 	// Check to ensure this file is within the rest of the framework
 	defined('JPATH_BASE') or die();
 	jimport("joomla.html.parameter.element");
-
+	$lang = & JFactory::getLanguage();
+	$lang->load('plug_techjoomlaAPI_hotmail', JPATH_ADMINISTRATOR);
 	class JElementpathapi extends JElement
 	{
 		var $_name = 'Pathapi';

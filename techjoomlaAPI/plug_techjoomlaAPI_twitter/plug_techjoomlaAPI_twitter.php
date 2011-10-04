@@ -280,7 +280,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 					$returndata[$i]['user_id'] = $oauth_key->user_id;
 					$returndata[$i]['status']	 = $data;
 					$i++;
-					$this->raiseLog(JText::_('LOG_GET_STATUS_SUCCESS'),JText::_('LOG_GET_STATUS'),$oauth_key->user_id,1);
+					$this->raiseLog(JText::_('LOG_GET_STATUS_SUCCESS'),JText::_('LOG_GET_STATUS'),$oauth_key->user_id,0);
 				}
 				else
 				{
@@ -354,14 +354,16 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 			$code = $tmhOAuth->request('POST', $tmhOAuth->url('1/statuses/update'), array('status' => $content));
 			if($code=200)
 			{
-					$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS'),JText::_('LOG_SET_STATUS'),$userid,1,200);
+					$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS')."=>".$content,JText::_('LOG_SET_STATUS'),$userid,1,200);
+					return true;
 			}
 			else
 			{
-				$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL'),JText::_('LOG_SET_STATUS'),$userid,1,$code);
+				$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL')."=>".$content,JText::_('LOG_SET_STATUS'),$userid,1,$code);
+				return false;
 			
 			}
-		return $response;
+		
 	
 	}
 

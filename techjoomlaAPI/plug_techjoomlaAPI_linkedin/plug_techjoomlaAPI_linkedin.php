@@ -371,6 +371,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				//return false;
 			}
 			
+			if(!$response_updates)	
+			continue;
 			$response=$this->raiseLog($response_updates,JText::_('LOG_GET_STATUS'),$oauth_key->user_id,1);
 			if($response)
 			{
@@ -393,6 +395,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					$status[$j]['timestamp'] = $totalresponse->values[$i]->updateContent->person->currentShare->timestamp;
 					$status[$j]['timestamp'] = number_format($status[$j]['timestamp'],0,'','');
           $status[$j]['timestamp'] = intval($status[$j]['timestamp'] /1000); 
+          $config =& JFactory::getConfig();
+					$offset = $config->getValue('config.offset'); 
+					$get_date= & JFactory::getDate($status[$j]['timestamp'],$offset);				
+					$status[$j]['timestamp'] = $get_date->toFormat();
 					$j++;
 				}
 			} 
@@ -449,7 +455,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		
 		
 		
-		if(is_array($status_log))
+		if(is_array($status_log) or is_array($status))
 		{
 			$status=$status_log;
 			if(isset($status['info']['http_code']))
