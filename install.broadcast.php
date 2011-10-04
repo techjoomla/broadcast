@@ -22,26 +22,42 @@ $status = $db->loadResultArray();
 $install_status = new JObject();
 $install_source = $this->parent->getPath('source');
 
-//install Broadcast Module and publish it
+//install Broadcast Module 
 echo '<br/><span style="font-weight:bold;">'.JText::_('Installing Module:').'</span>';
-$installer = new JInstaller;
-$result = $installer->install($install_source.DS.'broadcastmodule');
 if(JVERSION >= '1.6.0')
 {
-	$query = "UPDATE #__extensions SET enabled=1 WHERE element='mod_jomsocialbroadcast'";
-	$db->setQuery($query);
-	$db->query();
+	$query = "SELECT element FROM #__extensions WHERE  element='mod_jomsocialbroadcast'";
 }
 else
 {
-	$query = "UPDATE #__modules SET published=1 WHERE module='mod_jomsocialbroadcast'";
-	$db->setQuery($query);
-	$db->query();
+	$query = "SELECT module FROM #__modules WHERE module='mod_jomsocialbroadcast'";
 }
-echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_('Broadcast Module installed and published').'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_('Broadcast Module not installed').'</span>'; 
+$db->setQuery($query);
+$modstatus = $db->loadResultArray();
+
+$installer = new JInstaller;
+$result = $installer->install($install_source.DS.'broadcastmodule');
+if (!in_array("mod_jomsocialbroadcast", $modstatus)) {
+	if(JVERSION >= '1.6.0')
+	{
+		$query = "UPDATE #__extensions SET enabled=0 WHERE element='mod_jomsocialbroadcast'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	else
+	{
+		$query = "UPDATE #__modules SET published=0 WHERE module='mod_jomsocialbroadcast'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_('Broadcast Module installed and').'</span><span style="font-weight:bold; color:red;">'.JText::_(" Not published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_('Broadcast Module not installed').'</span>'; 
+}
+else
+{
+	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_('Broadcast Module installed').'</span>'; 	
+}
 
 echo '<br/><br/><span style="font-weight:bold;">'.JText::_('Installing Payment plugins:').'</span>';
-
 //install JS Broadcast plugin and publish it
 $installer = new JInstaller;
 $result = $installer->install($install_source.DS.'broadcastplugin');
@@ -65,23 +81,23 @@ else
 	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_('JomSocial Broadcast plugin installed').'</span>'; 	
 }
 	
-//install techjoomlaAPI plugins and publish it
+//install techjoomlaAPI plugins 
 $installer = new JInstaller;
 $result = $installer->install($install_source.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_facebook');
 if (!in_array("plug_techjoomlaAPI_facebook", $status)) {
 	if(JVERSION >= '1.6.0')
 	{
-		$query = "UPDATE #__extensions SET enabled=1 WHERE element='plug_techjoomlaAPI_facebook' AND folder='techjoomlaAPI'";
+		$query = "UPDATE #__extensions SET enabled=0 WHERE element='plug_techjoomlaAPI_facebook' AND folder='techjoomlaAPI'";
 		$db->setQuery($query);
 		$db->query();
 	}
 	else
 	{
-		$query = "UPDATE #__plugins SET published=1 WHERE element='plug_techjoomlaAPI_facebook' AND folder='techjoomlaAPI'";
+		$query = "UPDATE #__plugins SET published=0 WHERE element='plug_techjoomlaAPI_facebook' AND folder='techjoomlaAPI'";
 		$db->setQuery($query);
 		$db->query();
 	}
-	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_("Techjoomla's Facebook API plugin installed and published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_("Techjoomla's Facebook API plugin not installed").'</span>'; 	
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_("Techjoomla's Facebook API plugin installed and").'</span><span style="font-weight:bold; color:red;">'.JText::_(" Not published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_("Techjoomla's Facebook API plugin not installed").'</span>'; 	
 }
 else
 {
@@ -93,17 +109,17 @@ $result = $installer->install($install_source.DS.'techjoomlaAPI'.DS.'plug_techjo
 if (!in_array("plug_techjoomlaAPI_linkedin", $status)) {
 	if(JVERSION >= '1.6.0')
 	{
-		$query = "UPDATE #__extensions SET enabled=1 WHERE element='plug_techjoomlaAPI_linkedin' AND folder='techjoomlaAPI'";
+		$query = "UPDATE #__extensions SET enabled=0 WHERE element='plug_techjoomlaAPI_linkedin' AND folder='techjoomlaAPI'";
 		$db->setQuery($query);
 		$db->query();
 	}
 	else
 	{
-		$query = "UPDATE #__plugins SET published=1 WHERE element='plug_techjoomlaAPI_linkedin' AND folder='techjoomlaAPI'";
+		$query = "UPDATE #__plugins SET published=0 WHERE element='plug_techjoomlaAPI_linkedin' AND folder='techjoomlaAPI'";
 		$db->setQuery($query);
 		$db->query();
 	}
-	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_("Techjoomla's Linkedin API plugin installed and published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_("Techjoomla's Linkedin API plugin not installed").'</span>'; 	
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_("Techjoomla's Linkedin API plugin installed and").'</span><span style="font-weight:bold; color:red;">'.JText::_(" Not published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_("Techjoomla's Linkedin API plugin not installed").'</span>'; 	
 }
 else
 {
@@ -115,17 +131,17 @@ $result = $installer->install($install_source.DS.'techjoomlaAPI'.DS.'plug_techjo
 if (!in_array("plug_techjoomlaAPI_twitter", $status)) {
 	if(JVERSION >= '1.6.0')
 	{
-		$query = "UPDATE #__extensions SET enabled=1 WHERE element='plug_techjoomlaAPI_twitter' AND folder='techjoomlaAPI'";
+		$query = "UPDATE #__extensions SET enabled=0 WHERE element='plug_techjoomlaAPI_twitter' AND folder='techjoomlaAPI'";
 		$db->setQuery($query);
 		$db->query();
 	}
 	else
 	{
-		$query = "UPDATE #__plugins SET published=1 WHERE element='plug_techjoomlaAPI_twitter' AND folder='techjoomlaAPI'";
+		$query = "UPDATE #__plugins SET published=0 WHERE element='plug_techjoomlaAPI_twitter' AND folder='techjoomlaAPI'";
 		$db->setQuery($query);
 		$db->query();
 	}
-	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_("Techjoomla's Twitter API plugin installed and published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_("Techjoomla's Twitter API plugin not installed").'</span>'; 	
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_("Techjoomla's Twitter API plugin installed and").'</span><span style="font-weight:bold; color:red;">'.JText::_(" Not published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_("Techjoomla's Twitter API plugin not installed").'</span>'; 	
 }
 else
 {
