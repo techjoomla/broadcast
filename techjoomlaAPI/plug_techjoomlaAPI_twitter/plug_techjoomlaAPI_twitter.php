@@ -40,8 +40,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
   	'consumer_key'    => $this->appKey,
   	'consumer_secret' => $this->appSecret,
 		));
-		$this->streaming_callback=array();
-		
 		
 	}
 	
@@ -51,7 +49,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
      * @return  string  The html form for this plugin
      * NOTE: all hidden inputs returned are very important
 	*/
- function renderPluginHTML($config=array())
+ function renderPluginHTML($config=array(),$client='')
 	{
     $plug=array(); 
    	$plug['name']="Twitter";
@@ -64,7 +62,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		$plug['api_used']=$this->_name; 
 		$plug['message_type']='pm';               
 		$plug['img_file_name']="twitter.png"; 
-		$plug['apistatus'] = $this->connectionstatus($config['client']);
+		$plug['apistatus'] = $this->connectionstatus($client);
 	
 		return $plug; 
 	}
@@ -85,27 +83,26 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	
 	function get_request_token($callback) 
 	{
-	 $session = JFactory::getSession();	
-	$session->set("['oauth']['twitter']['request']",'');
-	$session->set("['oauth']['twitter']['access']",'');
+	 	$session = JFactory::getSession();	
+		$session->set("['oauth']['twitter']['request']",'');
+		$session->set("['oauth']['twitter']['access']",'');
 	
-	$params = array('oauth_callback'=> $callback);
-	//echo $callback;
-  $code = $this->twitter->request('POST', $this->twitter->url('oauth/request_token', ''), $params);
- 
-  if ($code == 200) {
-  
-  $oauth = $this->twitter->extract_params($this->twitter->response['response']);
-  $session->set("['oauth']['twitter']['request']",$oauth);
-  $request_token=$session->get("['oauth']['twitter']['request']");
-  $authurl = $this->twitter->url("oauth/authorize", '') .  "?oauth_token=".$request_token['oauth_token'];
-  $response=header('Location:'.$authurl);
-  $this->raiseLog(JText::_('LOG_GET_REQUEST_TOKEN_SUCCESS'),JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0,$code);
-     
-  } else{ 
-	$this->raiseException(JText::_('LOG_GET_REQUEST_TOKEN_FAIL'),$this->user->id,1);
-	$this->raiseLog(JText::_(JText::_('LOG_GET_REQUEST_TOKEN_FAIL'),'LOG_GET_REQUEST_TOKEN'),$this->user->id,0,$code);
-	return false;
+		$params = array('oauth_callback'=> $callback);
+		$code = $this->twitter->request('POST', $this->twitter->url('oauth/request_token', ''), $params);
+	 
+		if ($code == 200) {
+		
+		$oauth = $this->twitter->extract_params($this->twitter->response['response']);
+		$session->set("['oauth']['twitter']['request']",$oauth);
+		$request_token=$session->get("['oauth']['twitter']['request']");
+		$authurl = $this->twitter->url("oauth/authorize", '') .  "?oauth_token=".$request_token['oauth_token'];
+		$response=header('Location:'.$authurl);
+		$this->raiseLog(JText::_('LOG_GET_REQUEST_TOKEN_SUCCESS'),JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0,$code);
+		   
+		} else{ 
+		$this->raiseException(JText::_('LOG_GET_REQUEST_TOKEN_FAIL'),$this->user->id,1);
+		$this->raiseLog(JText::_(JText::_('LOG_GET_REQUEST_TOKEN_FAIL'),'LOG_GET_REQUEST_TOKEN'),$this->user->id,0,$code);
+		return false;
   }
 
 			return true;
@@ -142,7 +139,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 
 	}
 	
-	function store($client,$data) #TODO insert client also in db 
+	function store($client,$data) 	#TODO insert client also in db 
 	{
 		
 		$qry = "SELECT id FROM #__techjoomlaAPI_users WHERE user_id ={$this->user->id} AND client='{$client}' AND api='{$this->_name}' ";
