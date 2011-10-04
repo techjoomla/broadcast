@@ -70,7 +70,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 		$plug['api_used']=$this->_name; 
 		$plug['message_type']='email';               
 		$plug['img_file_name']="yahoo.png";
-		$plug['apistatus'] = $this->connectionstatus($config['client']); 
+		if(isset($config['client']))
+		$client=$config['client'];
+		else
+		$client='';
+		$plug['apistatus'] = $this->connectionstatus($client);
 		return $plug; 
 	}
 	

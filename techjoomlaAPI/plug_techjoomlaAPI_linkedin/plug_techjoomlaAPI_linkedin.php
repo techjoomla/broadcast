@@ -57,7 +57,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		$plug['api_used']=$this->_name; 
 		$plug['message_type']='pm';               
 		$plug['img_file_name']="linkedin.png";   
-		$plug['apistatus'] = $this->connectionstatus($config['client']);
+		if(isset($config['client']))
+		$client=$config['client'];
+		else
+		$client='';
+		$plug['apistatus'] = $this->connectionstatus($client);
 		return $plug;   
 	}
 	

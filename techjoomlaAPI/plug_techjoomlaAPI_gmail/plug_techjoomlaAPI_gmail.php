@@ -58,7 +58,11 @@ jimport('joomla.plugin.plugin');
 		$plug['api_used']=$this->_name; 
 		$plug['message_type']='email';               
 		$plug['img_file_name']="gmail.png"; 
-		$plug['apistatus'] = $this->connectionstatus($config['client']);
+		if(isset($config['client']))
+		$client=$config['client'];
+		else
+		$client='';
+		$plug['apistatus'] = $this->connectionstatus($client);
 		return $plug;   
 	}
 	
