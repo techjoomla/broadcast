@@ -203,7 +203,7 @@ jimport('joomla.plugin.plugin');
 		$mainframe = JFactory::getApplication();
 		$session = JFactory::getSession();		
 		//fIND CORRECT ITEM ID & PASS IT TO THE CALL BACK
-		$this->API_CONFIG['callbackUrl']= JURI::base().'index.php?option=com_invitex&view=invites&layout=apis';
+		$this->API_CONFIG['callbackUrl']= JRoute::_(JURI::base().'index.php?option=com_invitex&view=invites&layout=apis');
 		try{
 		$oauth =new GmailOath($this->API_CONFIG['appKey'], $this->API_CONFIG['appSecret'], $this->API_CONFIG['argarray'], $this->API_CONFIG['debug'], $this->API_CONFIG['callbackUrl']);
 		

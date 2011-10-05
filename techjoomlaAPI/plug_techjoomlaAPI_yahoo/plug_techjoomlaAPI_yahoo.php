@@ -247,7 +247,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 		$session = JFactory::getSession();
 		$contacts=array();
 		
-		$this->API_CONFIG['callbackUrl']= JURI::base().'index.php?option=com_invitex&view=invites&layout=apis';
+		$this->API_CONFIG['callbackUrl']= JRoute::_(JURI::base().'index.php?option=com_invitex&view=invites&layout=apis');
 		if($session->get("invitex['oauth']['yahoo']['authorized']",'')=== true)
     	{
 			$contacts=$session->get("invitex['oauth']['yahoo']['contacts']", '');
