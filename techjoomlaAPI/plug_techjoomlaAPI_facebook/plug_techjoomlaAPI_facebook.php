@@ -74,12 +74,17 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		$where=" AND client='".$client."'";		
 	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE user_id = {$this->user->id}  AND api='{$this->_name}'".$where;
 		$this->db->setQuery($query);
-		$result	= $this->db->loadResult();		
-		$uaccess=json_decode($result);
+		$result	= $this->db->loadResult();	
+		if($result)
+		{	
+		$uaccess=json_decode($result);		
 		if ($uaccess->facebook_uid && $uaccess->facebook_secret)
 			return 1;
 		else
 			return 0;
+		}
+		else
+		return 0;
 	}
 	
 	function get_request_token($callback) 
@@ -180,6 +185,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	        
 	function plug_techjoomlaAPI_facebookget_contacts() 
 	{
+		
 		try{	
 			$contacts=array();
 			$friends= $this->facebook->api('/me/friends');
@@ -264,7 +270,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	 	$oauth_keys = $this->getToken();
 	 
 	 	$i = 0;
-	 	$facebook_profile_limit=10;
+	 	if($this->params->get('broadcast_limit'))
+	 	$facebook_profile_limit=$this->params->get('broadcast_limit');
+	 	else
+	 	$facebook_profile_limit=2;
 		$returndata = array();
 		if(!$oauth_keys)
 		return false;

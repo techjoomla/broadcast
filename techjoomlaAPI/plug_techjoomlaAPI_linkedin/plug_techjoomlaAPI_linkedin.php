@@ -230,7 +230,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	function plug_techjoomlaAPI_linkedinget_contacts() 
 	{
 		$session = JFactory::getSession();
-		$this->API_CONFIG['callbackUrl']= JURI::base().'index.php?option=com_invitex&view=invites&layout=apis';
+		$this->API_CONFIG['callbackUrl']= JRoute::_(JURI::base().'index.php?option=com_invitex&view=invites&layout=apis');
 		
 		if($session->get("['oauth']['linkedin']['authorized']",'') === TRUE)
     {
@@ -369,7 +369,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			$this->API_CONFIG['callbackUrl']=NULL;
 			$oauth_token_arr1=JArrayHelper::fromObject($oauth_token_arr);
 			$this->linkedin->setTokenAccess($oauth_token_arr1);	
-			$options='&type=SHAR&format=json';
+			if($this->params->get('broadcast_limit'))
+			$linkedin_profile_limit=$this->params->get('broadcast_limit');
+			else
+			$linkedin_profile_limit=2;
+			$options='&type=SHAR&format=json&count='.$linkedin_profile_limit;
 			
 			$response_updates = $this->linkedin->updates($options);
 			}

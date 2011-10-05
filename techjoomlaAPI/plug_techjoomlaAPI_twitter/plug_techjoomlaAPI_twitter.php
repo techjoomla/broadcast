@@ -284,17 +284,23 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
     	
     	$contact_arr=explode('|',$contact);
     	$user_id=$contact_arr['0'];
-    	echo $screen_name=$contact_arr['1'];//urlencode($post['message_body']
-    	echo $code = $tmhOAuth->request('POST', $tmhOAuth->url('1/direct_messages/new'), array('text' => 'hi whats up123','screen_name'=>$screen_name));
-		
-		//echo	$code = $tmhOAuth->request('POST', $tmhOAuth->url('1/direct_messages/new'), array('text' => 'hi hw r u??','user_id'=>$profile_id));die;
-    	
-    		print_r($tmhOAuth->response);die;
-    	
-    	}
+    	$screen_name=$contact_arr['1'];//urlencode($post['message_body']
+    	$code = $tmhOAuth->request('POST', $tmhOAuth->url('1/direct_messages/new'), array('text' => $post['message_body'],'screen_name'=>$screen_name));
+			if($code==200)
+			{
+				$this->raiseLog(JText::_('LOG_SEND_MESSAGE_SUCCESS'),JText::_('LOG_SEND_MESSAGE'),$this->user->id,0,$code);
+			}
+			else
+			{
+				$this->raiseLog(JText::_('LOG_SEND_MESSAGE_SUCCESS'),JText::_('LOG_SEND_MESSAGE'),$this->user->id,0,$code);
+			}
+			
+	
+    }
     
 	
   }//end send message
+  
   
   
 	function plug_techjoomlaAPI_twittergetstatus()
@@ -313,11 +319,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 				'consumer_secret' => $this->appSecret,
 				'user_token'      => $token['oauth_token'],
 				'user_secret'     => $token['oauth_token_secret'],));
+				
+				if($this->params->get('broadcast_limit'))
+				$twitter_profile_limit=$this->params->get('broadcast_limit');
+				else
+				$twitter_profile_limit=2;
 
-
-				$params1 = array('count'=>2,'user_id'=>$token['user_id'],'screen_name'=>$token['screen_name']);
+				$params = array('count'=>$twitter_profile_limit,'user_id'=>$token['user_id'],'screen_name'=>$token['screen_name']);
 				try{
-				$tmhOAuth->request('GET', $tmhOAuth->url('1/statuses/user_timeline'));
+				$tmhOAuth->request('GET', $tmhOAuth->url('1/statuses/user_timeline'),$params);
 				}
 				catch (Exception $e) 
 				{
