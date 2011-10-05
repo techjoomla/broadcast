@@ -14,7 +14,7 @@ class BroadcastModelbroadcast extends JModel
 		{
 		$dispatcher = &JDispatcher::getInstance();
 		JPluginHelper::importPlugin('techjoomlaAPI');
-		$broadcast_config['client']='broadcast';
+		$broadcast_config['api']['client']='broadcast';
 		$api_response=$dispatcher->trigger('renderPluginHTML',array($broadcast_config['api']));
 		}
 		return $api_response;
