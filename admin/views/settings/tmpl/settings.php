@@ -147,6 +147,17 @@ else
 			 ?>"  >
 			</td>
 		</tr>
+		<tr>
+			<td align="left" width="10%"><?php echo JHTML::tooltip(JText::_('PURG_QUEUE_DESC'), JText::_('PURG_QUEUE'), '', JText::_('PURG_QUEUE'));?></td>
+			<td width="90%">
+			<input type="text" class="inputbox " name="data[purgelimit]" width="90%" value="<?php
+			if($broadcast_config['purgelimit'])		 
+				echo $broadcast_config['purgelimit'];
+			else
+				echo '50';
+			 ?>"  >
+			</td>
+		</tr>		
 		<tr><td colspan=2><hr/></td></tr>
 		<tr>
 		<td  width="25%"><?php echo JHTML::tooltip(JText::_('SELECT_API_DES'), JText::_('SELECT_API'), '', JText::_('SELECT_API'));?></td>

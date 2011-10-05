@@ -121,6 +121,24 @@ class BroadcastModelbroadcast extends JModel
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
 		return $grt_response = $dispatcher->trigger($api_used.'setstatus',array($userid,$status));
 	}
-
+	function purgequeue(){
+		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		
+		$query = "SELECT id 
+					FROM #__broadcast_queue 
+					WHERE count=0 ORDER BY date desc LIMIT ".$broadcast_config['purgelimit'];
+		$this->_db->setQuery($query);
+	 	$queue = $this->_db->loadResultArray();
+	 	
+		$query = "DELETE 
+					FROM #__broadcast_queue 
+					WHERE id NOT IN(".implode(',',$queue).") AND count=0 AND flag=1";
+		
+		$this->_db->setQuery($query); 
+		if (!$this->_db->query()) {
+			$this->setError( $this->_db->getErrorMsg() );
+			return false;
+		}
+	}
 
 }

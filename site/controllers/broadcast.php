@@ -99,6 +99,8 @@ class BroadcastControllerbroadcast extends JController
 				$db->query();
 			}// end of the interval chk if
 		}// end of foreach of queue
+		//purge the queue table
+		$model->purgequeue();
 	}
 
 }
