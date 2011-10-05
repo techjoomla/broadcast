@@ -106,7 +106,25 @@ class combroadcastHelper
 			return 1;					
 		else
 			return 0;
-	}	
+	}
+	#strips the long urls to short url with Google shortening
+	function givShortURL($string){
+		require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'googlshorturl.php');
+		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$api_key=$broadcast_config['url_apikey'];
+		$goo = new Googl($api_key);//if you have an api key
+	
+		// replacement of url in title
+		$regex = "/((https?\:\/\/|ftps?\:\/\/)|(www\.))(\S+)(\w{2,4})(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/i";  // url 
+	    preg_match_all($regex, $string ,$matches);
+		if( !empty($matches[0]) ){
+			foreach ($matches[0] as $match ){
+				$shorturl = $goo->set_short($match); 
+				$string = str_replace($match, $shorturl['id'], $string);
+			}
+		}
+		return $string;
+	}
 }
 
 

@@ -15,6 +15,7 @@ class broadcastModelcp extends JModel
 	function store($post)
 	{
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+		$post['status'] = combroadcastHelper::givShortURL($post['status']);
 		if( combroadcastHelper::inQueue($post['status'], $post['userid'],$post['count'],$post['interval'],'com_broadcast'))
 			combroadcastHelper::intempAct($post['userid'], $post['status'], date('Y-m-d H:i:s',time()));
 	}

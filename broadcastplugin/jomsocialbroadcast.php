@@ -86,16 +86,11 @@ class plgCommunityjomsocialbroadcast extends CApplications
 		if($activity->params){
 			$activity->title = $activity->title." ".$this->_getURL($activity->app,json_decode($activity->params));
 		}
+		$activity->title=strip_tags($activity->title);
 
-		// replacement of url in title
-		$regex = "/(http:\/\/[^\s]+)/"; // url 
-	    preg_match($regex, $activity->title,$matches);
-		if($matches){
-			$surl = $goo->set_short($matches[0]); 
-			$activity->title = preg_replace('/(http:\/\/[^\s]+)/', $surl['id'],  $activity->title );
+	// replacement of url in title with the short url	
+		$activity->title = combroadcastHelper::givShortURL($activity->title);
 		
-		}
-		$activity->title=strip_tags($activity->title); 
 		return $activity->title;
 	}
 
