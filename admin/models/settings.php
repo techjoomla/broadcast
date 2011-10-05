@@ -11,11 +11,11 @@ class broadcastModelSettings extends JModel
 		$condtionatype = join(',',$condtion);  
 		if(JVERSION >= '1.6.0')
 		{
-			$query = "SELECT extension_id as id,name,element,enabled as published FROM #__extensions WHERE folder in ($condtionatype)";
+			$query = "SELECT extension_id as id,name,element,enabled as published FROM #__extensions WHERE folder in ($condtionatype) AND enabled=1";
 		}
 		else
 		{
-			$query = "SELECT id,name,element,published FROM #__plugins WHERE folder in ($condtionatype)";
+			$query = "SELECT id,name,element,published FROM #__plugins WHERE folder in ($condtionatype) AND published=1";
 		}
 		$this->_db->setQuery($query);
 		return $this->_db->loadobjectList();
@@ -25,16 +25,6 @@ class broadcastModelSettings extends JModel
 		global $mainframe;	
 		$mainframe = JFactory::getApplication();
 		$config	= JRequest::getVar('data', '', 'post', 'array', JREQUEST_ALLOWRAW );
-		//code to enable the techjoomlaAPI plugins
-		$condtion = array(0 => '\'techjoomlaAPI\'');
-		$condtionatype = join(',',$condtion);  
-		if(JVERSION>='1.6.0')
-			$query = "UPDATE #__extensions SET enabled=1";
-		else
-			$query = "UPDATE #__plugins SET published=1";
-		$query .=" WHERE element IN ('".join("','",$config['api'])."') AND folder in ($condtionatype)";
-		$this->_db->setQuery($query);
-		$this->_db->query();
 		
 		$file = 	JPATH_SITE.DS."administrator".DS."components".DS."com_broadcast".DS."config".DS."config.php";
 		if ($config)

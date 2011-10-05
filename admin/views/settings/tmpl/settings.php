@@ -162,7 +162,12 @@ else
 		<tr>
 		<td  width="25%"><?php echo JHTML::tooltip(JText::_('SELECT_API_DES'), JText::_('SELECT_API'), '', JText::_('SELECT_API'));?></td>
 		<td class="setting-td">
-		<?php echo JHTML::_('select.genericlist', $apiselect, "data[api][]", ' multiple size="3"  ', "value", "text", $apis )?>
+			<?php 
+		if(!empty($apiselect))
+			echo JHTML::_('select.genericlist', $apiselect, "data[api][]", ' multiple size="3"  ', "value", "text", $apis );
+		else
+			echo JText::_('NO_API_PLUG');
+		?>
 		
 		</td>
 		</tr>
