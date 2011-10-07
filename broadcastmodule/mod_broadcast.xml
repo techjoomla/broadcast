@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install type="module" version="1.5" client ="site" method="upgrade">
-	<name>Jomosocial Broadcast Module</name>
+	<name>Broadcast Module</name>
 	<author>Techjoomla</author>
 	<creationDate>Sep 2011</creationDate>
 	<copyright>Techjoomla. All Rights Reserved.</copyright>
 	<authorEmail>extensions@techjoomla.com</authorEmail>
 	<authorUrl>http://www.techjoomla.com</authorUrl>
 	<version>1.0.0</version>
-	<description>Jomosocial Broadcast Module to connect facebook,twitter,linkedin</description>
+	<description>Broadcast Module to connect Facebook, Twitter, Linkedin</description>
   <files>
-      <filename module="mod_jomsocialbroadcast">mod_jomsocialbroadcast.php</filename>
-      <filename>mod_jomsocialbroadcast.css</filename>
+      <filename module="mod_broadcast">mod_broadcast.php</filename>
+      <filename>mod_broadcast.css</filename>
       <filename>index.html</filename>
       <folder>tmpl</folder>
       <folder>images</folder>
   </files>
   <languages folder="language">
-  	<language tag="en-GB">en-GB/en-GB.mod_jomsocialbroadcast.ini</language>
+  	<language tag="en-GB">en-GB/en-GB.mod_broadcast.ini</language>
   </languages>   
 	<!-- parameters for Joomla 1.5.x -->
 	<params>

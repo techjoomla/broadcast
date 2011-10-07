@@ -12,6 +12,6 @@ if($user->id){
 	$show_rss	= trim( $params->get('show_rss') );
 	
 	$apidata = combroadcastHelper::getapistatus();
-	require( JModuleHelper::getLayoutPath( 'mod_jomsocialbroadcast' ) );
+	require( JModuleHelper::getLayoutPath( 'mod_broadcast' ) );
 }
 ?>

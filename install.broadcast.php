@@ -26,27 +26,27 @@ $install_source = $this->parent->getPath('source');
 echo '<br/><span style="font-weight:bold;">'.JText::_('Installing Module:').'</span>';
 if(JVERSION >= '1.6.0')
 {
-	$query = "SELECT element FROM #__extensions WHERE  element='mod_jomsocialbroadcast'";
+	$query = "SELECT element FROM #__extensions WHERE  element='mod_broadcast'";
 }
 else
 {
-	$query = "SELECT module FROM #__modules WHERE module='mod_jomsocialbroadcast'";
+	$query = "SELECT module FROM #__modules WHERE module='mod_broadcast'";
 }
 $db->setQuery($query);
 $modstatus = $db->loadResultArray();
 
 $installer = new JInstaller;
 $result = $installer->install($install_source.DS.'broadcastmodule');
-if (!in_array("mod_jomsocialbroadcast", $modstatus)) {
+if (!in_array("mod_broadcast", $modstatus)) {
 	if(JVERSION >= '1.6.0')
 	{
-		$query = "UPDATE #__extensions SET enabled=0 WHERE element='mod_jomsocialbroadcast'";
+		$query = "UPDATE #__extensions SET enabled=0 WHERE element='mod_broadcast'";
 		$db->setQuery($query);
 		$db->query();
 	}
 	else
 	{
-		$query = "UPDATE #__modules SET published=0 WHERE module='mod_jomsocialbroadcast'";
+		$query = "UPDATE #__modules SET published=0 WHERE module='mod_broadcast'";
 		$db->setQuery($query);
 		$db->query();
 	}

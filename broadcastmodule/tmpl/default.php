@@ -26,8 +26,8 @@ else{	//vertical orientation
 }
 
 $doc =& JFactory::getDocument();
-$base=JURI::base()."modules/mod_jomsocialbroadcast/";
-$doc->addStyleSheet( $base.'mod_jomsocialbroadcast.css' );
+$base=JURI::base()."modules/mod_broadcast/";
+$doc->addStyleSheet( $base.'mod_broadcast.css' );
 ?>
 
 <?php if($pretext){?>

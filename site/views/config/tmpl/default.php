@@ -83,11 +83,11 @@ if(!$user->id){
 				<?php 
 				include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 				$lang = & JFactory::getLanguage();
-				$lang->load('mod_jomsocialbroadcast', JPATH_SITE);
+				$lang->load('mod_broadcast', JPATH_SITE);
 				$apidata = combroadcastHelper::getapistatus();
 				$align=1;			
 				ob_start();
-					include(JModuleHelper::getLayoutPath('mod_jomsocialbroadcast'));
+					include(JModuleHelper::getLayoutPath('mod_broadcast'));
 					$html = ob_get_contents();
 				ob_end_clean();
 				echo $html ;	
