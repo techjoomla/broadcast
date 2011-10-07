@@ -75,23 +75,18 @@ class combroadcastHelper
 	#populate the Jomsocial activity table called from broadcast & rss models 
 	function inJSAct($actor,$target,$title,$content,$api,$cid,$date)
 	{
-		$db 			=& JFactory::getDBO();
-		$obj			= new StdClass();
-		$obj->actor 	= $actor;
-		$obj->target 	= $target;
-		$obj->title		= $title;			
-		$obj->content	= $content;
-		$obj->app		= $api;
-		$obj->cid		= $cid;
-		$obj->params	= '';
-		$obj->created	= $date;	#TODO convert into correct date time 
-		$obj->access	= 0;
-		$obj->points	= 1;
-		$obj->archived	= 0; 
-		if(!$db->insertObject('#__community_activities', $obj)){		
-      		$db->stderr();
-      		return false;
-  		}
+			require_once( JPATH_SITE . DS . 'components' . DS . 'com_community' . DS . 'libraries' . DS . 'core.php'); 
+		$act = new stdClass();
+		$act->cmd 	= 'wall.write';
+		$act->actor 	= $actor;
+		$act->target 	= 0; // no target
+		$act->title 	= $title;
+		$act->content 	= $content;
+		$act->app 	= $api;
+		$act->cid 	= $cid;
+		$act->created = $date;
+		CFactory::load('libraries', 'activities');
+		CActivityStream::add($act);
 	}
 	#set the current Jomsocial status, called from broadcast & rss models 
 	function updateJSstatus($userid,$status,$date)

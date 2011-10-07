@@ -23,7 +23,7 @@ class BroadcastModelbroadcast extends JModel
 	/*trigger the api for request token */
 	function getRequestToken($api_used)
 	{ 
-		$callback = JURI::base()."index.php?option=com_broadcast&controller=broadcast&task=get_access_token";
+		$callback = JRoute::_(JURI::base()."index.php?option=com_broadcast&controller=broadcast&task=get_access_token");
 		$grt_response = array();
 		$dispatcher = &JDispatcher::getInstance();
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
@@ -38,7 +38,7 @@ class BroadcastModelbroadcast extends JModel
 	function getAccessToken($get)
 	{
 		$session =& JFactory::getSession();	
-		$callback = JURI::base()."index.php?option=com_broadcast&controller=broadcast&task=get_access_token";
+		$callback = JRoute::_(JURI::base()."index.php?option=com_broadcast&controller=broadcast&task=get_access_token");
 		$dispatcher = &JDispatcher::getInstance();
 		JPluginHelper::importPlugin('techjoomlaAPI',$session->get('api_used',''));
 		$grt_response = $dispatcher->trigger('get_access_token',array($get,'broadcast',$callback));
