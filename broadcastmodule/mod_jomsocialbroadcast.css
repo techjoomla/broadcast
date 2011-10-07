@@ -3,7 +3,7 @@
 .broadcast_foot{float:left; width:100%}
 
 
-.inbroadcast_ver{float:left; width:29%;padding-top: 6px;}
-.broadcast_ver{height: 36px;}
-.broadcast_hori{float:left; width:110px;}
-.inbroadcast_hori{ float: left; padding-top: 5px;}
+.inbroadcast_ver{float:left; width:29%;padding-top: 10px;}
+.broadcast_ver{}
+.broadcast_hori{float:left; width:83px;}
+.inbroadcast_hori{padding-left: 10px;}
