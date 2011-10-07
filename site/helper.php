@@ -18,7 +18,19 @@ class combroadcastHelper
 		$text = preg_replace("#(^|[\n ])\#([^ \"\t\n\r<]*)#ise", "'\\1<a href=\"http://hashtags.org/search?query=\\2\" >#\\2</a>'", $text);
 		return $text;
 	}
-	
+	/*function to add to queue and also populate the tmp activity table
+	 * @param int userid
+	 * @param string status
+	 * @param datetime date of format Y-m-d H:i:s
+	 * @param int number of times to broadcast
+	 * @param int interval (in seconds) in which to broadcast
+	 * @param string the one who has called this function
+	 * @param string api which is used
+	*/
+	function addtoQueue($userid,$status,$date,$count,$interval,$supplier,$api=''){
+		$this->inQueue($userid,$status,$count,$interval,$supplier);
+		$this->intempAct($userid,$status,$date,$api);
+	}
 	#inQueue function called from plugin as well can be called from custom place	
 	function inQueue($newstatus, $userid, $count, $interval, $supplier)
 	{
