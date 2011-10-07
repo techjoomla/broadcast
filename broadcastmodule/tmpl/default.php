@@ -33,7 +33,10 @@ $doc->addStyleSheet( $base.'mod_broadcast.css' );
 <?php if($pretext){?>
 <div class="broadcast_head"><?php echo $pretext; ?></div>
 <?php }
-
+if(empty($apidata))
+{
+	echo JText::_('NO_API_PLUG');
+}
 for($i=0; $i<count($apidata); $i++)
 {
 	if(!isset( $apidata[$i]['error_message']) )

@@ -14,4 +14,6 @@ if($user->id){
 	$apidata = combroadcastHelper::getapistatus();
 	require( JModuleHelper::getLayoutPath( 'mod_broadcast' ) );
 }
+else
+	echo JText::_('BC_USER_LOGIN');
 ?>
