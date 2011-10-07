@@ -159,28 +159,12 @@ function com_install()
 	$img_ERROR = '<img src="images/publish_r.png" />';
 	$BR = '<br />';
 	$destination = JPATH_SITE . DS . 'administrator' . DS . 'components' . DS . 'com_broadcast' . DS . 'config' . DS ;
-	$configarray = array(
-					'show_name' => '1',
-					'status_via' => '0',
-					'status_skip' => '#,@',
-					'url_apikey' => '',
-					'purgelimit' => '50',
-					'show_status_rss' => '0',
-					'rss_link_limit' => '3',
-					'private_key_cronjob' => '1234'
-					); 
-	   
-	if(JFolder::exists($destination))
-    {
-        JFolder::create(JPATH_SITE.DS.'administrator'. DS . 'components' . DS . 'com_broadcast' . DS . 'oldconfig');
-        $old_destination =	JPATH_SITE . DS . 'administrator' . DS . 'components' . DS . 'com_broadcast' . DS . 'oldconfig' . DS ;	
-         		
-		if(JFile::exists($destination.'config.php')){
-			JFile::move($destination.'config.php', $old_destination.'config.php');
-		}
-
-		$config2 = getConfig($old_destination.'config.php');
-		$result = array_merge($configarray, $config2);
+	$configarray = getConfig($destination.'configdefault.php'); 
+	
+	if(JFolder::exists($destination.'config.php'))
+    {         		
+		$config2 = getConfig($destination.'config.php');
+		$result = array_merge($configarray, $config2); 
 		foreach($result as $k=>$v)
 		{
 			if(is_array($v))
@@ -204,10 +188,8 @@ function com_install()
 		{
 		  JFile::delete($destination.'config.php');
 		}
-			$newdata = '<?php $broadcast_config = array('.print_r($newconfigarray, true).') ?>';
-			JFile::write($destination.'config.php',$newdata);
-		
-		JFolder::delete($old_destination);
+		$newdata = '<?php $broadcast_config = array('.print_r($newconfigarray, true).') ?>';
+		JFile::write($destination.'config.php',$newdata);
     }
     				
 	else if(!JFile::exists($destination.'config.php'))
@@ -223,6 +205,8 @@ function com_install()
 		JFile::move(JPATH_SITE.'/components/com_broadcast/images/linkedin.png', JPATH_SITE.'/components/com_community/assets/favicon/linkedin.png' );
 		JFile::move(JPATH_SITE.'/components/com_broadcast/images/facebook.png', JPATH_SITE.'/components/com_community/assets/favicon/facebook.png' );
 	}
+	JFile::delete($destination.'configdefault.php');
+	
 }
 
 	function getConfig($filename)
