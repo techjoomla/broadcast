@@ -159,30 +159,14 @@ function com_install()
 	$img_ERROR = '<img src="images/publish_r.png" />';
 	$BR = '<br />';
 	$destination = JPATH_SITE . DS . 'administrator' . DS . 'components' . DS . 'com_broadcast' . DS . 'config' . DS ;
-	$configarray = getConfig($destination.'configdefault.php'); 
+	$configarraydata = getConfig($destination.'configdefault.php'); 
+	$configarray = getformattedarray($configarraydata); 
 	
 	if(JFolder::exists($destination.'config.php'))
     {         		
-		$config2 = getConfig($destination.'config.php');
-		$result = array_merge($configarray, $config2); 
-		foreach($result as $k=>$v)
-		{
-			if(is_array($v))
-			{
-				$str = 'array(';
-				foreach ($v as $kk => $vv)
-				{
-					$str1[]= "'{$kk}' => '" . $vv . "'";
-				} 	
-				$str.= implode(",", $str1);;
-				$str .= ')';
-				$final[] ="'{$k}' => " . $str ;
-			}
-			else
-				$final[]= "'{$k}' => '{$v}'" ;
-		}
-						
-		$newconfigarray = implode(",\n", $final);
+		$oldconfig = getConfig($destination.'config.php');
+		$result = array_merge($configarray, $oldconfig); 
+		$newconfigarray = getformattedarray($result); 
 		
 		if(JFile::exists($destination.'config.php'))
 		{
@@ -208,7 +192,26 @@ function com_install()
 	JFile::delete($destination.'configdefault.php');
 	
 }
-
+function getformattedarray($result){
+	foreach($result as $k=>$v)
+	{
+		if(is_array($v))
+		{
+			$str = 'array(';
+			foreach ($v as $kk => $vv)
+			{
+				$str1[]= "'{$kk}' => '" . $vv . "'";
+			} 	
+			$str.= implode(",", $str1);;
+			$str .= ')';
+			$final[] ="'{$k}' => " . $str ;
+		}
+		else
+			$final[]= "'{$k}' => '{$v}'" ;
+	}
+					
+	return $configarray = implode(",\n", $final);
+} 
 	function getConfig($filename)
 	{
 		include($filename);
