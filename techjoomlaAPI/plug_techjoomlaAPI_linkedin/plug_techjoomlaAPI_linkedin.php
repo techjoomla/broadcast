@@ -406,11 +406,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					$status[$j]['comment'] =  $totalresponse->values[$i]->updateContent->person->currentShare->comment;
 					$status[$j]['timestamp'] = $totalresponse->values[$i]->updateContent->person->currentShare->timestamp;
 					$status[$j]['timestamp'] = number_format($status[$j]['timestamp'],0,'','');
-          $status[$j]['timestamp'] = intval($status[$j]['timestamp'] /1000); 
-          $config =& JFactory::getConfig();
-					$offset = $config->getValue('config.offset'); 
-					$get_date= & JFactory::getDate($status[$j]['timestamp'],$offset);				
-					$status[$j]['timestamp'] = $get_date->toFormat();
+					$status[$j]['timestamp'] = intval($status[$j]['timestamp'] /1000); 
 					$j++;
 				}
 			} 
