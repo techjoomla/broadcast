@@ -7,7 +7,7 @@
 	<authorEmail>TechJoomla</authorEmail>
 	<authorUrl>contact@techjoomla.com</authorUrl>
 	<version>1.0.0</version>
-	<description>Social Broadcast  is a social networking component for connecting to Linkedin,facebook,twitter!</description>
+	<description>Social Broadcast - Social sync for your Joomla website ! </description>
     <!-- installation part -->
     
 	<install> <!-- Runs on install -->

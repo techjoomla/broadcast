@@ -79,12 +79,16 @@ foreach($xml->document->_children as $var)
 		<div id="cp2" class="cp2" style="float: left; width: 40%;padding-bottom: 10px; ">
 		<?php
 		echo $pane->startPane( 'pane' );
-		echo $pane->startPanel( JText::_('ABOUT'), 'panel1' );?>
+		echo $pane->startPanel( JText::_('BC_ABOUT'), 'panel1' );?>
 		<h1 style="color:#0B55C4;"><?php echo JText::_('ABOUT1');?></h1>
 		<h3><b><?php echo JText::_('ABOUT2');?></b></h3>
-		<b><?php echo JText::_('ABOUT3');?></b>
-		<p><?php echo JText::_('ABOUT4');?></p> 
-		
+		<ol>
+			<li><?php echo JText::_('ABOUT3');?></li>
+			<li><?php echo JText::_('ABOUT4');?></li>
+			<li><?php echo JText::_('ABOUT5');?></li>   
+		</ol>
+		<p><?php echo JText::_('ABOUT6');?></p>  
+		<p><?php echo JText::_('ABOUT7');?></p> 
 		<?php
 		echo $pane->endPanel();		
 		?>

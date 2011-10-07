@@ -164,7 +164,7 @@ else
 		<td class="setting-td">
 			<?php 
 		if(!empty($apiselect))
-			echo JHTML::_('select.genericlist', $apiselect, "data[api][]", ' multiple size="3"  ', "value", "text", $apis );
+			echo JHTML::_('select.genericlist', $apiselect, "data[api][]", ' multiple size="5"  ', "value", "text", $apis );
 		else
 			echo JText::_('NO_API_PLUG');
 		?>
