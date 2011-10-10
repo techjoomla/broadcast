@@ -69,7 +69,8 @@ class BroadcastModelbroadcast extends JModel
 		$dispatcher = &JDispatcher::getInstance();
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
 		$statuses = $dispatcher->trigger($api_used.'getstatus'); 
-		$this->storestatus($statuses[0],$api_used); 		
+		if(isset($statuses[0]))
+			$this->storestatus($statuses[0],$api_used); 		
 	}
 	
 	function storestatus($apistatuses,$api){
