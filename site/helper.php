@@ -84,7 +84,6 @@ class combroadcastHelper
 		$act->content 	= $content;
 		$act->app 	= $api;
 		$act->cid 	= $cid;
-		$act->created = $date;
 		CFactory::load('libraries', 'activities');
 		CActivityStream::add($act);
 	}
