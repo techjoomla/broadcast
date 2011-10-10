@@ -28,8 +28,8 @@ class combroadcastHelper
 	 * @param string api which is used
 	*/
 	function addtoQueue($userid,$status,$date,$count,$interval,$supplier,$api=''){
-		$this->inQueue($userid,$status,$count,$interval,$supplier);
-		$this->intempAct($userid,$status,$date,$api);
+		combroadcastHelper::inQueue($userid,$status,$count,$interval,$supplier);
+		combroadcastHelper::intempAct($userid,$status,$date,$api);
 	}
 	#inQueue function called from plugin as well can be called from custom place	
 	function inQueue($newstatus, $userid, $count, $interval, $supplier)
