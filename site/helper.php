@@ -32,7 +32,7 @@ class combroadcastHelper
 		combroadcastHelper::intempAct($userid,$status,$date,$api);
 	}
 	#inQueue function called from plugin as well can be called from custom place	
-	function inQueue($newstatus, $userid, $count, $interval, $supplier)
+	function inQueue($userid,$newstatus, $count, $interval, $supplier)
 	{
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 
