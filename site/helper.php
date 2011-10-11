@@ -121,7 +121,7 @@ class combroadcastHelper
 		$goo = new Googl($api_key);//if you have an api key
 	
 		// replacement of url in title
-		$regex = "/((https?\:\/\/|ftps?\:\/\/)|(www\.))(\S+)(\w{2,4})(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/i";  // url 
+		$regex = "/((https?\:\/\/|ftps?\:\/\/)|(www\.))(\S+)(\w{1,5})(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/i";  // url 
 	    preg_match_all($regex, $string ,$matches);
 		if( !empty($matches[0]) ){
 			foreach ($matches[0] as $match ){

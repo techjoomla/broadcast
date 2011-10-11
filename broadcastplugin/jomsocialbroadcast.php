@@ -101,6 +101,9 @@ class plgCommunityjomsocialbroadcast extends CApplications
 			case 'events':
 				$url = JURI::base().$paramarray->event_url;
 			break;
+			case 'groups':
+				$url = JURI::base().$paramarray->group_url;
+			break;
 			case 'videos':
 				$url = JURI::base().$paramarray->video_url;
 			break;
