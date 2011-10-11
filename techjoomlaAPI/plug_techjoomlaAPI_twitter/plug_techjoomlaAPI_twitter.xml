@@ -22,8 +22,8 @@
 	</languages>
 	<!-- parameters for Joomla 1.5.x -->
 	<params addpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_twitter/element">
-		<param name="appKey" type="text" default="" label="Enter Twitter App ID:" description="Enter Twitter App ID" />
-		<param name="appSecret" type="text" default="" label="Enter Twitter App Secret: " description="Enter Twitter App Secret: " />
+		<param name="appKey" type="text" default="" label="Enter Twitter Consumer Key:" description="Enter Twitter Consumer Key" />
+		<param name="appSecret" type="text" default="" label="Enter Twitter Consumer Secret: " description="Enter Twitter Consumer Secret: " />
 		<param name="no_allowed_message" type="text" default="10" label="Limit to send messages[For Invitex]" description="Enter no of allowed messages" />
 		<param name="log_file_path" type="hidden" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored" />		
 		<param name="broadcast_limit" type="text" default="5" label="Limit for status update[For Broadcast]" description="Enter the Limit for no of statuses to get" />								
@@ -35,8 +35,8 @@
 	<config name="params">
   	<fields name="params">
     	<fieldset name="basic" label="Plugin Parameters" addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_twitter/plug_techjoomlaAPI_twitter/element">
-				<field name="appKey" type="text" default="" label="Enter Twitter App ID:" description="Enter Twitter App ID:"/>
-				<field name="appSecret" type="text" default="" label="Enter Twitter App Secret:" description="Enter Twitter App Secret:" />
+				<field name="appKey" type="text" default="" label="Enter Twitter Consumer Key:" description="Enter Twitter Consumer Key:"/>
+				<field name="appSecret" type="text" default="" label="Enter Twitter Consumer Secret:" description="Enter Twitter Consumer Secret:" />
 				<field name="no_allowed_message" type="text" default="10" label="Limit to send messages[For Invitex]" description="Enter no of allowed messages"/>
 				<param name="log_file_path" type="hidden" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored" />		
 				<field name="broadcast_limit" type="text" default="5" label="Limit for status update[For Broadcast]" description="Enter the Limit for no of statuses to get" />						
