@@ -38,19 +38,10 @@ $modstatus = $db->loadResultArray();
 $installer = new JInstaller;
 $result = $installer->install($install_source.DS.'broadcastmodule');
 if (!in_array("mod_broadcast", $modstatus)) {
-	if(JVERSION >= '1.6.0')
-	{
-		$query = "UPDATE #__extensions SET enabled=0 WHERE element='mod_broadcast'";
-		$db->setQuery($query);
-		$db->query();
-	}
-	else
-	{
 		$query = "UPDATE #__modules SET published=0 WHERE module='mod_broadcast'";
 		$db->setQuery($query);
 		$db->query();
-	}
-	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_('Broadcast Module installed and').'</span><span style="font-weight:bold; color:red;">'.JText::_(" Not published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_('Broadcast Module not installed').'</span>'; 
+		echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_('Broadcast Module installed and').'</span><span style="font-weight:bold; color:red;">'.JText::_(" Not published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_('Broadcast Module not installed').'</span>'; 
 }
 else
 {
