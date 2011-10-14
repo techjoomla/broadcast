@@ -62,7 +62,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
     $plug=array(); 
    	$plug['name']="Yahoo";
   	//check if keys are set
-		if($this->API_CONFIG['appKey']=='' || $this->API_CONFIG['appSecret']=='' || $this->API_CONFIG['appId']=='')// || !in_array($this->_name,$config))
+		if($this->API_CONFIG['appKey']=='' || $this->API_CONFIG['appSecret']=='' || $this->API_CONFIG['appId']=='' || !in_array($this->_name,$config))
 		{
 			$plug['error_message']=true;		
 			return $plug;
