@@ -182,7 +182,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 	}
 	
 	function getToken($user=''){
-		$user=$this->user->id;
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;

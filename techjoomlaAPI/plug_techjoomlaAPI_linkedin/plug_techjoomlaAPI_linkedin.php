@@ -205,7 +205,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	}
 	
 	function getToken($user=''){
-		$user=$this->user->id;
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;
@@ -359,7 +358,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		$i = 0;
 		$returndata = array();
 		$oauth_keys = $this->getToken(); 
-		
+		$returndata=array(array());
 		foreach($oauth_keys as $oauth_key){
 			
 			$oauth_token		 	= json_decode($oauth_key->token);
@@ -394,7 +393,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					$i++;
 			}
 		}
+		
+		if(!empty($returndata['0']))
 		return $returndata;
+		else
+		return;
 	}
   	function renderstatus($totalresponse)
   	{

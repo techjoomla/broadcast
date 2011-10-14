@@ -219,7 +219,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 	}
 	
 	function getToken($user=''){
-		$user=$this->user->id;
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;

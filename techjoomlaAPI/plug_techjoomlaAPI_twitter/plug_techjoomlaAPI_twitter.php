@@ -171,7 +171,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	}
 	
 	function getToken($user=''){
-		$user=$this->user->id;
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;
@@ -310,6 +309,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	 if(!$oauth_keys)
 		return false;
 		$i=0;
+		$returndata=array(array());
 	 	foreach($oauth_keys as $oauth_key)
 	 	{	
 	 		
@@ -350,10 +350,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 				}
 	
 		}
-		if($returndata)
-	 return $returndata;
-	 else
-	 return false;
+		
+		if(!empty($returndata['0']))
+		return $returndata;
+		else
+		return;
 			
 	}
 	

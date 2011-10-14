@@ -160,7 +160,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	}
 	
 	function getToken($user=''){
-		$user=$this->user->id;
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;
@@ -268,7 +267,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	{ 
 		$oauth_keys =array();
 	 	$oauth_keys = $this->getToken();
-	 
+	 	$returndata=array(array());
 	 	$i = 0;
 	 	if($this->params->get('broadcast_limit'))
 	 	$facebook_profile_limit=$this->params->get('broadcast_limit');
@@ -278,7 +277,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		if(!$oauth_keys)
 		return false;
 	 	foreach($oauth_keys as $oauth_key){	
-	 	
+	 		
 			$token =json_decode($oauth_key->token);	
 			try{		
 				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit));
@@ -287,13 +286,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			{
 				$this->raiseException($e->getMessage());
 				return false;
-		  }	
-		  
-			$returndata[$i]['user_id'] = $oauth_key->user_id;
-			$returndata[$i]['status'] = $this->renderstatus($json_facebook['data']);
-			if($returndata[$i]['status'])
+		  }
+		  $status='';
+		  $status=$this->renderstatus($json_facebook['data'])	;
+		  if($status)
 			{
-				
+				$returndata[$i]['user_id'] 	= $oauth_key->user_id;
+				$returndata[$i]['status'] 	= $status;	
 				$response=$this->raiseLog(JText::_('LOG_GET_STATUS_SUCCESS'),JText::_('LOG_GET_STATUS'),$oauth_key->user_id,1);
 			}
 			else
@@ -304,8 +303,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			
 			$i++;
 		}
-			
-			return $returndata;
+		
+		if(!empty($returndata['0']))
+		return $returndata;
+		else
+		return;
 		
 	}
 			

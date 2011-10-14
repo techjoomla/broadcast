@@ -205,7 +205,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 	}
 	
 	function getToken($user=''){
-		$user=$this->user->id;
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;
