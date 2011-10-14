@@ -69,7 +69,7 @@ class BroadcastModelbroadcast extends JModel
 		$dispatcher = &JDispatcher::getInstance();
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
 		$statuses = $dispatcher->trigger($api_used.'getstatus'); 
-		if(isset($statuses[0]))
+		if(isset($statuses[0]) && !empty($statuses[0]))
 			$this->storestatus($statuses[0],$api_used); 		
 	}
 	
@@ -106,7 +106,8 @@ class BroadcastModelbroadcast extends JModel
 					$today_date	= & JFactory::getDate($status['timestamp']);
 					combroadcastHelper::inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toMySQL() );
 					combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toMySQL(),$api );
-					combroadcastHelper::updateJSstatus($userid, $status_content,$today_date->toMySQL() );
+					$today =& JFactory::getDate();
+					combroadcastHelper::updateJSstatus($userid, $status_content,$today->toMySQL() );
 				}
 			}
 		}
