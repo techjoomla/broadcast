@@ -41,7 +41,7 @@ for($i=0; $i<count($apidata); $i++)
 {
 	if(!isset( $apidata[$i]['error_message']) )
 	{
-		$getTokenURL = JURI::base()."index.php?option=com_broadcast&controller=broadcast&task=get_request_token&api=".$apidata[$i]['api_used'];
+		$getTokenURL = JRoute::_("index.php?option=com_broadcast&controller=broadcast&task=get_request_token&api=".$apidata[$i]['api_used']);
 		$removeTokenURL= JRoute::_('index.php?option=com_broadcast&controller=broadcast&task=remove_token&api='.$apidata[$i]['api_used']);
 ?>
 		<div class="<?php echo $outclass ?>" >

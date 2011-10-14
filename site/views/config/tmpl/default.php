@@ -152,12 +152,12 @@ if(!$user->id){
 			var latestId = counter+1;
 			function addNewItem() {
 				if(counter>limit){
-	        	    alert("Only  "+limit+" RSS Links are allowed.");
+	        	    alert("<?php echo JText::sprintf('LIMIT_RSS',$broadcast_config['rss_link_limit']);?>");
 				}
 				else{
-				appendElement("container1", "element" + latestId, "<input type='text' class='inputbox' name='rss_link[]' value='' /><a href=\"javascript:removeItem(" + latestId + ")\"> [Remove Link]</a>");		
-				latestId++;
-				counter++;
+					appendElement("container1", "element" + latestId, "<input size='50' type='text' class='inputbox' name='rss_link[]' value='' /><a href=\"javascript:removeItem(" + latestId + ")\"><?php echo JText::_('REM_RSS');?></a>");		
+					latestId++;
+					counter++;
 				}
 			}
 
@@ -205,7 +205,7 @@ if(!$user->id){
 							{
 								echo '<div id="element'.$i.'">';													
 								echo '<input size="50" type="text" class="inputbox" name="rss_link['.$i.']" value="'.$rss.'" />';
-								echo '<a href="javascript:removeItem('.$i.');" > ['.JText::_('REM_RSS').']</a>'."<br />";
+								echo '<a href="javascript:removeItem('.$i.');" > '.JText::_('REM_RSS').'</a>'."<br />";
 								echo '</div>';
 								$i++;
 							}

@@ -35,9 +35,9 @@ class BroadcastControllerbroadcast extends JController
 			$user	= JFactory::getUser();
 			$userconfig = $model->checkuserconfig($user->id);
 			if(!$userconfig){ 
-				$mainframe->redirect(JURI::base()."index.php?option=com_broadcast&view=config", 'Please set your user settings' );
+				$mainframe->redirect(JURI::base()."index.php?option=com_broadcast&view=config", JText::_("BC_CONN_TO") );
 			}
-			$msg	= $user->name." "."connected!!"." ".$mainframe->getCfg('sitename');
+			$msg	= $user->name." ".JText::_("BC_CONN_TO")." ".ucfirst(str_replace('plug_techjoomlaAPI_', '', $session->get('api_used','')))." ".JText::_("BC_CONN_ON")." ".$mainframe->getCfg('sitename');
 		}
 	 	$currentMenu = $session->get('currentMenu'); 
 		$mainframe->redirect( JURI::base(), $msg);
