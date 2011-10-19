@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install version="1.5" type="plugin" group="community" method="upgrade">
 	<name>Jomsocial Broadcast</name>
-	<creationDate>Sep 2011</creationDate>
+	<creationDate>Oct 2011</creationDate>
 	<author>TechJoomla</author>
 	<authorEmail>TechJoomla</authorEmail>
 	<authorUrl>contact@techjoomla.com</authorUrl>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<isapplication>true</isapplication>
 	<description>
-		Jomsocial status broadcast
+		Broadcast Jomsocial status to other Networks
 	</description>
 	<languages>
 		<language tag="en-GB">en-GB/en-GB.plg_community_jomsocialbroadcast.ini</language>
