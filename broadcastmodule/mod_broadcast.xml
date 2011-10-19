@@ -17,6 +17,8 @@
   </files>
   <languages folder="language">
   	<language tag="en-GB">en-GB/en-GB.mod_broadcast.ini</language>
+		<language tag="pt-BR">pt-BR/pt-BR.mod_broadcast.ini</language>
+		<language tag="zh-TW">zh-TW/zh-TW.mod_broadcast.ini</language>
   </languages>   
 	<!-- parameters for Joomla 1.5.x -->
 	<params>
