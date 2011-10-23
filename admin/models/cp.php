@@ -19,7 +19,7 @@ class broadcastModelcp extends JModel
 			$apis = $post['api_status'];
 		else
 			$apis = '';
-		combroadcastHelper::addtoQueue($post['userid'], $post['status'], date('Y-m-d H:i:s',time()),$post['count'],$post['interval'],$apis,'com_broadcast',1);
+		return combroadcastHelper::addtoQueue($post['userid'], $post['status'], date('Y-m-d H:i:s',time()),$post['count'],$post['interval'],$apis,'com_broadcast',1);
 	}
 }
 

@@ -32,6 +32,7 @@ class combroadcastHelper
 			$message = combroadcastHelper::givShortURL($message);
 		combroadcastHelper::inQueue($userid,$message,$count,$interval,$supplier,$media);
 		combroadcastHelper::intempAct($userid,$message,$date);
+		return true;
 	}
 	#inQueue function called from plugin as well can be called from custom place	
 	function inQueue($userid,$newstatus, $count, $interval, $supplier, $media)
@@ -77,6 +78,7 @@ class combroadcastHelper
       		$db->stderr();
       		return false;
   		}
+		return true;
 	}
 	#populate the Jomsocial activity table called from broadcast & rss models 
 	function inJSAct($actor,$target,$title,$content,$api,$cid,$date)
