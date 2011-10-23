@@ -64,13 +64,17 @@ else
 				</tr>
 				<tr>
 					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPSELAPI'), JText::_('BC_SEL_API'), '', JText::_('BC_SEL_API'));?></td>
-					<td><?php foreach($broadcast_config['api'] as $api){
-					?>
+					<td><?php 
+					if(isset($broadcast_config['api']) && !empty($broadcast_config['api']))
+						foreach($broadcast_config['api'] as $api){
+						?>
 						<span syle="vertical-align:text-top;"> 
-						<input style="float:none;" type="checkbox" name="api_status[]" value="<?php echo $api; ?>" /><span><?php echo ucfirst(str_replace('plug_techjoomlaAPI_','', $api)); ?></span>
-					</span>
-					<?php 
-					}
+							<input style="float:none;" type="checkbox" name="api_status[]" value="<?php echo $api; ?>" /><span><?php echo ucfirst(str_replace('plug_techjoomlaAPI_','', $api)); ?></span>
+						</span>
+						<?php 
+						}
+					else
+						echo JText::_('NO_API_PLUG');
 					?>
 					</td>
 				</tr>				
