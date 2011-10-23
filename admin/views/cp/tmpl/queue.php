@@ -3,9 +3,8 @@ defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip');
 JHTML::_('behavior.formvalidation');
 
+require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 
-?>
-<?php
 $document =& JFactory::getDocument();
 if(JVERSION >= '1.6.0')
 	$js_key="
