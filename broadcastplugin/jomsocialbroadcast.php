@@ -44,7 +44,7 @@ class plgCommunityjomsocialbroadcast extends CApplications
 		if(in_array($bc_activity->app,$subscribedapp))
 		{	 
 			$title=$this->tag_replace($bc_activity->actor,$bc_activity->target,$bc_activity->created,$bc_activity);
-			combroadcastHelper::addtoQueue($user->id, $title, date('Y-m-d H:i:s',time()),1,0,'com_community');
+			combroadcastHelper::addtoQueue($user->id, $title, date('Y-m-d H:i:s',time()),1,0,'','com_community',1);
 		}
 
 	return true;
@@ -85,11 +85,7 @@ class plgCommunityjomsocialbroadcast extends CApplications
 		if($activity->params){
 			$activity->title = $activity->title." ".$this->_getURL($activity->app,json_decode($activity->params));
 		}
-		$activity->title=strip_tags($activity->title);
-
-	// replacement of url in title with the short url	
-		$activity->title = combroadcastHelper::givShortURL($activity->title);
-		
+		$activity->title=strip_tags($activity->title);		
 		return $activity->title;
 	}
 

@@ -15,8 +15,11 @@ class broadcastModelcp extends JModel
 	function store($post)
 	{
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
-		$post['status'] = combroadcastHelper::givShortURL($post['status']);
-		combroadcastHelper::addtoQueue($post['userid'], $post['status'], date('Y-m-d H:i:s',time()),$post['count'],$post['interval'],'com_broadcast');
+		if(isset($post['api_status']) && !empty($post['api_status']))
+			$apis = $post['api_status'];
+		else
+			$apis = '';
+		combroadcastHelper::addtoQueue($post['userid'], $post['status'], date('Y-m-d H:i:s',time()),$post['count'],$post['interval'],$apis,'com_broadcast',1);
 	}
 }
 

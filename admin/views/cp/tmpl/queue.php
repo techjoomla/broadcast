@@ -64,6 +64,18 @@ else
 					<td><textarea class="inputbox required" name="status" id="status" cols="25"></textarea></td>
 				</tr>
 				<tr>
+					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPSELAPI'), JText::_('BC_SEL_API'), '', JText::_('BC_SEL_API'));?></td>
+					<td><?php foreach($broadcast_config['api'] as $api){
+					?>
+						<span syle="vertical-align:text-top;"> 
+						<input style="float:none;" type="checkbox" name="api_status[]" value="<?php echo $api; ?>" /><span><?php echo ucfirst(str_replace('plug_techjoomlaAPI_','', $api)); ?></span>
+					</span>
+					<?php 
+					}
+					?>
+					</td>
+				</tr>				
+				<tr>
 					<td><?php echo JHTML::tooltip(JText::_('TOOLTIPCOUNT'), JText::_('BC_COUNT'), '', JText::_('BC_COUNT'));?></td>
 					<td><input type="text" class="inputbox required validate-numeric"  name="count" value="" id="" size="30" /></td>
 				</tr>

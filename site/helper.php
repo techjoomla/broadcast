@@ -19,25 +19,32 @@ class combroadcastHelper
 	}
 	/*function to add to queue and also populate the tmp activity table
 	 * @param int userid
-	 * @param string status
+	 * @param string message
 	 * @param datetime date of format Y-m-d H:i:s
 	 * @param int number of times to broadcast
 	 * @param int interval (in seconds) in which to broadcast
-	 * @param string the one who has called this function
-	 * @param string api which is used
+	 * @param array media list of api to broadcast the status  
+	 * @param string supplier the one who has called this function
+	 * @param int short to shorten the url or not
 	*/
-	function addtoQueue($userid,$status,$date,$count,$interval,$supplier,$api=''){
-		combroadcastHelper::inQueue($userid,$status,$count,$interval,$supplier);
-		combroadcastHelper::intempAct($userid,$status,$date,$api);
+	function addtoQueue($userid,$message,$date,$count,$interval,$media='',$supplier,$short){
+		if($short==1)	// replacement of url in message with short url	
+			$message = combroadcastHelper::givShortURL($message);
+		combroadcastHelper::inQueue($userid,$message,$count,$interval,$supplier,$media);
+		combroadcastHelper::intempAct($userid,$message,$date);
 	}
 	#inQueue function called from plugin as well can be called from custom place	
-	function inQueue($userid,$newstatus, $count, $interval, $supplier)
+	function inQueue($userid,$newstatus, $count, $interval, $supplier, $media)
 	{
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+				if($media == '')
+			$touseapi = $broadcast_config['api'];
+		else
+			$touseapi = $media;
 
 		if(!$count)	$count = 1;
 	    $db =& JFactory::getDBO();
-		foreach($broadcast_config['api'] as $api){
+		foreach($touseapi as $api){
 			$obj		   	= new StdClass();
 			$obj->id	   	= '';
 			$obj->status   	= $newstatus;
