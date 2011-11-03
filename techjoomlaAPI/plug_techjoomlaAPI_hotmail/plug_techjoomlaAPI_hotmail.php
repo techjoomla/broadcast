@@ -9,6 +9,10 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.plugin.plugin');
+
+//mhash deprecated in php 5.3 so use hash in lib
+if( !function_exists('mhash') AND function_exists('hash') ){function mhash( $hash, $data, $key='' ) {return hash( "sha256", $data, true );   }}
+
 // include the Hotmail class
 if(JVERSION >='1.6.0')
 require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_hotmail'.DS.'plug_techjoomlaAPI_hotmail'.DS.'lib'.DS.'contacts_importer.class.php');
