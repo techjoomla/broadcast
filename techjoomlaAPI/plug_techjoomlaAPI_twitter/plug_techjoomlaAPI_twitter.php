@@ -325,7 +325,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 				else
 				$twitter_profile_limit=2;
 
-				$params = array('count'=>$twitter_profile_limit,'user_id'=>$token['user_id'],'screen_name'=>$token['screen_name']);
+				$params = array('include_entities'=>true,'count'=>$twitter_profile_limit,'user_id'=>$token['user_id'],'screen_name'=>$token['screen_name']);
 				try{
 				$tmhOAuth->request('GET', $tmhOAuth->url('1/statuses/user_timeline'),$params);
 				}
@@ -372,7 +372,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 				break;
 				if(isset($data['text']))
 				{
-					
+					if( !($data['source']=='web') )		//for converting the urls t.co into goo.gl
+					{
+						foreach($data['entities']['urls'] as $url)
+						{
+							$data['text'] = str_replace($url['url'],$url['expanded_url'],$data['text']);
+						}
+					}	
 					$status[$j]['comment'] =  $data['text'];
 					$status[$j]['timestamp'] = strtotime($data['created_at']);
 					
