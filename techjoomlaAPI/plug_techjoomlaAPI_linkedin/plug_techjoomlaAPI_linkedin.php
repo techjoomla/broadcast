@@ -205,6 +205,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	}
 	
 	function getToken($user=''){
+		$user=$this->user->id;
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;
@@ -314,8 +315,49 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		}
 		
 	}
+	function plug_techjoomlaAPI_linkedinsend_message($raw_mail,$invitee_data)
+	{
 	
-	function plug_techjoomlaAPI_linkedinsend_message($post)
+		foreach($invitee_data as $id=>$invitee_name)
+		 {
+					$invitee_email=$name.'|'.$id;
+
+					$query="select id from #__invitex_imports_emails
+											WHERE invitee_email='$invitee_email' order by id DESC LIMIT 1";
+					$this->db->setQuery($query);
+					$res=trim($this->db->loadResult());
+					$invite_id		=	md5($res);
+					
+					$mail	=	$this->buildPM($raw_mail,$invitee_name,$invite_id);
+					$msg_PM	=	$this->tagreplace($mail);
+					$send=0;
+					
+					
+					$data2=array();
+					$data2['message_subject']='Invitation from site '.$mail['sitename'];
+					$data2['message_body']=$msg_PM;
+					$data2['contacts'][0]=$id;
+						
+					$response=$this->send($data2);
+					
+					if($response)
+					{			
+					
+							$update_data =new stdClass();
+							$update_data->invitee_email=$invitee_email;
+							$update_data->sent = '1';
+							$update_data->sent_at = time();
+							$this->db->updateObject('#__invitex_imports_emails',$update_data,'invitee_email');
+					}
+					else
+					{
+						return -1;
+					}
+			}
+    return 1;
+	}
+		
+	function send($post)
 	{
 		$session = JFactory::getSession();	
 		if($session->get("['oauth']['linkedin']['authorized']",'') === TRUE)
@@ -348,17 +390,43 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				return $return;
 			
 			} 
-			
-            
     }
   }//end send message
- 
+ 	function buildPM($mail,$invitee_name,$invite_id)
+{
+		$mail['name']=$invitee_name;	
+		$mail['message_register']	=	JRoute::_(JURI::base()."index.php?option=com_invitex&task=sign_up&id=".$invite_id);
+		$url_join	=	JRoute::_(JURI::base()."index.php?option=com_invitex&task=sign_up&invite_anywhere=1&id={$invite_id}");
+		$mail['message_join']	=	$url_join;
+		$mail['message_unsubscribe']	=	$unreg_link=JRoute::_(JURI::base()."index.php?option=com_invitex&task=unSubscribe&id=".$invite_id);
+		return $mail;
+}
+function tagreplace($msg)
+{
+		$session = JFactory::getSession();
+		$message_body     =  stripslashes($msg['msg_body']);
+		$message_body	    =	 str_replace("[NAME]", $msg['name'],$message_body);
+		$message_body    	=	 str_replace("[AVATAR]",$msg['avatar'], $message_body);
+		$message_body    	=	 str_replace("[INVITER]", $msg['fromname'], $message_body);
+		$message_body	    =	 str_replace("[SITENAME]", $msg['sitename'], $message_body);
+		$message_body	    =	 str_replace("[SITELINK]", $msg['sitelink'], $message_body);
+		$message_body   	=	 str_replace("[MESSAGE]", $msg['message'], $message_body);
+		if(isset($msg['invitetypename']))
+		$message_body	    =	 str_replace("[INVITETYPENAME]", $msg['invitetypename'], $message_body);
+		$message_body	    =	 str_replace("[SUBSCRIBE]",$msg['message_register'], $message_body);
+		$message_body	    =	 str_replace("[JOIN]",$msg['message_join'], $message_body);
+		$message_body	    =	 str_replace("[UNSUBSCRIBE]", $msg['message_unsubscribe'], $message_body);
+		$message_body	    =	 str_replace("[PWIU]", $msg['ppl_who_have_invited_before'], $message_body);
+		$message_body	    =	 str_replace("[EXPIRYDAYS]", $msg['expiry'], $message_body);
+		$message_body	    =	 str_replace("[SITEURL]",JURI::base(), $message_body);
+		return $message_body;
+}
 	function plug_techjoomlaAPI_linkedingetstatus()
 	{  	
 		$i = 0;
 		$returndata = array();
 		$oauth_keys = $this->getToken(); 
-		$returndata=array(array());
+		
 		foreach($oauth_keys as $oauth_key){
 			
 			$oauth_token		 	= json_decode($oauth_key->token);
@@ -393,11 +461,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					$i++;
 			}
 		}
-		
-		if(!empty($returndata['0']))
 		return $returndata;
-		else
-		return;
 	}
   	function renderstatus($totalresponse)
   	{
