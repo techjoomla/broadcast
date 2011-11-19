@@ -12,15 +12,18 @@ jimport('joomla.plugin.plugin');
 
 // include the LinkedIn class
 if(JVERSION >='1.6.0')
-	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_linkedin'.DS.'plug_techjoomlaAPI_linkedin'.DS.'lib'.DS.'orkut.php');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'lib'.DS.'orkut.php');
 else
-	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_linkedin'.DS.'lib'.DS.'orkut.php');
-
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'lib'.DS.'orkut.php');
+require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'friends.php');
+require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'lib'.DS.'auth/auth.php');
+require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'globals.php');
+require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'scrap.php');
 $lang = & JFactory::getLanguage();
 $lang->load('plug_techjoomlaAPI_orkut', JPATH_ADMINISTRATOR);	
-class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
+class plgTechjoomlaAPIplug_techjoomlaAPI_orkut extends JPlugin
 { 
-	function plgTechjoomlaAPIplug_techjoomlaAPI_linkedin(& $subject, $config)
+	function plgTechjoomlaAPIplug_techjoomlaAPI_orkut(& $subject, $config)
 	{
 		parent::__construct($subject, $config);
 		$appKey	=& $this->params->get('appKey');
@@ -56,7 +59,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			return $plug;
 		}		
 		$plug['api_used']=$this->_name; 
-		$plug['message_type']='email';               
+		$plug['message_type']='pm';               
 		$plug['img_file_name']="orkut.png";   
 		if(isset($config['client']))
 		$client=$config['client'];
@@ -84,98 +87,43 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	function get_request_token($callback) 
 	{
 		$session = JFactory::getSession();
-		$this->linkedin->callbackUrl=$this->API_CONFIG['callbackUrl']= $callback.'&'.LinkedInAPI::_GET_RESPONSE.'=1'; 
-		try{
-		$this->linkedin = new LinkedInAPI($this->API_CONFIG);
-		}
-		catch(LinkedInException $e)
-		{ 
-			$this->raiseException($e->getMessage());
-			return false;
-		}
+		$this->API_CONFIG['callbackUrl']= $callback; 
 		
-		$_GET[LinkedInAPI::_GET_RESPONSE] = (isset($_GET[LinkedInAPI::_GET_RESPONSE])) ? $_GET[LinkedInAPI::_GET_RESPONSE] : ''; 
-		if(!$_GET[LinkedInAPI::_GET_RESPONSE])
-		{	
-			try{		
-			$response = $this->linkedin->retrieveTokenRequest();
-			}	
-			catch(LinkedInException $e)
-				{ 
-					$this->raiseException($e->getMessage());
-					return false;
-				}
-				
-			$return=$this->raiseLog($response,JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0);
-			
-			if($response['success'] === TRUE)
-			{
-				$cart['oauth'][][]=array();
-				$session->set("['oauth']['linkedin']['request']",$response['linkedin']);
-				$request_token=$session->get("['oauth']['linkedin']['request']");
-				
-				try{
-				header('Location:'.LinkedInAPI::_URL_AUTH.$request_token['oauth_token']);
-				}
-				catch(LinkedInException $e)
-				{ 
-					$this->raiseException($e->getMessage());
-					return false;
-				}
-				return true;
-			}
-			else
-			{
-				$return=$this->raiseException($response['linkedin']['oauth_problem']."<BR>".$response['error']);
-				return false;
-			}
-			return $return;
-				
-		}//end if
+		$orkutApi= new Orkut($this->API_CONFIG['appKey'], $this->API_CONFIG['appSecret']);
+		try {
+			$orkutApi->login($callback);
+			//print_r($orkutApi);die;
+		}
+		catch(Exception $e) {
+			//print_r($e);
+			$_SESSION['oauth_token']='';
+			$this->raiseException($e->getMessage());
+		}
+	
 		
 	}
+
 	
 	function get_access_token($get,$client,$callback) 
 	{
 	
 		$session = JFactory::getSession();
 		$this->API_CONFIG['callbackUrl']=NULL;
-		$this->linkedin = new LinkedInAPI($this->API_CONFIG);
-		
-		$get[LINKEDINAPI::_GET_RESPONSE] = (isset($get[LINKEDINAPI::_GET_RESPONSE])) ? $get[LINKEDINAPI::_GET_RESPONSE] : ''; 
-		if($get[LINKEDINAPI::_GET_RESPONSE])
+		if($get['oauth_token'])
 		{
-				try{
-				$request_token=$session->get("['oauth']['linkedin']['request']");
-				$response = $this->linkedin->retrieveTokenAccess($get['oauth_token'], $request_token['oauth_token_secret'], $get['oauth_verifier']);
-				}
-				catch(LinkedInException $e)
-				{ 
-					$this->raiseException($e->getMessage());
-					return false;
-				}
 				
-				$return=$this->raiseLog($response,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0);
-				if($response['success'] === TRUE)
-				{
-					
-				  $session->set("['oauth']['linkedin']['access']",$response['linkedin']);
-				  $session->set("['oauth']['linkedin']['authorized']",true);
-					  
-					$response_data['linkedin_oauth']		= json_encode($response['linkedin']);		
-					$response_data['linkedin_secret']	= $get['oauth_verifier'];
-					$this->store($client,$response_data);
-					
-				
-				}
-				else
-				{
-				$return=$this->raiseException($response['linkedin']['oauth_problem']."<BR>".$response['error']);
+				$session->set("['oauth']['orkut']['authorized']",true);
+				$_SESSION['oauth_token']=$response_data['orkut_oauth']		= $get['oauth_token'];		
+				$_SESSION['oauth_verifier']=$response_data['orkut_secret']	= $get['oauth_verifier'];
+				$this->store($client,$response_data);
+			
+				return true;
+		}
+		else
+		{
 				return false;
-				}
-				return $return;
-				
-			}
+		}
+
 	}
 
 	function store($client,$data) #TODO insert client also in db 
@@ -228,64 +176,71 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		$this->db->query();
 	}
 	
-	function plug_techjoomlaAPI_linkedinget_contacts() 
+	function plug_techjoomlaAPI_orkutget_contacts() 
 	{
+			JRequest::setVar('oauth_token',$_SESSION['oauth_token']);
+			JRequest::setVar('oauth_verifier',$_SESSION['oauth_verifier']);
 		$session = JFactory::getSession();
 		$this->API_CONFIG['callbackUrl']= JRoute::_(JURI::base().'index.php?option=com_invitex&view=invites&layout=apis');
-		
-		if($session->get("['oauth']['linkedin']['authorized']",'') === TRUE)
+		//print_r($_SESSION);die;
+		if($session->get("['oauth']['orkut']['authorized']",'') === TRUE)
     {
 			// user is already connected
 			try{
-				$this->linkedin = new LinkedInAPI($this->API_CONFIG);
-				$this->linkedin->setTokenAccess($session->get("['oauth']['linkedin']['access']",''));			
-				$response = $this->linkedin->connections('~/connections:(id,first-name,last-name,picture-url)');			
+						$orkutApi= new Orkut($this->API_CONFIG['appKey'], $this->API_CONFIG['appSecret']);
+						$orkutApi->login($this->API_CONFIG['callbackUrl']);
+						// create the instance and print the json output
+						$friends = new Friends($orkutApi);
+						$friends->fetchUsers();
+						$contacts=$friends->execute();
+						
 			}
 			catch(LinkedInException $e)
 			{ 
 				$this->raiseException($e->getMessage());
 				return false;
 			}
-			
-			$return=$this->raiseLog($response,JText::_('LOG_GET_CONTACTS'),$this->user->id,0);
-			if($response['success'] === TRUE)
+		
+			if($friends)
 			{
-				$connections = simplexml_load_string($response['linkedin']);
-				$contacts=array();
-				$contacts=$this->renderContacts($connections);
+				try{
+					$contacts=$this->renderContacts($contacts);
+				}
+				catch(Exception $e)
+				{ 
+					$this->raiseException($e->getMessage());
+					return false;
+				}
 				if(count($contacts)==0)
 				$this->raiseException(JText::_('NO_CONTACTS'));
-				
-				
 			} 
 			
     }
-  
-		return $contacts;
+  	return $contacts;
 	}
 	
 	function renderContacts($connections)
 	{
+
 		$mainframe=JFactory::getApplication();		
-		$conns = (array) $connections;
-		if(isset($conns['person']))
+		$conns = $connections[1]['friends'];
+		if($conns['data']['list'])
 		{
-				$conns = $conns['person'];
-		
+
+				$conns = $conns['data']['list'];
 				$count=0;
 				$r_connections=array();
-				if (array_key_exists("0",$conns))
-				{
+			
 					foreach($conns as $connection)
 					{
-						$connection  = (array) $connection;
+							
 						if($connection['id'])
 						{
 							$r_connections[$count]->id  =$connection['id'];
-							$r_connections[$count]->name =$connection['first-name'].' '.$connection['last-name'];
-							if(array_key_exists('picture-url',$connection))
+							$r_connections[$count]->name =$connection['displayName'];
+							if($connection['thumbnailUrl'])
 							{
-								$r_connections[$count]->picture_url=$connection['picture-url'];
+								$r_connections[$count]->picture_url=$connection['thumbnailUrl'];
 							}
 							else
 							{
@@ -293,66 +248,53 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 							}
 							$count++;
 						}
-					}
-				}
-				else//only 1 connection
-				{	
-					$connection  = (array) $conns;
-					if($connection['id'])
-					{
-						$r_connections[0]->id  =$connection['id'];
-						$r_connections[0]->first_name =$connection['first-name'].' '.$connection['last-name'];
-						if($connection['picture-url']	)
-						{
-							$r_connections[0]->picture_url=$connection['picture-url'];
-						}
 						else
-						{
-							$r_connections[0]->picture_url='';
-						}
+							continue;
 					}
-				}
 				return $r_connections;
 		}
 		
 	}
 	
-	function plug_techjoomlaAPI_linkedinsend_message($post)
+	function plug_techjoomlaAPI_orkutsend_message($raw_mail,$invitee_data,$cap)
 	{
-		$session = JFactory::getSession();	
-		if($session->get("['oauth']['linkedin']['authorized']",'') === TRUE)
-    {
-			if(!empty($post['contacts']))
-			{
-				$this->API_CONFIG['callbackUrl']=NULL;
-				$this->linkedin = new LinkedInAPI($this->API_CONFIG);
-				$this->linkedin->setTokenAccess($session->get("['oauth']['linkedin']['access']",''));
-				
-				if(!empty($post['message_copy']))
-				{
-					$copy = TRUE;
-				}
-				else
-				{
-					$copy = FALSE;
-				}
-				
-				try{
-				$response = $this->linkedin->message($post['contacts'], $post['message_subject'], $post['message_body'],$copy);
-				}
-				catch(LinkedInException $e)
-				{ 
-					$this->raiseException($e->getMessage());
-					return false;
-				}
-				
-				$return=$this->raiseLog($response,JText::_('LOG_SEND_MESSAGE'),$this->user->id,0);
-				return $return;
+		require(JPATH_SITE.DS.'components'.DS.'com_invitex'.DS.'config.php');
+	
+			JRequest::setVar('oauth_token',$_SESSION['oauth_token']);
+			JRequest::setVar('oauth_verifier',$_SESSION['oauth_verifier']);
+
+			//print_r($invitee_data);die;
+			$uids=array();
+			foreach($invitee_data as $id=>$invitee_name)
+		 	{
+					$uids[]=$id;	
+			}
+			$session = JFactory::getSession();	
 			
-			} 
+			if($session->get("['oauth']['orkut']['authorized']",'') === TRUE)
+    	{
+					if($uids)
+					{
+								
+									$this->API_CONFIG['callbackUrl']=NULL;
+						// message
+									$message = $invitex_settings['pm_message_body_no_replace'];
+						//log in
+									
+								$orkutApi= new Orkut($this->API_CONFIG['appKey'], $this->API_CONFIG['appSecret']);
+								$orkutApi->login($this->API_CONFIG['callbackUrl']);
+								// create the instance and print the json output
+						
+								$send_scrap = new Scrap($orkutApi);
+								if(isset($cap['tokencaptcha']) && $cap['tokencaptcha']!='' && isset($cap['textcaptcha']) && $cap['textcaptcha']!='')
+								{
+				        		$send_scrap->setCaptchaRequest($cap['tokencaptcha'], $cap['textcaptcha']);
+								}					
+							$resp	=	$send_scrap->send($uids, $message);
+							return $resp;
 			
-            
-    }
+					} 
+		}
   }//end send message
  
 	function plug_techjoomlaAPI_linkedingetstatus()
@@ -413,6 +355,28 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			} 
 	  	return $status;
 		}
+function getCaptchaURL($url)
+{
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'auth.php');
+
+
+	// modifying header, //since this file outputs a jpeg image.
+	// TODO - check incoming header, and sent it. If orkut changes captcha to another format, will break this code
+	header("content-type: image/jpeg");
+	ini_set('output_buffering ','off');
+	//output_buffering = Off;
+	// captcha url
+	$c = parse_url($url);
+	$cap=explode('=',$c['query']);
+	$captcha=$cap[1].'='.$cap[2];
+	//echo $captcha;die;
+	$orkutApi->login('http://'. $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+	$r = $orkutApi->executeCaptcha($captcha,'');
+	//return ($r['data']);
+print_r($r['data']);die;
+		//	return ($r['data']);
+} 
+	  	
 	function plug_techjoomlaAPI_linkedinsetstatus($userid,$comment='')
 	{
 	
