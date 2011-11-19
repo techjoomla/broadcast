@@ -258,8 +258,29 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		return $r_connections;
 	}
 	
-	function plug_techjoomlaAPI_facebooksend_message($post)
-	{
+	function plug_techjoomlaAPI_facebooksend_message($raw_mail,$invitee_data)
+	{	
+		foreach($invitee_data as $id=>$invitee_name)
+		 {
+			$inviteid[]=$id;	
+			}
+	
+		$inviteeidstr=implode(',',$inviteid);
+		$userid=md5($this->user->id);
+		$regurl= cominvitexHelper::getinviteURL();
+		
+		$parameters = array(
+		'app_id' => $this->facebook->getAppId(),
+		'to' => $inviteeidstr,
+		'link' => $regurl,
+		'redirect_uri' => JURI::base(),
+		'name'=>'This is the Subject',
+		'description'=>'This is the Message from Config'
+ 		);
+ 		
+		$url = 'http://www.facebook.com/dialog/send?'.http_build_query($parameters);
+		header('Location:'.$url);	
+		die;
 	
   }//end send message
   
