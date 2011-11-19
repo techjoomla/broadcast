@@ -260,6 +260,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	
 	function plug_techjoomlaAPI_facebooksend_message($raw_mail,$invitee_data)
 	{	
+		require(JPATH_SITE.DS.'components'.DS.'com_invitex'.DS.'config.php');
 		foreach($invitee_data as $id=>$invitee_name)
 		 {
 			$inviteid[]=$id;	
@@ -273,9 +274,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		'app_id' => $this->facebook->getAppId(),
 		'to' => $inviteeidstr,
 		'link' => $regurl,
-		'redirect_uri' => JURI::base(),
-		'name'=>'This is the Subject',
-		'description'=>'This is the Message from Config'
+		'redirect_uri' => JURI::base()."index.php?option=com_invitex&view=invites&fb_redirect=success",
+		'name'=>$invitex_settings['pm_message_body_no_replace_sub'],
+		'description'=>$invitex_settings['pm_message_body_no_replace']
  		);
  		
 		$url = 'http://www.facebook.com/dialog/send?'.http_build_query($parameters);
