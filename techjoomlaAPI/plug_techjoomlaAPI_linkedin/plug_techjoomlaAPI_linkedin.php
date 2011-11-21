@@ -328,8 +328,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					$res=trim($this->db->loadResult());
 					$invite_id		=	md5($res);
 					
-					$mail	=	$this->buildPM($raw_mail,$invitee_name,$invite_id);
-					$msg_PM	=	$this->tagreplace($mail);
+					$mail	=	cominvitexHelper::buildPM($raw_mail,$invitee_name,$invite_id);
+					$msg_PM	=	cominvitexHelper::tagreplace($mail);
 					$send=0;
 					
 					
@@ -392,35 +392,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			} 
     }
   }//end send message
- 	function buildPM($mail,$invitee_name,$invite_id)
-{
-		$mail['name']=$invitee_name;	
-		$mail['message_register']	=	JRoute::_(JURI::base()."index.php?option=com_invitex&task=sign_up&id=".$invite_id);
-		$url_join	=	JRoute::_(JURI::base()."index.php?option=com_invitex&task=sign_up&invite_anywhere=1&id={$invite_id}");
-		$mail['message_join']	=	$url_join;
-		$mail['message_unsubscribe']	=	$unreg_link=JRoute::_(JURI::base()."index.php?option=com_invitex&task=unSubscribe&id=".$invite_id);
-		return $mail;
-}
-function tagreplace($msg)
-{
-		$session = JFactory::getSession();
-		$message_body     =  stripslashes($msg['msg_body']);
-		$message_body	    =	 str_replace("[NAME]", $msg['name'],$message_body);
-		$message_body    	=	 str_replace("[AVATAR]",$msg['avatar'], $message_body);
-		$message_body    	=	 str_replace("[INVITER]", $msg['fromname'], $message_body);
-		$message_body	    =	 str_replace("[SITENAME]", $msg['sitename'], $message_body);
-		$message_body	    =	 str_replace("[SITELINK]", $msg['sitelink'], $message_body);
-		$message_body   	=	 str_replace("[MESSAGE]", $msg['message'], $message_body);
-		if(isset($msg['invitetypename']))
-		$message_body	    =	 str_replace("[INVITETYPENAME]", $msg['invitetypename'], $message_body);
-		$message_body	    =	 str_replace("[SUBSCRIBE]",$msg['message_register'], $message_body);
-		$message_body	    =	 str_replace("[JOIN]",$msg['message_join'], $message_body);
-		$message_body	    =	 str_replace("[UNSUBSCRIBE]", $msg['message_unsubscribe'], $message_body);
-		$message_body	    =	 str_replace("[PWIU]", $msg['ppl_who_have_invited_before'], $message_body);
-		$message_body	    =	 str_replace("[EXPIRYDAYS]", $msg['expiry'], $message_body);
-		$message_body	    =	 str_replace("[SITEURL]",JURI::base(), $message_body);
-		return $message_body;
-}
 	function plug_techjoomlaAPI_linkedingetstatus()
 	{  	
 		$i = 0;
