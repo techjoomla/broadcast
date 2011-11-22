@@ -12,13 +12,19 @@ jimport('joomla.plugin.plugin');
 
 // include the LinkedIn class
 if(JVERSION >='1.6.0')
+{
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'lib'.DS.'orkut.php');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'friends.php');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'lib'.DS.'auth/auth.php');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'scrap.php');
+}
 else
+{
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'lib'.DS.'orkut.php');
-require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'friends.php');
-require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'lib'.DS.'auth/auth.php');
-require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'globals.php');
-require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'scrap.php');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'friends.php');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'lib'.DS.'auth/auth.php');
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'scrap.php');
+}
 $lang = & JFactory::getLanguage();
 $lang->load('plug_techjoomlaAPI_orkut', JPATH_ADMINISTRATOR);	
 class plgTechjoomlaAPIplug_techjoomlaAPI_orkut extends JPlugin
@@ -258,16 +264,18 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_orkut extends JPlugin
 	
 	function plug_techjoomlaAPI_orkutsend_message($raw_mail,$invitee_data,$cap)
 	{
+			
 		require(JPATH_SITE.DS.'components'.DS.'com_invitex'.DS.'config.php');
 	
 			JRequest::setVar('oauth_token',$_SESSION['oauth_token']);
 			JRequest::setVar('oauth_verifier',$_SESSION['oauth_verifier']);
 
-			//print_r($invitee_data);die;
+			//print_r($raw_mail);die;
 			$uids=array();
 			foreach($invitee_data as $id=>$invitee_name)
 		 	{
-					$uids[]=$id;	
+					$invitee_email[]	= "'".$invitee_name.'|'.$id."'";
+					$uids[]	=	$id;	
 			}
 			$session = JFactory::getSession();	
 			
@@ -277,10 +285,24 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_orkut extends JPlugin
 					{
 								
 									$this->API_CONFIG['callbackUrl']=NULL;
-						// message
-									$message = $invitex_settings['pm_message_body_no_replace'];
-						//log in
-									
+									// message
+									if($session->get('invite_anywhere'))
+									{
+												$invitee_string=implode(',',$invitee_email);
+												$db				= JFactory::getDBO();
+												$user_id	=	JFactory::getUser()->id;
+												$query="select i.id from #__invitex_imports as i, #__invitex_imports_emails as ie
+																WHERE invitee_email IN($invitee_string) AND i.id=ie.import_id AND i.inviter_id=$user_id group by ie.import_id order by i.id DESC LIMIT 1";
+												$db->setQuery($query);
+												$import_id=trim($db->loadResult());
+												
+												$raw_mail['message_join']=cominvitexHelper::getIAinviteURL($import_id);
+									}
+									else
+									{
+										$raw_mail['message_register']=cominvitexHelper::getinviteURL();
+									}							
+									$message	=	cominvitexHelper::tagreplace($raw_mail);	
 								$orkutApi= new Orkut($this->API_CONFIG['appKey'], $this->API_CONFIG['appSecret']);
 								$orkutApi->login($this->API_CONFIG['callbackUrl']);
 								// create the instance and print the json output
@@ -357,11 +379,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_orkut extends JPlugin
 		}
 function getCaptchaURL($url)
 {
-	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'auth.php');
-
-
-	// modifying header, //since this file outputs a jpeg image.
-	// TODO - check incoming header, and sent it. If orkut changes captcha to another format, will break this code
 	header("content-type: image/jpeg");
 	ini_set('output_buffering ','off');
 	//output_buffering = Off;
@@ -370,6 +387,7 @@ function getCaptchaURL($url)
 	$cap=explode('=',$c['query']);
 	$captcha=$cap[1].'='.$cap[2];
 	//echo $captcha;die;
+	$orkutApi= new Orkut($this->API_CONFIG['appKey'], $this->API_CONFIG['appSecret']);
 	$orkutApi->login('http://'. $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
 	$r = $orkutApi->executeCaptcha($captcha,'');
 	//return ($r['data']);
