@@ -1,5 +1,7 @@
 <?php
-class cURL 
+if (!class_exists('CUrl'))
+ {
+class orkutcURL 
 {
 
 	private $headers;
@@ -101,5 +103,5 @@ class cURL
 		return $return;
 	}
 }
-
+}
 ?>

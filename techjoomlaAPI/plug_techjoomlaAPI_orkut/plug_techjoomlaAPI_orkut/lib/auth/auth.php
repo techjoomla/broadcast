@@ -66,7 +66,7 @@ function getKeys($url, $user, $pass)
     $cookieFile=g_base_dir.'/cookies.txt';
     unlink($cookieFile);
     
-    $curl = new cURL($cookieFile);
+    $curl = new orkutcURL($cookieFile);
     $r = $curl->get($url);
 
 
