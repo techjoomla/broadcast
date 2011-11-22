@@ -24,7 +24,7 @@ class CurlRequest {
 		}
 
 		// We need to set method even when we don't have a $postBody 'DELETE'
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+		//curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_USERAGENT, $ua);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
@@ -83,10 +83,10 @@ class OrkutAuth {
 	const REST_ENDPOINT = 'http://sandbox.orkut.com/social/rest/';
 
 	/* production */
-	const RPC_ENDPOINT = 'http://www.orkut.com/social/rpc';
+//	const RPC_ENDPOINT = 'http://www.orkut.com/social/rpc/';
 	protected $oauthRequestTokenParams = array('scope' => 'http://orkut.gmodules.com/social/');
 
-
+const RPC_ENDPOINT = 'http://sandbox.orkut.com/social/rpc';
 	/** sandbox 
 	const RPC_ENDPOINT = 'http://sandbox.orkut.com/social/rpc';
 	protected $oauthRequestTokenParams = array('scope' => 'http://sandbox.orkut.gmodules.com/social');
@@ -109,8 +109,9 @@ class OrkutAuth {
 	 * 3- some parameters are passed on url, which we use to get an access token. This access token will allow us to call RPC methods.
 	 * 4- after getting access token, redirect back to the url which originally sent the auth process.
 	 */
-	public function login() {
+	public function login($callback) {
 		// do we have an active token in the session ?
+		//print_r($_GET);die;
 		if($this->getAccessToken()!=null) {	
 			$this->accessToken = $this->getAccessToken();
 		}
@@ -120,7 +121,7 @@ class OrkutAuth {
 			if(!isset($_GET['oauth_verifier']) && !isset($_GET['oauth_token'])) {
 
 				//setup the callback url, so we can go back further
-				$callbackUrl = 'http://'. $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+				 $callbackUrl = $callback;
 
 				// get request token
         			$token = $this->obtainRequestToken($callbackUrl);
@@ -187,7 +188,7 @@ class OrkutAuth {
 		}
 	}
 
-	protected function requestAccessToken($requestToken, $requestTokenSecret) {
+	public function requestAccessToken($requestToken, $requestTokenSecret) {
 
 		$accessToken = new OAuthConsumer($requestToken, $requestTokenSecret);
 		$accessRequest = OAuthRequest::from_consumer_and_token($this->consumerToken, $accessToken, 'GET', self::ACCESS_TOKEN_URL, array());
@@ -201,14 +202,14 @@ class OrkutAuth {
 	
 
 	// need to improve this function, allowing to read from other sources.
-	protected function getAccessToken() {
+	public function getAccessToken() {
 		if(isset($_SESSION["oauth_token"]))
 			return unserialize($_SESSION["oauth_token"]);
 		else
 			return null;
 	}
 
-	protected function obtainRequestToken($callbackUrl) {
+	public function obtainRequestToken($callbackUrl) {
 
 		$ret = $this->requestRequestToken($callbackUrl);
 
@@ -228,7 +229,7 @@ class OrkutAuth {
 		}
 	}
 
-	protected function requestRequestToken($callbackUrl) {
+	public function requestRequestToken($callbackUrl) {
 		$requestTokenRequest = OAuthRequest::from_consumer_and_token($this->consumerToken, NULL, "GET", self::REQUEST_TOKEN_URL, $this->oauthRequestTokenParams);
 
 		foreach($this->oauthRequestTokenParams as $key => $value) {	
