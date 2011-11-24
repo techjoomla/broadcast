@@ -2,17 +2,10 @@
 
 defined('_JEXEC') or die( 'Restricted access' );
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_community'.DS.'libraries'.DS.'core.php');
 require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 
 $document = &JFactory::getDocument();
-
-$document->addScript( JURI::base().'components/com_community/assets/'.'jquery-1.3.2.pack.js' );
-$document->addScript( JURI::base().'components/com_community/assets/'.'joms.jquery.js' );
-$document->addScript( JURI::base().'components/com_community/assets/validate-1.5.js' );
 $document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css' );
-
-
 
 $session =& JFactory::getSession();
 
