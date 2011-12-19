@@ -93,6 +93,12 @@ class combroadcastHelper
 		$act->app 	= $api;
 		$act->cid 	= $cid;
 		CFactory::load('libraries', 'activities');
+		$command = $api.'.myaction';
+		$act->comment_type  = $command;
+		$act->comment_id    = CActivities::COMMENT_SELF;
+		
+		$act->like_type     = $command;
+		$act->like_id     = CActivities::LIKE_SELF;		
 		CActivityStream::add($act);
 	}
 	#set the current Jomsocial status, called from broadcast & rss models 
