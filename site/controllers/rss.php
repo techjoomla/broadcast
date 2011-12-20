@@ -54,31 +54,34 @@ class BroadcastControllerrss extends JController
 				$params = new JParameter('');
 				$params->set('rssurl', trim($link));
 				try{
-					$feed = modFeedHelper::getFeed($params);
-					if(!$feed) 
-					 continue;   
-					      
-					for ($j = 0; $j < 5; $j ++)
-					{					
-						$currItem = & $feed->items[$j];      
-						if ( !is_null( $currItem->get_link() ) ) 
-						{       
-							$statuslog=$currItem->get_title();
-						 	if($statuslog != "")
-						 	{                
-								if(!combroadcastHelper::checkexist($statuslog,$userid,'rss'))
-								{
-									$model->rssstore($userid,$currItem);
+						$feed = modFeedHelper::getFeed($params);
+						if(!$feed) 
+						 continue;   
+								  
+						for ($j = 0; $j < 5; $j ++)
+						{	
+								if(!empty($feed->items[$j]))
+								{				
+									$currItem = & $feed->items[$j];      
+									if ( !is_null( $currItem->get_link() ) ) 
+									{       
+										$statuslog=$currItem->get_title();
+									 	if($statuslog != "")
+									 	{                
+											if(!combroadcastHelper::checkexist($statuslog,$userid,'rss'))
+											{
+												$model->rssstore($userid,$currItem);
+											}
+										 }
+											echo "\n";
+									}
 								}
-							 }
-						  	echo "\n";
 						}
-					}
 				}catch(Exception $e){echo 'Caught exception: '.$e->getMessage(); "\n";}
 	
 			}//for each link
 			
-		}
+		}//foreach
 	}
 
 }//class

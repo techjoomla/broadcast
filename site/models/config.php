@@ -34,8 +34,14 @@ class BroadcastModelconfig extends JModel
 		if(!$user->id)		
 			return false;
 			
+		if($data['broadcast_activity'])
 		$broadcast_activity = implode('|', $data['broadcast_activity']); 
+		else
+		$broadcast_activity ='';
+		if($data['rss_link'])
 		$rss_link 			= implode('|', $data['rss_link']);
+		else
+		$rss_link 			='';
 				
 		$row->broadcast_activity_config = $broadcast_activity;
 		$row->broadcast_rss_url = $rss_link;		

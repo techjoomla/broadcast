@@ -144,7 +144,7 @@ if(!$user->id){
 		<script type="text/javascript">
 			var latestId = counter+1;
 			function addNewItem() {
-				if(counter>limit){
+				if(parseInt(counter)>parseInt(limit)){
 	        	    alert("<?php echo JText::sprintf('LIMIT_RSS',$broadcast_config['rss_link_limit']);?>");
 				}
 				else{
