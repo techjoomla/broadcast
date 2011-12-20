@@ -30,8 +30,17 @@ class combroadcastHelper
 	function addtoQueue($userid,$message,$date,$count,$interval,$media='',$supplier,$short){
 		if($short==1)	// replacement of url in message with short url	
 			$message = combroadcastHelper::givShortURL($message);
-		combroadcastHelper::inQueue($userid,$message,$count,$interval,$supplier,$media);
-		combroadcastHelper::intempAct($userid,$message,$date);
+		if(is_array($userid) )
+		{
+			foreach($userid as $id){
+				combroadcastHelper::inQueue($id,$message,$count,$interval,$supplier,$media);
+				combroadcastHelper::intempAct($id,$message,$date);
+			}
+		}
+		else{
+			combroadcastHelper::inQueue($userid,$message,$count,$interval,$supplier,$media);		
+			combroadcastHelper::intempAct($userid,$message,$date);
+		}
 		return true;
 	}
 	#inQueue function called from plugin as well can be called from custom place	
