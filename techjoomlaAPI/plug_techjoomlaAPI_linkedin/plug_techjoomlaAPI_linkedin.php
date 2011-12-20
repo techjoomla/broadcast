@@ -315,6 +315,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		}
 		
 	}
+	
 	function plug_techjoomlaAPI_linkedinsend_message($raw_mail,$invitee_data)
 	{
 	require(JPATH_SITE.DS.'components'.DS.'com_invitex'.DS.'config.php');
@@ -395,7 +396,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			} 
     }
   }//end send message
-
+  
 	function plug_techjoomlaAPI_linkedingetstatus()
 	{  	
 		$i = 0;
@@ -537,8 +538,46 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	}
 	
 	
-	function plug_techjoomlaAPI_linkedinget_profile()
+	function plug_techjoomlaAPI_linkedinget_profile($integr_with,$client,$callback)
 	{
+		$session = JFactory::getSession();	
+				
+		$mapData[0]		=& $this->params->get('mapping_field_0');	//joomla		
+		$mapData[1]		=& $this->params->get('mapping_field_1'); //jomsocial
+		$mapData[2]		=& $this->params->get('mapping_field_2'); //cb
+
+		
+		try{
+				$this->linkedin = new LinkedInAPI($this->API_CONFIG);
+				$this->linkedin->setTokenAccess($session->get("['oauth']['linkedin']['access']",''));			
+				require_once(JPATH_SITE.DS.'components/com_profileimport/helper.php');
+				if($integr_with==0)
+					$mapping_field = $this->params->get('mapping_field_0'); 
+				if($integr_with==1)
+					$mapping_field = $this->params->get('mapping_field_1'); 
+				if($integr_with==2)
+					$mapping_field = $this->params->get('mapping_field_2'); 
+		
+				$mapping_fieldParams=comprofileimportHelper::RenderParamsprofileimport($mapping_field);
+				
+				$linkfinal=array('id','first-name','last-name','picture-url','location','current-status','interests','educations','phone-numbers','date-of-birth','main-address','headline','summary','positions');
+				//$linkfinal=array_intersect($linkarr, $mapping_fieldParams);
+				$mapping_fieldParamstrr=implode(',',$linkfinal);
+				$profileFields='~:('.$mapping_fieldParamstrr.')';
+				//$profileFields='~:(id,first-name,last-name,picture-url,location,current-status,interests,educations,phone-numbers,date-of-birth,main-address,headline,summary,positions)';
+				$profileData = $this->linkedin->profile($profileFields);	
+				if($profileData)
+				{
+					$profileDetails['profileData']=$profileData;	
+					$profileDetails['mapData']		=$mapData;
+					return $profileDetails;
+				}
+		}
+		catch(LinkedInException $e)
+		{ 
+			$this->raiseException($e->getMessage());
+			return false;
+		}
 
   }
 }//end class
