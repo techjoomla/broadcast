@@ -46,11 +46,13 @@ class plgCommunityjomsocialbroadcast extends CApplications
 			$title=$this->tag_replace($bc_activity->actor,$bc_activity->target,$bc_activity->created,$bc_activity);
 			
 			require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
-			if(isset($broadcast_config['user_ids']) || $broadcast_config['user_ids'] != '' || !($broadcast_config['user_ids']) )
+			if(isset($broadcast_config['user_ids']) || $broadcast_config['user_ids'] != '' || ($broadcast_config['user_ids']) )
 			{
 				$userids = $broadcast_config['user_ids'];
 				$userid_arr = explode(',', $userids);
-				array_push($userid_arr, $user->id);
+				if( !( in_array($user->id, $userid_arr) )  )
+					array_push($userid_arr, $user->id);
+					
 				combroadcastHelper::addtoQueue($userid_arr, $title, date('Y-m-d H:i:s',time()),1,0,'','com_community',1);
 			}
 			else

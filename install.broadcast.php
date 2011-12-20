@@ -6,7 +6,7 @@ jimport('joomla.filesystem.file');
 
 
 $db = & JFactory::getDBO();
-$condtion = array(0 => '\'community\'',0 => '\'techjoomlaAPI\'');
+$condtion = array(0 => '\'community\'',1 => '\'techjoomlaAPI\'' ,2 => '\'content\'',3 => '\'k2\'',4 => '\'docman\'',5 => '\'easybolg\'',6 => '\'flexicontent_fields\'');
 $condtionatype = join(',',$condtion);
 if(JVERSION >= '1.6.0')
 {
@@ -137,6 +137,122 @@ if (!in_array("plug_techjoomlaAPI_twitter", $status)) {
 else
 {
 	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_("Techjoomla's Twitter API plugin installed").'</span>'; 	
+}
+
+//install broadcast_external plugins
+//bradcast_content
+$installer = new JInstaller;
+$result = $installer->install($install_source.DS.'broadcast_extensions'.DS.'broadcast_content');
+if (!in_array("broadcast_content", $status)) {
+	if(JVERSION >= '1.6.0')
+	{
+		$query = "UPDATE #__extensions SET enabled=0 WHERE element='broadcast_content' AND folder='content'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	else
+	{
+		$query = "UPDATE #__plugins SET published=0 WHERE element='broadcast_content' AND folder='content'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_("Broadcast content plugin installed and").'</span><span style="font-weight:bold; color:red;">'.JText::_(" Not published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_("Broadcast_content plugin not installed").'</span>'; 	
+}
+else
+{
+	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_("Broadcast content plugin installed").'</span>'; 	
+}
+
+//Broadcastdocman
+$installer = new JInstaller;
+$result = $installer->install($install_source.DS.'broadcast_extensions'.DS.'broadcastdocman');
+if (!in_array("Broadcastdocman", $status)) {
+	if(JVERSION >= '1.6.0')
+	{
+		$query = "UPDATE #__extensions SET enabled=0 WHERE element='broadcastdocman' AND folder='docman'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	else
+	{
+		$query = "UPDATE #__plugins SET published=0 WHERE element='broadcastdocman' AND folder='docman'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_("Broadcast Docman plugin installed and").'</span><span style="font-weight:bold; color:red;">'.JText::_(" Not published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_("Broadcast Docman plugin not installed").'</span>'; 	
+}
+else
+{
+	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_("Broadcast Docman plugin installed").'</span>'; 	
+}
+
+//Broadcastdocman
+$installer = new JInstaller;
+$result = $installer->install($install_source.DS.'broadcast_extensions'.DS.'broadcasteasyblog');
+if (!in_array("broadcasteasyblog", $status)) {
+	if(JVERSION >= '1.6.0')
+	{
+		$query = "UPDATE #__extensions SET enabled=0 WHERE element='broadcasteasyblog' AND folder='easyblog'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	else
+	{
+		$query = "UPDATE #__plugins SET published=0 WHERE element='broadcasteasyblog' AND folder='easyblog'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_("Broadcast Easyblog plugin installed and").'</span><span style="font-weight:bold; color:red;">'.JText::_(" Not published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_("Broadcast Easyblog plugin not installed").'</span>'; 	
+}
+else
+{
+	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_("Broadcast Easyblog plugin installed").'</span>'; 	
+}
+
+//broadcastflexicontent
+$installer = new JInstaller;
+$result = $installer->install($install_source.DS.'broadcast_extensions'.DS.'broadcastflexicontent');
+if (!in_array("broadcastflexicontent", $status)) {
+	if(JVERSION >= '1.6.0')
+	{
+		$query = "UPDATE #__extensions SET enabled=0 WHERE element='broadcastflexicontent' AND folder='flexicontent_fields'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	else
+	{
+		$query = "UPDATE #__plugins SET published=0 WHERE element='broadcastflexicontent' AND folder='flexicontent_fields'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_("Broadcast Flexicontent plugin installed and").'</span><span style="font-weight:bold; color:red;">'.JText::_(" Not published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_("Broadcast Flexicontent plugin not installed").'</span>'; 	
+}
+else
+{
+	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_("Broadcast Flexicontent plugin installed").'</span>'; 	
+}
+
+//broadcastk2
+$installer = new JInstaller;
+$result = $installer->install($install_source.DS.'broadcast_extensions'.DS.'broadcastk2');
+if (!in_array("broadcastk2", $status)) {
+	if(JVERSION >= '1.6.0')
+	{
+		$query = "UPDATE #__extensions SET enabled=0 WHERE element='broadcastk2' AND folder='k2'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	else
+	{
+		$query = "UPDATE #__plugins SET published=0 WHERE element='broadcastk2' AND folder='k2'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_("Broadcast K2 plugin installed and").'</span><span style="font-weight:bold; color:red;">'.JText::_(" Not published").'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_("Broadcast K2 plugin not installed").'</span>'; 	
+}
+else
+{
+	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_("Broadcast K2 plugin installed").'</span>'; 	
 }
 
 function com_install()

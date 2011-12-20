@@ -7,6 +7,7 @@ $broadcast_config = array(
 'purgelimit' => '50',
 'show_status_rss' => '0',
 'rss_link_limit' => '3',
-'private_key_cronjob' => '1234'
+'private_key_cronjob' => '1234',
+'user_ids'=> ''
 )
 ?>
