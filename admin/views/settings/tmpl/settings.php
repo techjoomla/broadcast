@@ -124,7 +124,17 @@ else
 			</select>
 			</td>
 		</tr>
-		
+		<tr>
+			<td align="left" width="10%"><?php echo JHTML::tooltip(JText::_('DEFAULT_USERS_DES'), JText::_('DEFAULT_USERS'), '', JText::_('DEFAULT_USERS'));?></td>
+			<td width="90%">
+			<input type="text" class="inputbox " name="data[user_ids]" width="90%" value="<?php
+			if(!empty($broadcast_config['user_ids']))
+				echo $broadcast_config['user_ids'];
+			else
+				echo '';
+			 ?>"  >
+			</td>
+		</tr>
 		<tr>
 			<td align="left" width="10%"><?php echo JHTML::tooltip(JText::_('STATUS_SKIP_CHARACTER_DES'), JText::_('STATUS_SKIP_CHARACTER'), '', JText::_('STATUS_SKIP_CHARACTER'));?></td>
 			<td width="90%">
