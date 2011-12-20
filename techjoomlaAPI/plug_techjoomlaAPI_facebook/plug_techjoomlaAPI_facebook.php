@@ -306,6 +306,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	
   }//end send message
   
+  
   function plug_techjoomlaAPI_facebookgetstatus()
 	{ 
 		$oauth_keys =array();
@@ -454,9 +455,30 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		return true;	
 	}
 	
-	function plug_techjoomlaAPI_facebookget_profile()
+	function plug_techjoomlaAPI_facebookget_profile($integr_with,$client,$callback)
 	{
+			
+			$mapData[0]		=& $this->params->get('mapping_field_0');	//joomla		
+			$mapData[1]		=& $this->params->get('mapping_field_1'); //jomsocial
+			$mapData[2]		=& $this->params->get('mapping_field_2'); //cb
+			
+		try{			
+			$profileData= $this->facebook->api('/me');
+			$profileData['picture-url']='https://graph.facebook.com/'.$profileData['id'].'/picture';
+		} 
+		catch (FacebookApiException $e) 
+		{
+			$response=$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
+			return false;
+		}
 
+		if($profileData)
+		{
+			$profileDetails['profileData']=$profileData;	
+			$profileDetails['mapData']=$mapData;
+			return $profileDetails;
+		}
+			
   }
 
 }//end class
