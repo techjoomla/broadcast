@@ -63,7 +63,7 @@ class plgFlexicontent_fieldsbroadcastflexicontent extends JPlugin
 			$date = $item->publish_up;
 	        $count = 1;
 	        $interval = 0;
-	        $supplier = 'flexicontent_plugin';
+	        $supplier = 'Flexicontent_plugin';
 	        $shorten_url = 1;
 			combroadcastHelper::addtoQueue($userid_arr,$msg_str,$date,$count,$interval,'',$supplier,$shorten_url); 	
    		   }

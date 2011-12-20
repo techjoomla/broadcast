@@ -84,7 +84,7 @@ class plgContentBroadcast_content extends JPlugin
 			$date = $article->publish_up;
 	        $count = 1;
 	        $interval = 0;
-	        $supplier = 'content_plugin';
+	        $supplier = 'Joomlacontent_plugin';
 	        $shorten_url = 1;
 			combroadcastHelper::addtoQueue($userid_arr,$msg_str,$date,$count,$interval,'',$supplier,$shorten_url);
 		}
