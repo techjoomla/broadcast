@@ -39,12 +39,13 @@
 		<menu link="option=com_broadcast" img="components/com_broadcast/images/broadcast16x16.png">COM_BROADCAST</menu>
 		<files folder="admin">
 			<folder>sql</folder>
-			<folder>config</folder>	
+			<folder>config</folder>
+			<folder>plugins</folder>	
 			<folder>controllers</folder>	
 			<folder>css</folder>	
 			<folder>images</folder>	
 			<folder>models</folder>	
-			<folder>views</folder>				
+			<folder>views</folder>	
 			<file>admin.broadcast.php</file>
 			<file>controller.php</file>
 			<file>index.html</file>	
