@@ -325,7 +325,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 				else
 				$twitter_profile_limit=2;
 
-				$params = array('include_entities'=>true,'count'=>$twitter_profile_limit,'user_id'=>$token['user_id'],'screen_name'=>$token['screen_name']);
+				$params = array('count'=>$twitter_profile_limit,'user_id'=>$token['user_id'],'screen_name'=>$token['screen_name']);
 				try{
 				$tmhOAuth->request('GET', $tmhOAuth->url('1/statuses/user_timeline'),$params);
 				}
@@ -357,7 +357,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		return;
 			
 	}
-	
 	function renderstatus($response)
 	{
 		
@@ -488,12 +487,43 @@ function raiseException($exception,$userid='',$display=1,$params=array())
 		return true;	
 	}
 	
-	function plug_techjoomlaAPI_twitterget_profile()
+	function plug_techjoomlaAPI_twitterget_profile($integr_with,$client,$callback)
 	{
-		$session = JFactory::getSession();
-		$acces_token = $session->get("['oauth']['twitter']['access']",'');	
+		$session = JFactory::getSession();		
+		$mapData[0]		=& $this->params->get('mapping_field_0');	//joomla		
+		$mapData[1]		=& $this->params->get('mapping_field_1'); //jomsocial
+		$mapData[2]		=& $this->params->get('mapping_field_2'); //cb
+		
+		$token = $session->get("['oauth']['twitter']['access']",'');	
+		$tmhOAuth = new tmhOAuth(array(
+				'consumer_key'    => $this->appKey,
+				'consumer_secret' => $this->appSecret,
+				'user_token'      => $token['oauth_token'],
+				'user_secret'     => $token['oauth_token_secret']));
+				
+			$params=array();
+			$connection=array();
+		
+		$oauth_key = $this->getToken();
+		
+		if(!$oauth_key)
+		return false;
+		else
+		$token =json_decode($oauth_key[0]->token,true);		
+   	$params = array('user_id'=>$token['user_id'],'screen_name'=>$token['screen_name']);	
+  	$data = $tmhOAuth->request('GET', $tmhOAuth->url('1/users/show'),$params);
+  	$profileData=json_decode($tmhOAuth->response['response'],true);	
+		
+		if($profileData)
+		{
+			$profileDetails['profileData']=$profileData;
+			$profileDetails['mapData']=$mapData;
+			return $profileDetails;
+		}
+
 
   }
+  
   
 	
 	
