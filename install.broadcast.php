@@ -140,6 +140,7 @@ else
 }
 
 //install broadcast_external plugins
+echo '<br/><br/><span style="font-weight:bold;">'.JText::_('Installing Extensions Intregration plugins:').'</span>';
 //bradcast_content
 $installer = new JInstaller;
 $result = $installer->install($install_source.DS.'broadcast_extensions'.DS.'broadcast_content');
