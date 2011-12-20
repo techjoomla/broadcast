@@ -12,9 +12,15 @@ jimport('joomla.plugin.plugin');
 
 // include the LinkedIn class
 if(JVERSION >='1.6.0')
-	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_googleplus'.DS.'plug_techjoomlaAPI_googleplus'.DS.'lib'.DS.'googleplus.php');
+{
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_googleplus'.DS.'plug_techjoomlaAPI_googleplus'.DS.'lib'.DS."apiClient.php");
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_googleplus'.DS.'plug_techjoomlaAPI_googleplus'.DS.'lib'.DS."contrib".DS."apiPlusService.php");
+}
 else
-	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_googleplus'.DS.'lib'.DS.'googleplus.php');
+{
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_googleplus'.DS.'lib'.DS."apiClient.php");
+	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_googleplus'.DS.'lib'.DS."contrib".DS."apiPlusService.php");
+}
 
 $lang = & JFactory::getLanguage();
 $lang->load('plug_techjoomlaAPI_googleplus', JPATH_ADMINISTRATOR);	
@@ -22,20 +28,28 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 { 
 	function plgTechjoomlaAPIplug_techjoomlaAPI_googleplus(& $subject, $config)
 	{
+		
 		parent::__construct($subject, $config);
-		$appKey	=& $this->params->get('appKey');
-		$appSecret	=& $this->params->get('appSecret');
+		$this->appKey	=& $this->params->get('appKey');
+		$this->appSecret	=& $this->params->get('appSecret');
+		$this->developerKey=& $this->params->get('developerKey');
+		
 		$this->callbackUrl='';
 		$this->errorlogfile='googleplus_error_log.php';
 		$this->user =& JFactory::getUser();
-		
 		$this->db=JFactory::getDBO();
-		$this->API_CONFIG=array(
-		'appKey'       => $appKey,
-		'appSecret'    => $appSecret,
-		'callbackUrl'  => NULL 
-		);
-		$this->googleplus = new LinkedInAPI($this->API_CONFIG);
+		$this->client = new apiClient();
+		$this->client->setApplicationName("Google+ PHP Starter Application");
+		
+		 $this->client->setClientId($this->appKey);
+ 		$this->client->setClientSecret($this->appSecret);
+ 		$this->client->setDeveloperKey($this->developerKey);
+ 
+ 		
+		$this->client->setScopes(array('https://www.googleapis.com/auth/plus.me'));
+		$this->plus = new apiPlusService($this->client);
+
+		
 		}
 	
 	/*
@@ -49,7 +63,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 		$plug=array(); 
    	$plug['name']="Googleplus";
   	//check if keys are set
-		if($this->API_CONFIG['appKey']=='' || $this->API_CONFIG['appSecret']=='' || !in_array($this->_name,$config)) #TODO add condition to check config
+		if($this->appKey=='' || $this->appSecret=='' || $this->developerKey==''  )// || !in_array($this->_name,$config)) #TODO add condition to check config
 		{	
 			$plug['error_message']=true;		
 			return $plug;
@@ -72,7 +86,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 	
 	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE user_id = {$this->user->id}  AND api='{$this->_name}'".$where;
 		$this->db->setQuery($query);
-		$result	= $this->db->loadResult();		
+		$result	= $this->db->loadResult();	
+		//print_r();die;
 		if ($result)
 			return 1;
 		else
@@ -82,99 +97,32 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 	
 	function get_request_token($callback) 
 	{
+		
 		$session = JFactory::getSession();
-		$this->googleplus->callbackUrl=$this->API_CONFIG['callbackUrl']= $callback.'&'.LinkedInAPI::_GET_RESPONSE.'=1'; 
-		try{
-		$this->googleplus = new LinkedInAPI($this->API_CONFIG);
-		}
-		catch(LinkedInException $e)
-		{ 
-			$this->raiseException($e->getMessage());
-			return false;
-		}
-		
-		$_GET[LinkedInAPI::_GET_RESPONSE] = (isset($_GET[LinkedInAPI::_GET_RESPONSE])) ? $_GET[LinkedInAPI::_GET_RESPONSE] : ''; 
-		if(!$_GET[LinkedInAPI::_GET_RESPONSE])
-		{	
-			try{		
-			$response = $this->googleplus->retrieveTokenRequest();
-			}	
-			catch(LinkedInException $e)
-				{ 
-					$this->raiseException($e->getMessage());
-					return false;
-				}
-				
-			$return=$this->raiseLog($response,JText::_('LOG_GET_REQUEST_TOKEN'),$this->user->id,0);
-			
-			if($response['success'] === TRUE)
-			{
-				$cart['oauth'][][]=array();
-				$session->set("['oauth']['googleplus']['request']",$response['googleplus']);
-				$request_token=$session->get("['oauth']['googleplus']['request']");
-				
-				try{
-				header('Location:'.LinkedInAPI::_URL_AUTH.$request_token['oauth_token']);
-				}
-				catch(LinkedInException $e)
-				{ 
-					$this->raiseException($e->getMessage());
-					return false;
-				}
-				return true;
-			}
-			else
-			{
-				$return=$this->raiseException($response['googleplus']['oauth_problem']."<BR>".$response['error']);
-				return false;
-			}
-			return $return;
-				
-		}//end if
-		
+		$this->client->setRedirectUri($callback);
+		$authUrl =  $this->client->createAuthUrl();
+		header('Location:'.$authUrl);
 	}
 	
 	function get_access_token($get,$client,$callback) 
 	{
-	
+		$_SESSION['access_token']='';
+		$this->client->setRedirectUri($callback);
 		$session = JFactory::getSession();
-		$this->API_CONFIG['callbackUrl']=NULL;
-		$this->googleplus = new LinkedInAPI($this->API_CONFIG);
-		
-		$get[LINKEDINAPI::_GET_RESPONSE] = (isset($get[LINKEDINAPI::_GET_RESPONSE])) ? $get[LINKEDINAPI::_GET_RESPONSE] : ''; 
-		if($get[LINKEDINAPI::_GET_RESPONSE])
-		{
-				try{
-				$request_token=$session->get("['oauth']['googleplus']['request']");
-				$response = $this->googleplus->retrieveTokenAccess($get['oauth_token'], $request_token['oauth_token_secret'], $get['oauth_verifier']);
-				}
-				catch(LinkedInException $e)
-				{ 
-					$this->raiseException($e->getMessage());
-					return false;
-				}
-				
-				$return=$this->raiseLog($response,JText::_('LOG_GET_ACCESS_TOKEN'),$this->user->id,0);
-				if($response['success'] === TRUE)
-				{
-					
-				  $session->set("['oauth']['googleplus']['access']",$response['googleplus']);
-				  $session->set("['oauth']['googleplus']['authorized']",true);
-					  
-					$response_data['googleplus_oauth']		= json_encode($response['googleplus']);		
-					$response_data['googleplus_secret']	= $get['oauth_verifier'];
-					$this->store($client,$response_data);
-					
-				
-				}
-				else
-				{
-				$return=$this->raiseException($response['googleplus']['oauth_problem']."<BR>".$response['error']);
-				return false;
-				}
-				return $return;
-				
+		if (isset($get['code'])) {
+			$response=$this->client->authenticate();
+			$_SESSION['access_token'] = $this->client->getAccessToken();
+			if($_SESSION['access_token'])		
+			{
+			$this->store($client,$_SESSION['access_token']);
+
+			return true;
 			}
+			else
+			return false;
+  	}
+		
+		
 	}
 
 	function store($client,$data) #TODO insert client also in db 
@@ -205,6 +153,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 	}
 	
 	function getToken($user=''){
+		$user=$this->user->id;
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;
@@ -353,46 +302,12 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
     }
   }//end send message
  
+ 
 	function plug_techjoomlaAPI_googleplusgetstatus()
 	{  	
-		$i = 0;
-		$returndata = array();
-		$oauth_keys = $this->getToken(); 
 		
-		foreach($oauth_keys as $oauth_key){
 			
-			$oauth_token		 	= json_decode($oauth_key->token);
-			$oauth_token_arr	=	json_decode($oauth_token->googleplus_oauth);
-			try{
-			$this->googleplus->retrieveTokenRequest();
-			$this->API_CONFIG['callbackUrl']=NULL;
-			$oauth_token_arr1=JArrayHelper::fromObject($oauth_token_arr);
-			$this->googleplus->setTokenAccess($oauth_token_arr1);	
-			if($this->params->get('broadcast_limit'))
-			$googleplus_profile_limit=$this->params->get('broadcast_limit');
-			else
-			$googleplus_profile_limit=2;
-			$options='&type=SHAR&format=json&count='.$googleplus_profile_limit;
-			
-			$response_updates = $this->googleplus->updates($options);
-			}
-			catch(LinkedInException $e)
-			{ 
-				$this->raiseException($e->getMessage(),$oauth_key->user_id,1);
-				//return false;
-			}
-			
-			if(!$response_updates)	
-			continue;
-			$response=$this->raiseLog($response_updates,JText::_('LOG_GET_STATUS'),$oauth_key->user_id,1);
-			if($response)
-			{
-					$json_googleplus= $response_updates['googleplus']; 	
-					$returndata[$i]['user_id'] = $oauth_key->user_id;
-					$returndata[$i]['status'] = $this->renderstatus(json_decode($json_googleplus));
-					$i++;
-			}
-		}
+		
 		return $returndata;
 	}
   	function renderstatus($totalresponse)
@@ -426,7 +341,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 		$oauth	=	json_decode($oauth_token->googleplus_oauth, true);
 		
 		try{
-			$this->googleplus = new LinkedInAPI($this->API_CONFIG);  	
 			$this->googleplus->setTokenAccess($oauth);			
 
 			$content = array ('comment' => $comment);
@@ -498,8 +412,33 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 	}
 	
 	
-	function plug_techjoomlaAPI_googleplusget_profile()
+	function plug_techjoomlaAPI_googleplusget_profile($integr_with,$client,$callback)
 	{
-
-  }
+			$mapData[0]		=& $this->params->get('mapping_field_0');	//joomla		
+			$mapData[1]		=& $this->params->get('mapping_field_1'); //jomsocial
+			$mapData[2]		=& $this->params->get('mapping_field_2'); //cb
+				
+			$oauth_keys = $this->getToken(); 
+		
+			if($this->params->get('broadcast_limit'))
+		 	$googleplus_profile_limit=$this->params->get('broadcast_limit');
+		 	else
+		 	$googleplus_profile_limit=2;	
+		 		
+			foreach($oauth_keys as $oauth_key){
+				$this->client->setAccessToken(json_decode($oauth_key->token,true));
+				$this->plus = new apiPlusService($this->client);
+				$profileData = $this->plus->people->get('me');  	
+	 					
+				if($profileData){
+						$profileDetails['profileData']=$profileData;	
+						$profileDetails['mapData']=$mapData;
+						return $profileDetails;
+				}
+			
+			}	//for each
+			
+ 	 }
+  
+  
 }//end class
