@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <install version="1.5" type="plugin" group="content" method="upgrade">
+   <name>Broadcast_content</name>
+   <author>Techjoomla</author>
+   <creationDate>Dec 2011</creationDate>
+   <copyright>(c) Techjoomla</copyright>
+   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+   <authorEmail>extensions@techjoomla.com</authorEmail>
+   <authorUrl>http://www.techjoomla.com</authorUrl>
+   <version>1.2</version>
+   <description>Broadcast content plugin allows developers to push updates to Social Networks via Broadcast</description>
+   <files>
+        <filename plugin="broadcast_content">broadcast_content.php</filename>
+		</files>
+	
+  <!-- parameters for Joomla 1.5.x -->
+	<params addpath="/administrator/components/com_broadcast/plugins/elements">
+		<param name="sections" type="sqlmultilistx" default="1" label="Select sections to add article" sql="SELECT id , title FROM #__sections WHERE published = 1 AND scope ='content' " key_field='id' value_field='title' multiple="multiple" description="Select sections to add article" size="auto"/>
+		<param name="category" type="JMACategoriesAdmin" default="1" label="Select categories to add article" element="Broadcast_API" multiple="multiple" 				description="Select categories to add article" key_field='id' value_field='title' />
+		<param name="msg" type="text" default="{username} added content {article_name} {path}" label="Message" description="Use this to define the message you want to broadcast, you can use the placeholders to dynamically change the message" size="50"/>
+	</params>
+		
+ <!-- parameters for Joomla 1.6.x -->
+	<config name="params">
+  		<fields name="params" >
+    		<fieldset name="basic" label="Plugin Parameters">
+    	 		<field name="category" type="category" default="1" label="Select categories to add article" element="Broadcast_API" multiple="multiple" description="Select categories to add article" key_field='id' value_field='title'  extension="com_content"/>
+    			<field name="msg" type="text" default="{username} added content {article_name} {path}" label="Message" description="Use this to define the message you want to broadcast, you can use the placeholders to dynamically change the message" size="50"/>
+		  </fieldset>
+	</fields>
+	</config>
+  
+</install>

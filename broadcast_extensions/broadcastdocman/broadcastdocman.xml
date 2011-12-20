@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<install version="1.5" type="plugin" group="docman" method="upgrade">
+    <name>broadcast docman</name>
+    <author>Techjoomla</author>
+	<creationDate>20 Dec 2011</creationDate>
+	<copyright>(C)techjoomla.com</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>contact@techjoomla.com</authorEmail>
+	<authorUrl>www.techjoomla.com</authorUrl>
+	<version>1.0.0</version>
+	<isapplication>false</isapplication>
+	<isbrowsable>false</isbrowsable>
+	<description>
+		DOCman plugin to auto broadcast to Social Networks via Broadcast
+	</description>
+   
+    <files>
+        <filename plugin="broadcastdocman">broadcastdocman.php</filename>
+    </files>
+    
+    <!-- parameters for Joomla 1.5.x -->
+	<params addpath="/administrator/components/com_broadcast/plugins/elements">
+		<param name="category" type="sqlmultilistx" default="1" label="Select categoies of document" sql="SELECT 		 id,title FROM #__categories WHERE section= 'com_docman' AND published = 1 " key_field='id' value_field='title' 						 multiple="multiple" description="Select categories to add Document" size="auto"/>
+		<param name="msg" type="text" default="{username} added Document {title} {path}" label="Message"				 description="" size="50"/>
+	</params>
+	
+	<!-- Standard plugin parameters for Joomla! 1.6+ -->
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="category" type="sql" default="1" query="SELECT id,title FROM #__categories WHERE section= 'com_docman' AND published = 1 " key_field='id' value_field='title' 				  						   multiple="multiple" description="Allowed Category of Document" />        
+				<field name="msg" type="text" default="{username} added Document {title} {path}" label="Message"		description="" size="50"/>
+			</fieldset>
+		</fields>
+	</config>
+</install>
