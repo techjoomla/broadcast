@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
   <install version="1.5" type="plugin" group="content" method="upgrade">
-   <name>Broadcast_content</name>
+   <name>Broadcast content</name>
    <author>Techjoomla</author>
    <creationDate>Dec 2011</creationDate>
    <copyright>(c) Techjoomla</copyright>

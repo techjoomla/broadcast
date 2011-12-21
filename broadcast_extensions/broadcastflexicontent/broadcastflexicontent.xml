@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install version="1.5" type="plugin" group="flexicontent_fields" method="upgrade">
-	<name>Broadcast flexicontent</name>
-	<author>tekdi</author>
-	<creationDate>March 2009</creationDate>
-	<copyright>Copyright (C) 2009 Emmanuel Danan</copyright>
-	<license>GNU/GPL v2</license>
-	<authorEmail>emmanuel@vistamedia.fr</authorEmail>
-	<authorUrl>www.vistamedia.fr</authorUrl>
-	<version>1.0</version>
+	<name>Broadcast FLEXIcontent</name>
+    <author>Techjoomla</author>
+	<creationDate>20 Dec 2011</creationDate>
+	<copyright>(C)techjoomla.com</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>contact@techjoomla.com</authorEmail>
+	<authorUrl>www.techjoomla.com</authorUrl>
+	<version>1.2</version>
 	<description>
-			flexi content plugin to auto broadcast to Social Networks via Broadcast
+			FLEXIcontent plugin allows developers to push updates to Social Networks via Broadcast
 	</description>
 	<files>
 		<filename plugin="broadcastflexicontent">broadcastflexicontent.php</filename>
 	</files>
 	<!-- parameters for Joomla 1.5.x -->
 	<params addpath="/administrator/components/com_broadcast/plugins/elements">
-		<param name="category" type="sqlmultilistx" default="1" label="Select categoies to add item" sql="SELECT id , 						 title FROM #__categories WHERE published = 1 AND section BETWEEN 1 AND 9" key_field='id' value_field='title' multiple="multiple" description="Select categories to add item" size="auto"/>
+		<param name="category" type="sqlmultilistx" default="1" label="Select categoies to add item" sql="SELECT id , title FROM #__categories WHERE published = 1 AND section BETWEEN 1 AND 9" key_field='id' value_field='title' multiple="multiple" description="Select categories to add item" size="auto"/>
 		
-		<param name="msg" type="text" default="{username} added item {item_name} {path}" label="Message" description="" size="50"/>
+		<param name="msg" type="text" default="{username} added item {item_name} {path}" label="Message" description="Use this to define the message you want to broadcast, you can use the placeholders to dynamically change the message" size="50"/>
 	</params>
 	
 	<!-- parameters for Joomla 1.5.x -->
 	<config name="params">
   		<fields name="params" >
     		<fieldset name="basic" label="Plugin Parameters">
-    	 		<field name="category" type="category" default="1" label="Select categories to add item"
-    	 		query="SELECT id ,title FROM #__categories WHERE published = 1 AND section BETWEEN 1 AND 9" element="Broadcast_API" multiple="multiple" description="Select categories to add item" key_field='id' value_field='title'  extension="com_flexicontent"/>
-    			<field name="msg" type="text" default="{username} added item {article name} {path}" label="Message" description="" size="50"/>
+    	 		<field name="category" type="category" default="1" label="Select categories to add item" query="SELECT id ,title FROM #__categories WHERE published = 1 AND section BETWEEN 1 AND 9" element="Broadcast_API" multiple="multiple" description="Select categories to add item" key_field='id' value_field='title'  extension="com_flexicontent"/>
+    			<field name="msg" type="text" default="{username} added item {item_name} {path}" label="Message" description="Use this to define the message you want to broadcast, you can use the placeholders to dynamically change the message" size="50"/>
 		  </fieldset>
 	</fields>
 	</config>

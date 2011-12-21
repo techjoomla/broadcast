@@ -14,13 +14,13 @@ defined('_JEXEC') or die ('Restricted access');
 JLoader::register('K2Plugin', JPATH_ADMINISTRATOR.DS.'components'.DS.'com_k2'.DS.'lib'.DS.'k2plugin.php');
 
 // Initiate class to hold plugin events
-class plgK2broadcastk2 extends K2Plugin {
+class plgK2Broadcastk2 extends K2Plugin {
 
 	// Some params
 	var $pluginName = 'broadcastk2';
 	var $pluginNameHumanReadable = 'Broadcast K2 Plugin';
 
-	function plgK2broadcastk2( & $subject, $params)
+	function plgK2Broadcastk2( & $subject, $params)
 	 { 
 		parent::__construct($subject, $params);
 	}
@@ -28,26 +28,22 @@ class plgK2broadcastk2 extends K2Plugin {
 	
 	function onAfterK2Save(& $item, $isNew)
 	{
-	
-		$app = JFactory::getApplication();
-		if($app->isAdmin())
-		{
-				   require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
-		}
-
-
 		$plugin			=& JPluginHelper::getPlugin('K2', 'broadcastk2');
 		$pluginParams	= new JParameter( $plugin->params );
 
-		$categorys = array($this->params->get('category'));
+		if(is_array($this->params->get('category')) )
+			$categorys = ($this->params->get('category'));
+		else{
+			$categorys = array();
+			$categorys[] = ($this->params->get('category'));
+		}
 		$cid = JRequest::getInt('catid', 0, 'post');
 	    	
 		if(in_array($cid,$categorys))
 			{
 				 	    	
-			if(!$id = JRequest::getInt('id', 0, 'post')) 
+			if($isNew) 
 				{
-
 				$user =& JFactory::getUser();
 				$userid = $user->id;
 				require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
@@ -62,7 +58,15 @@ class plgK2broadcastk2 extends K2Plugin {
 
 		/*construct the msg to push into the queue*/
 				$username = $user->username;
-				$path = JURI::root()."index.php?option=com_k2&view=item&cid=".$item->id.":".$item->alias."&catid=".$item->catid.":general";
+				$app = JFactory::getApplication();
+				if($app->isAdmin())
+				{
+					require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+					$path = JRoute::_(JURI::root()."index.php?option=com_k2&view=item&id=".$item->id.":".$item->alias);
+				}
+				else
+					$path = JURI::root().substr(JRoute::_("index.php?option=com_k2&view=item&id=".$item->id.":".$item->alias),strlen(JURI::base(true))+1);	
+		
 				$title = $item->title;
 				$msg_str = $this->params->get('msg');
 				$msg_str= str_replace( '{username}',$username ,$msg_str);
