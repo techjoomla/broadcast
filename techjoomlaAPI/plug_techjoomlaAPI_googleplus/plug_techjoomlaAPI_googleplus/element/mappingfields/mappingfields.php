@@ -289,6 +289,8 @@
 		
 		public function RenderField_js($fieldnamejs)
 		{
+			if(!$fieldnamejs)
+			return;
 			$defaultvalue='';
 			$gpfields=array('organizations','displayName','aboutMe','name','birthday','gender','email','work','currentLocation','relationshipStatus','picture-url');
 			foreach($fieldnamejs as $key=>$value)

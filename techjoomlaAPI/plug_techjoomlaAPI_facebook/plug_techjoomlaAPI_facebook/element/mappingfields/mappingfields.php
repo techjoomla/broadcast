@@ -273,6 +273,8 @@
 		
 		public function RenderField_js($fieldnamejs)
 		{
+			if(!$fieldnamejs)
+			return;
 			$defaultvalue='';
 			$fbfields=array('name','gender','email','work','location','education','hometown','bio','picture-url');
 			foreach($fieldnamejs as $key=>$value)

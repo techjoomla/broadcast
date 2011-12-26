@@ -284,6 +284,8 @@
 		
 		public function RenderField_js($fieldnamejs)
 		{
+			if(!$fieldnamejs)
+			return;
 			$defaultvalue='';
 			foreach($fieldnamejs as $key=>$value)
 			{

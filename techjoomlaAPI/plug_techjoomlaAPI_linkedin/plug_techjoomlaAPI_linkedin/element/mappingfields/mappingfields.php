@@ -282,6 +282,8 @@
 		
 		public function RenderField_js($fieldnamejs)
 		{
+			if(!$fieldnamejs)
+			return;
 			$defaultvalue='';
 			$linkfields=array('first-name','last-name','picture-url','summary','gender','location','educations','phone-numbers','main-address','current-status');
 			foreach($fieldnamejs as $key=>$value)
