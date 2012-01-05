@@ -33,6 +33,7 @@ class combroadcastHelper
 		if(is_array($userid) )
 		{
 			foreach($userid as $id){
+
 			if(trim($id)){
 				combroadcastHelper::inQueue($id,$message,$count,$interval,$supplier,$media);
 				combroadcastHelper::intempAct($id,$message,$date);
