@@ -340,7 +340,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		{
 
 			$screen_name=$id;			
-		 	$code = $tmhOAuth->request('POST', $tmhOAuth->url('1/direct_messages/new'), array('text' => 'HIHIHI','screen_name'=>$screen_name));
+		 	$code = $tmhOAuth->request('POST', $tmhOAuth->url('1/direct_messages/new'), array('text' => $message,'screen_name'=>$screen_name));
 
 			if($code==200)
 			{
