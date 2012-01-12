@@ -6,7 +6,7 @@
 	<author>TechJoomla</author>
 	<authorEmail>TechJoomla</authorEmail>
 	<authorUrl>contact@techjoomla.com</authorUrl>
-	<version>1.2</version>
+	<version>1.2.1</version>
 	<description>Social Broadcast - Social sync for your Joomla website ! </description>
     <!-- installation part -->
     
@@ -32,7 +32,9 @@
 	<languages folder="site/language">
 		<language tag="en-GB">en-GB/en-GB.com_broadcast.ini</language>
 		<language tag="pt-BR">pt-BR/pt-BR.com_broadcast.ini</language>
-		<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.ini</language>		
+		<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.ini</language>
+		<language tag="sv-SE">sv-SE/sv-SE.com_broadcast.ini</language>
+		<language tag="th-TH">th-TH/th-TH.com_broadcast.ini</language>		
 	</languages>
 	
 	<administration>
@@ -52,14 +54,16 @@
 		</files>	
 		<languages folder="admin/language">
 			<language tag="en-GB">en-GB/en-GB.com_broadcast.ini</language>
-			<language tag="en-GB">en-GB/en-GB.com_broadcast.sys.ini</language>
-			<language tag="en-GB">en-GB/en-GB.com_broadcast.menu.ini</language>
+				<language tag="en-GB">en-GB/en-GB.com_broadcast.sys.ini</language>
+				<language tag="en-GB">en-GB/en-GB.com_broadcast.menu.ini</language>
 			<language tag="pt-BR">pt-BR/pt-BR.com_broadcast.ini</language>
-			<language tag="pt-BR">pt-BR/pt-BR.com_broadcast.sys.ini</language>
-			<language tag="pt-BR">pt-BR/pt-BR.com_broadcast.menu.ini</language>
+				<language tag="pt-BR">pt-BR/pt-BR.com_broadcast.sys.ini</language>
+				<language tag="pt-BR">pt-BR/pt-BR.com_broadcast.menu.ini</language>
 			<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.ini</language>			
-			<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.sys.ini</language>			
-			<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.menu.ini</language>									
+				<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.sys.ini</language>			
+				<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.menu.ini</language>
+			<language tag="sv-SE">sv-SE/sv-SE.com_broadcast.ini</language>			
+			<language tag="th-TH">th-TH/th-TH.com_broadcast.ini</language>					
 		</languages>
 	</administration>	
 </install>
