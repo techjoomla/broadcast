@@ -317,7 +317,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		{
 			$raw_mail['message_register']=cominvitexHelper::getinviteURL();
 		}							
-		$message	=	cominvitexHelper::tagreplace($raw_mail);	
+		$flag=1;					
+		$message	=	cominvitexHelper::tagreplace($raw_mail,$flag);		
 		
 		$subject	= $invitex_settings['pm_message_body_no_replace_sub'];
 		$subject	=	str_replace("[SITENAME]", $raw_mail['sitename'], $subject);
@@ -325,7 +326,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		'app_id' => $this->facebook->getAppId(),
 		'to' => $inviteeidstr,
 		'link' => $regurl,
-		'redirect_uri' => JURI::base()."index.php?option=com_invitex&view=invites&fb_redirect=success",
+		'redirect_uri' => JURI::root().substr(JRoute::_("index.php?option=com_invitex&view=invites&fb_redirect=success&Itemid=".$in_itemid,false),strlen(JURI::base(true))+1),
 		'name'=>$subject,
 		'description'=>$message
  		);
