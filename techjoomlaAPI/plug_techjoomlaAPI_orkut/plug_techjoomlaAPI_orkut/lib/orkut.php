@@ -1,7 +1,7 @@
 <?php
 
 require_once("external/OAuth.php");
-
+ if(!class_exists('CurlRequest')){
 class CurlRequest {
 
 	public static function send($url, $method, $postBody = false, $headers = false, $ua = 'osapi 1.0') {
@@ -74,7 +74,8 @@ class CurlRequest {
 		return $response;
 	}
 }
-
+}
+ if(!class_exists('OrkutAuth')){
 class OrkutAuth {
 
 	const REQUEST_TOKEN_URL = 'https://www.google.com/accounts/OAuthGetRequestToken';
@@ -327,7 +328,8 @@ const RPC_ENDPOINT = 'http://sandbox.orkut.com/social/rpc';
 	}
 
 }
-
+}
+ if(!class_exists('Orkut')){
 class Orkut extends OrkutAuth {
 
 	private $message;
@@ -419,5 +421,5 @@ class Orkut extends OrkutAuth {
 	
 	}
 }
-
+}
 ?>

@@ -21,26 +21,26 @@
 			<language tag="en-GB">en-GB/en-GB.plg_techjoomlaAPI_plug_techjoomlaAPI_hotmail.ini</language>
 	</languages>
 	<!-- parameters for Joomla 1.5.x -->
-	<params addpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_hotmail/element">
+	<params addpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_hotmail/element/pathapi">
+		<param name="path_api_hotmail" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />	
 		<param name="appKey" type="text" default="" label="Enter Hotmail Client ID" description="Enter Hotmail Client ID" />
 		<param name="appSecret" type="text" default="" label="Enter Hotmail Client secret" description="Enter Hotmail Client secret" />
 		<param name="no_allowed_message" type="text" default="10" label="Limit to send messages[For Invitex]" description="Enter no of allowed messages" />
 		<param name="log_file_path" type="hidden" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored" />		
 		<param name="broadcast_limit" type="text" default="5" label="Limit for status update[For Broadcast]" description="Enter the Limit for no of statuses to get" />								
-		<param name="path_api_hotmail" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />	
 		<param name="throttle_limit_hotmail" type="hidden" label="Throttle Limit of hotmail API" description="This is Throttle Limit per day per application" />		
 	</params>
 	
 	<!-- Fields for Joomla 1.6.x and onwards -->
 	<config name="params">
   	<fields name="params" >
-    	<fieldset name="basic"	addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_hotmail/plug_techjoomlaAPI_hotmail/element">
+    	<fieldset name="basic"	addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_hotmail/plug_techjoomlaAPI_hotmail/element/pathapi">
+				<field name="pathapi_hotmail" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />	
 				<field name="appKey" type="text" default="" label="Enter Hotmail Client ID" description="Enter Hotmail Client ID"/>
 				<field name="appSecret" type="text" default="" label="Enter Hotmail Client secret" description="Enter Hotmail Client secret" />
 				<field name="no_allowed_message" type="text" default="10" label="Limit to send messages[For Invitex]" description="Enter no of allowed messages"/>
 				<field name="log_file_path" type="hidden" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored"/>		
 				<field name="broadcast_limit" type="text" default="5" label="Limit for status update[For Broadcast]" description="Enter the Limit for no of statuses to get" />						
-				<field name="path_api_hotmail" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />	
 				<field name="throttle_limit_hotmail" type="hidden" label="Throttle Limit of hotmail API" description="This is Throttle Limit per day per application" />		
 			</fieldset>
 		</fields>

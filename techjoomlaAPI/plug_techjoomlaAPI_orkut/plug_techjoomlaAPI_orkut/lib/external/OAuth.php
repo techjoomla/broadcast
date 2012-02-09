@@ -130,7 +130,7 @@ class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod {/*{{{*/
     throw Exception("fetch_private_cert not implemented");
   }/*}}}*/
 
-  public function build_signature(&$request, $consumer, $token) {/*{{{*/
+  public function build_signature($request, $consumer, $token) {/*{{{*/
     $base_string = $request->get_signature_base_string();
     $request->base_string = $base_string;
   
