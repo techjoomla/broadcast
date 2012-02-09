@@ -3,7 +3,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $path = dirname(__FILE__).DS.'helper.php';
 #@TODO check this imp for version 1.0.1
-if(!class_exists('techjoomlaHelperLogs')) 
+if(!class_exists('techjoomlaHelperLogs'))
 {
   //require_once $path;
    JLoader::register('techjoomlaHelperLogs', $path );

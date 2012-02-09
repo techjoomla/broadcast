@@ -2,12 +2,12 @@
 <install version="1.5" type="plugin" group="docman" method="upgrade">
     <name>Broadcast DOCman</name>
     <author>Techjoomla</author>
-	<creationDate>20 Dec 2011</creationDate>
+	<creationDate>Feb 2012</creationDate>
 	<copyright>(C)techjoomla.com</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>contact@techjoomla.com</authorEmail>
 	<authorUrl>www.techjoomla.com</authorUrl>
-	<version>1.2</version>
+	<version>1.2.1</version>
 	<isapplication>false</isapplication>
 	<isbrowsable>false</isbrowsable>
 	<description>

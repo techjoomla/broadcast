@@ -2,11 +2,11 @@
 <install type="module" version="1.5" client ="site" method="upgrade">
 	<name>Broadcast Module</name>
 	<author>Techjoomla</author>
-	<creationDate>Dec 2011</creationDate>
+	<creationDate>Feb 2012</creationDate>
 	<copyright>Techjoomla. All Rights Reserved.</copyright>
 	<authorEmail>extensions@techjoomla.com</authorEmail>
 	<authorUrl>http://www.techjoomla.com</authorUrl>
-	<version>1.2</version>
+	<version>1.2.1</version>
 	<description>Broadcast Module to connect Facebook, Twitter, Linkedin</description>
   <files>
       <filename module="mod_broadcast">mod_broadcast.php</filename>

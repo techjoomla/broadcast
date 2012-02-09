@@ -82,6 +82,7 @@ class BroadcastModelbroadcast extends JModel
 
 		foreach($apistatuses as $apistatus){
 			$userid = $apistatus['user_id'];
+			$apistatus['status'] = array_reverse($apistatus['status']);
 			foreach ($apistatus['status'] as $status )
 			{	
 				if((!combroadcastHelper::checkexist($status['comment'],$userid,$api)))

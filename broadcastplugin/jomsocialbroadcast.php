@@ -95,31 +95,33 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	//Append URL
 		$shorturl='';
 		if($activity->params){
-			$activity->title = $activity->title." ".$this->_getURL($activity->app,json_decode($activity->params));
+			$activity->title = $activity->title." ".$this->_getURL($activity->app,$activity->params);
 		}
 		$activity->title=strip_tags($activity->title);		
 		return $activity->title;
 	}
 
-	function _getURL($app,$paramarray)
+	function _getURL($app,$params)
 	{
+		$paramarray = new CParameter( $params );
 		$url =  '';
 		switch($app)
 		{
 			case 'events':
-				$url = JURI::base().$paramarray->event_url;
+				$url = JURI::base().$paramarray->get('event_url', null);
 			break;
 			case 'groups':
-				$url = JURI::base().$paramarray->group_url;
+				$url = JURI::base().$paramarray->get('group_url', null);
 			break;
 			case 'videos':
-				$url = JURI::base().$paramarray->video_url;
+				$url = JURI::base().$paramarray->get('video_url', null);
 			break;
 			case 'photos':
 				$u =& JURI::getInstance(JURI::current());
-				$url = 'http://'.$u->getHost().$paramarray->photo_url;
+				$url = 'http://'.$u->getHost().$paramarray->get('photo_url', null);
 			break;
 		}
+//		echo $url; die;
 		return $url;
 	}
 	

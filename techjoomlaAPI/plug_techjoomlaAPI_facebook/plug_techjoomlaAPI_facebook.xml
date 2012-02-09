@@ -2,12 +2,12 @@
 <install version="1.5" type="plugin" group="techjoomlaAPI" method="upgrade">
 	<name>Techjoomla-Facebook API</name>
 	<author>Techjoomla</author>
-	<creationDate>25 Oct 2011</creationDate>
+	<creationDate>Feb 2012</creationDate>
 	<copyright>(C)techjoomla.com</copyright>
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
-	<authorEmail>extensions@tekdi.net</authorEmail>
+	<authorEmail>contact@techjoomla.com</authorEmail>
 	<authorUrl>www.techjoomla.com</authorUrl>
-	<version>1.0.0</version>
+	<version>1.2.1</version>
 	<isconsumer>true</isconsumer>
 	<description>
 		Techjoomla Facebook API plugin 
@@ -18,11 +18,11 @@
 		<folder>plug_techjoomlaAPI_facebook</folder>
 	</files>
 	<languages folder="language"> 
-			<language tag="en-GB">en-GB/en-GB.plug_techjoomlaAPI_facebook.ini</language>
-			<language tag="pt-BR">pt-BR/pt-BR.plug_techjoomlaAPI_facebook.ini</language>
-			<language tag="zh-TW">zh-TW/zh-TW.plug_techjoomlaAPI_facebook.ini</language>
-			<language tag="sv-SE">sv-SE/sv-SE.plug_techjoomlaAPI_facebook.ini</language>
-			<language tag="th-TH">th-TH/th-TH.plug_techjoomlaAPI_facebook.ini</language>
+			<language tag="en-GB">en-GB/en-GB.plg_techjoomlaAPI_plug_techjoomlaAPI_facebook.ini</language>
+			<language tag="pt-BR">pt-BR/pt-BR.plg_techjoomlaAPI_plug_techjoomlaAPI_facebook.ini</language>
+			<language tag="zh-TW">zh-TW/zh-TW.plg_techjoomlaAPI_plug_techjoomlaAPI_facebook.ini</language>
+			<language tag="sv-SE">sv-SE/sv-SE.plg_techjoomlaAPI_plug_techjoomlaAPI_facebook.ini</language>
+			<language tag="th-TH">th-TH/th-TH.plg_techjoomlaAPI_plug_techjoomlaAPI_facebook.ini</language>
 	</languages>
 	<!-- parameters for Joomla 1.5.x -->
 	<params addpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_facebook/element/pathapi">
