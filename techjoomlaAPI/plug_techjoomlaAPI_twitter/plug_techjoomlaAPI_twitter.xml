@@ -47,8 +47,8 @@
   	<fields name="params" >
     	<fieldset name="pathapi"  addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_twitter/plug_techjoomlaAPI_twitter/element/pathapi" label="Plugin Parameters">
 				<field name="pathapi_twitter" class="inputbox" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />			
-				<field name="appKey" type="text" default="" label="Enter LinkedIn application key" description="Enter LinkedIn application key"/>
-				<field name="appSecret" type="text" default="" label="Enter LinkedIn secret key" description="Enter LinkedIn secret key" />
+				<field name="appKey" type="text" default="" label="Enter Twitter application key" description="Enter Twitter application key"/>
+				<field name="appSecret" type="text" default="" label="Enter Twitter secret key" description="Enter Twitter secret key" />
 				<field name="no_allowed_message" type="text" default="10" label="Limit to send messages[For Invitex]" description="Enter no of allowed messages"/>	
 				<field name="log_file_path" type="hidden" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored"/>		
 				<field name="broadcast_limit" type="text" default="5" label="Limit for status update[For Broadcast]" description="Enter the Limit for no of statuses to get" />						
