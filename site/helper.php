@@ -1,6 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die( 'Direct Access to this location is not allowed.' );
-
+if (!class_exists('combroadcastHelper'))
+{
 class combroadcastHelper
 { 	
 	function getapistatus(){
@@ -159,8 +160,7 @@ class combroadcastHelper
 		return $string;
 	}
 }
-
-
+}
 //this class is used to make log for f/l/t controllers 
 if (!class_exists('techjoomlaHelperLogs'))
 {
