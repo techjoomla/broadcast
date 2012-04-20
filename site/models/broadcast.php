@@ -135,7 +135,7 @@ class BroadcastModelbroadcast extends JModel
 	 	
 		$query = "DELETE 
 					FROM #__broadcast_queue 
-					WHERE id NOT IN(".implode(',',$queue).") AND count=0 AND flag=1";
+					WHERE id IN(".implode(',',$queue).") AND count=0 AND flag=1";
 		
 		$this->_db->setQuery($query); 
 		if (!$this->_db->query()) {

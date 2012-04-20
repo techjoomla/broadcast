@@ -204,12 +204,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		
 	}
 	
-	function getToken($user=''){
+	function getToken($user='',$client=''){
+	
 			$this->removeDeletedUsers();
-		$user=$this->user->id;
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;
+			
+			if($client)
+			$where .= " AND client='".$client."'";
 			
 		$query = "SELECT user_id,token
 		FROM #__techjoomlaAPI_users 
@@ -431,7 +434,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	{  	
 		$i = 0;
 		$returndata = array();
-		$oauth_keys = $this->getToken(); 
+		$oauth_keys = $this->getToken('','broadcast'); 
 		
 		foreach($oauth_keys as $oauth_key){
 			
@@ -489,8 +492,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	{
 	
 		//To do use json encode decode for this	
-		$oauth_key = $this->getToken($userid); 
-		if(!isset($oauth_key))
+		$oauth_key = $this->getToken($userid,'broadcast');
+		if(empty($oauth_key))
 		return false;
 		$oauth_token		 	= json_decode($oauth_key[0]->token);
 		$oauth	=	json_decode($oauth_token->linkedin_oauth, true);
@@ -502,6 +505,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			$content = array ('comment' => $comment);
 			//$content = array ('comment' => $comment, 'title' => '', 'submitted-url' => '', 'submitted-image-url' => '', 'description' => '');
 			$status= $this->linkedin->share('new',$content); 
+
 		
 		}
 		catch(LinkedInException $e)
@@ -591,10 +595,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 				$mapping_fieldParams=comprofileimportHelper::RenderParamsprofileimport($mapping_field);
 				
 				$linkfinal=array('id','first-name','last-name','picture-url','location','current-status','interests','educations','phone-numbers','date-of-birth','main-address','headline','summary','positions');
-				//$linkfinal=array_intersect($linkarr, $mapping_fieldParams);
 				$mapping_fieldParamstrr=implode(',',$linkfinal);
 				$profileFields='~:('.$mapping_fieldParamstrr.')';
-				//$profileFields='~:(id,first-name,last-name,picture-url,location,current-status,interests,educations,phone-numbers,date-of-birth,main-address,headline,summary,positions)';
 				$profileData = $this->linkedin->profile($profileFields);	
 				if($profileData)
 				{

@@ -170,11 +170,14 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		
 	}
 	
-	function getToken($user=''){
-			$this->removeDeletedUsers();
+	function getToken($user='',$client=''){	
+		$this->removeDeletedUsers();
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;
+			
+			if($client)
+			$where .= " AND client='".$client."'";
 			
 		$query = "SELECT user_id,token
 		FROM #__techjoomlaAPI_users 
@@ -182,6 +185,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		$this->db->setQuery($query);
 		return $this->db->loadObjectlist();
 	}
+	
 	
 	//This is function to remove users from Broadcast which are deleted from joomla
 	function removeDeletedUsers()
@@ -216,7 +220,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		if($client!='')
 		$where="AND client='{$client}' AND api='{$this->_name}'";
 		
-		#TODO add condition for client also
 		$qry 	= "UPDATE #__techjoomlaAPI_users SET token='' WHERE user_id = {$this->user->id} ".$where;
 		$this->db->setQuery($qry);	
 		$this->db->query();
@@ -359,7 +362,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	function plug_techjoomlaAPI_twittergetstatus()
 	{ 
 	 $oauth_keys =array();
-	 $oauth_keys = $this->getToken();
+	 $oauth_keys = $this->getToken('','broadcast');
 	 if(!$oauth_keys)
 		return false;
 		$i=0;
@@ -455,7 +458,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	function plug_techjoomlaAPI_twittersetstatus($userid='',$content='')
 	{	
 		
-		$oauth_key = $this->getToken($userid);
+		$oauth_key = $this->getToken($userid,'broadcast');
 		
 		if(!$oauth_key)
 		return false;
@@ -558,8 +561,7 @@ function raiseException($exception,$userid='',$display=1,$params=array())
 			$params=array();
 			$connection=array();
 		
-		$oauth_key = $this->getToken();
-		
+		$oauth_key = $this->getToken($this->user->id,'profileimport');		
 		if(!$oauth_key)
 		return false;
 		else

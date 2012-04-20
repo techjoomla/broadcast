@@ -81,6 +81,7 @@ class BroadcastControllerbroadcast extends JController
 		$response = array();
 		$model = $this->getModel('broadcast');
 		$queue = $model->getqueue(); 
+				$model->purgequeue();
 		foreach($queue as $queue) 
 		{
 			$updtinterval=strtotime($queue->date)+($queue->flag+1)+$queue->interval;
@@ -98,9 +99,10 @@ class BroadcastControllerbroadcast extends JController
 				$db->setQuery($query);
 				$db->query();
 			}// end of the interval chk if
+					$model->purgequeue();
 		}// end of foreach of queue
 		//purge the queue table
-		$model->purgequeue();
+
 	}
 
 }

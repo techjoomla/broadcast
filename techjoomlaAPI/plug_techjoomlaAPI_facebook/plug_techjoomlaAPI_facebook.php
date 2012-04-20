@@ -133,7 +133,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		
 	}
 	
-	function store($client,$data) #TODO insert client also in db 
+	function store($client,$data) 
 	{
 		
 		$qry = "SELECT id FROM #__techjoomlaAPI_users WHERE user_id ={$this->user->id} AND client='{$client}' AND api='{$this->_name}' ";
@@ -159,11 +159,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		
 	}
 	
-	function getToken($user=''){
+	function getToken($user='',$client=''){
+	
 			$this->removeDeletedUsers();
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;
+			
+			if($client)
+			$where .= " AND client='".$client."'";
 			
 		$query = "SELECT user_id,token
 		FROM #__techjoomlaAPI_users 
@@ -171,6 +175,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		$this->db->setQuery($query);
 		return $this->db->loadObjectlist();
 	}
+	
 	
 	//This is function to remove users from Broadcast which are deleted from joomla
 	function removeDeletedUsers()
@@ -340,7 +345,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
   function plug_techjoomlaAPI_facebookgetstatus()
 	{ 
 		$oauth_keys =array();
-	 	$oauth_keys = $this->getToken();
+	 	$oauth_keys = $this->getToken('','broadcast');
 	 	$returndata=array(array());
 	 	$i = 0;
 	 	if($this->params->get('broadcast_limit'))
@@ -405,7 +410,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	function plug_techjoomlaAPI_facebooksetstatus($userid='',$content='')
 	{
 	
-		$oauth_key = $this->getToken($userid);
+		$oauth_key = $this->getToken($userid,'broadcast');
 		
 		if(!$oauth_key)
 		return false;
