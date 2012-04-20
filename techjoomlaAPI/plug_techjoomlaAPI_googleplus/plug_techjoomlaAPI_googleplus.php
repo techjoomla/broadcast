@@ -152,12 +152,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 		
 	}
 	
-	function getToken($user=''){
+	function getToken($user='',$client=''){
+	
 			$this->removeDeletedUsers();
-		$user=$this->user->id;
 		$where = '';
 		if($user)
 			$where = ' AND user_id='.$user;
+			
+			if($client)
+			$where .= " AND client='".$client."'";
 			
 		$query = "SELECT user_id,token
 		FROM #__techjoomlaAPI_users 
@@ -364,8 +367,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 	{
 	
 		//To do use json encode decode for this	
-		$oauth_key = $this->getToken($userid); 
-		if(!isset($oauth_key))
+		$oauth_key = $this->getToken($userid,'profileimport'); 
+		if(empty($oauth_key))
 		return false;
 		$oauth_token		 	= json_decode($oauth_key[0]->token);
 		$oauth	=	json_decode($oauth_token->googleplus_oauth, true);
@@ -448,7 +451,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 			$mapData[1]		=& $this->params->get('mapping_field_1'); //jomsocial
 			$mapData[2]		=& $this->params->get('mapping_field_2'); //cb
 				
-			$oauth_keys = $this->getToken(); 
+			$oauth_keys = $this->getToken($this->user->id,'profileimport'); 
 		
 			if($this->params->get('broadcast_limit'))
 		 	$googleplus_profile_limit=$this->params->get('broadcast_limit');
