@@ -426,7 +426,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 			{
 				if($j==10)
 				break;
-				if(isset($data['text']))
+				if(!empty($data['text']))
 				{
 					if( !($data['source']=='web') )		//for converting the urls t.co into goo.gl
 					{
