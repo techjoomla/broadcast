@@ -384,7 +384,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 
 				$params = array('count'=>$twitter_profile_limit,'user_id'=>$token['user_id'],'screen_name'=>$token['screen_name']);
 				try{
-				$tmhOAuth->request('GET', $tmhOAuth->url('1/statuses/user_timeline'),$params);
+				$tmhOAuth->request('GET', $tmhOAuth->url('1/statuses/user_timeline.json'),$params);
 				}
 				catch (Exception $e) 
 				{
