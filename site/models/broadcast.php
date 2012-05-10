@@ -132,15 +132,17 @@ class BroadcastModelbroadcast extends JModel
 					WHERE count=0 ORDER BY date desc LIMIT ".$broadcast_config['purgelimit'];
 		$this->_db->setQuery($query);
 	 	$queue = $this->_db->loadResultArray();
-	 	
-		$query = "DELETE 
-					FROM #__broadcast_queue 
-					WHERE id IN(".implode(',',$queue).") AND count=0 AND flag=1";
+	 	if(!empty($queue))
+	 	{
+			$query = "DELETE 
+						FROM #__broadcast_queue 
+						WHERE id IN(".implode(',',$queue).") AND count=0 AND flag=1";
 		
-		$this->_db->setQuery($query); 
-		if (!$this->_db->query()) {
-			$this->setError( $this->_db->getErrorMsg() );
-			return false;
+			$this->_db->setQuery($query); 
+			if (!$this->_db->query()) {
+				$this->setError( $this->_db->getErrorMsg() );
+				return false;
+			}
 		}
 	}
 
