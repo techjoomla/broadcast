@@ -10,9 +10,6 @@
  **/
 defined('_JEXEC') or die('Restricted access');
 
-// no direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
-
 // Import library dependencies
 jimport('joomla.event.plugin');
 
@@ -30,9 +27,7 @@ class plgDocmanBroadcastdocman extends JPlugin
 
     function onAfterEditDocument()
     {		
-			$plugin			=& JPluginHelper::getPlugin('docman', 'Broadcastdocman');
-			$pluginParams	= new JParameter( $plugin->params );	
-
+		
 			if(is_array($this->params->get('category')) )
 				$categorys = ($this->params->get('category'));
 			else{
@@ -64,20 +59,20 @@ class plgDocmanBroadcastdocman extends JPlugin
 					$username = $user->username;
 
 					$app = JFactory::getApplication();
-					if($app->isAdmin())
+					require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+					/*if($app->isAdmin())
 					{
-						require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+
 						$path = JRoute::_(JURI::root().'index.php?option=com_docman&task=cat_view&gid='.$gid);
 					}
-					else
+					else*/
 						$path = JURI::root().substr(JRoute::_('index.php?option=com_docman&task=cat_view&gid='.$gid),strlen(JURI::base(true))+1);
 
 					$msg_str = $this->params->get('msg'); 
 					$msg_str= str_replace( '{username}',$username ,$msg_str);
 					$msg_str= str_replace( '{title}',$dmname,$msg_str);
 					$msg_str= str_replace( '{path}',$path,$msg_str);
-
-					$date = $item->publish_up;
+					$date=JRequest::getVar('dmdate_published');
 					$count = 1;
 					$interval = 0;
 					$supplier = 'DOCman_plugin';
