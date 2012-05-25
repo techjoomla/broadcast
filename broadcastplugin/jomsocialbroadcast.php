@@ -37,7 +37,16 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	
 	function onBeforeStreamCreate($activity) ///trigger present in SOME versions of joomla
 	{ 
+		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 		$bc_activity = clone $activity;
+		
+		//if only to broadcast public events 
+		if($broadcast_config['push_only_public_acts']==1)
+		{
+			//if access is public then only add to queue
+			if($bc_activity->access!=0)
+			return true;
+		}
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_community'.DS.'libraries'.DS.'activities.php');
 		$user	= JFactory::getUser();	
 		$subscribedapp	= explode('|',$this->getusersetting($user->id)); 
@@ -45,7 +54,7 @@ class plgCommunityjomsocialbroadcast extends CApplications
 		{
 			$title=$this->tag_replace($bc_activity->actor,$bc_activity->target,$bc_activity->created,$bc_activity);
 			
-			require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+
 			if(isset($broadcast_config['user_ids']) || $broadcast_config['user_ids'] != '' || ($broadcast_config['user_ids']) )
 			{
 				$userids = $broadcast_config['user_ids'];

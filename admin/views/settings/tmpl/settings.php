@@ -6,7 +6,7 @@ JHTML::_('behavior.tooltip');
 JHTML::_('behavior.formvalidation');
 require(JPATH_SITE.DS."administrator".DS."components".DS."com_broadcast".DS."config".DS."config.php");
 	
-	$status_via=$status_via_no='';
+	$push_only_public_acts=$push_only_public_acts_no=$status_via=$status_via_no='';
 	$show_status_update=$show_status_update_no='';
 	//$show_status_viarss=$show_status_viarss_no='';
 	$show_name=$show_name_no='';
@@ -15,6 +15,11 @@ require(JPATH_SITE.DS."administrator".DS."components".DS."com_broadcast".DS."con
 		$status_via='SELECTED=true';
 	else
 		$status_via_no='SELECTED=true';
+		
+	if(!empty($broadcast_config['push_only_public_acts']))
+	$push_only_public_acts='SELECTED=true';
+	else
+		$push_only_public_acts_no='SELECTED=true';
 
 	
 	if($broadcast_config['show_name'])
@@ -121,6 +126,14 @@ else
 			<td width="90%"><select class="inputbox" name="data[status_via]">
 			<option value="1" <?php echo $status_via; ?>> <?php echo JText::_('BC_YES');?> </option>
 			<option value="0" <?php echo $status_via_no; ?>> <?php echo JText::_('BC_NO');?> </option>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td align="left" width="10%"><?php echo JHTML::tooltip(JText::_('PUSH_ONLY_PUBLIC_ACTS_DES'), JText::_('PUSH_ONLY_PUBLIC_ACTS'), '', JText::_('PUSH_ONLY_PUBLIC_ACTS'));?></td>
+			<td width="90%"><select class="inputbox" name="data[push_only_public_acts]">
+			<option value="1" <?php echo $push_only_public_acts; ?>> <?php echo JText::_('BC_YES');?> </option>
+			<option value="0" <?php echo $push_only_public_acts_no; ?>> <?php echo JText::_('BC_NO');?> </option>
 			</select>
 			</td>
 		</tr>

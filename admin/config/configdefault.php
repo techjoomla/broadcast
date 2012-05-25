@@ -1,6 +1,7 @@
 <?php
 $broadcast_config = array(
 'show_name' => '1',
+'push_only_public_acts'=>0,
 'status_via' => '0',
 'status_skip' => '#,@',
 'url_apikey' => '',
