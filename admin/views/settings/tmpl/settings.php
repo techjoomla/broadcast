@@ -20,6 +20,8 @@ require(JPATH_SITE.DS."administrator".DS."components".DS."com_broadcast".DS."con
 	$push_only_public_acts='SELECTED=true';
 	else
 		$push_only_public_acts_no='SELECTED=true';
+		
+	
 
 	
 	if($broadcast_config['show_name'])
@@ -200,6 +202,17 @@ else
 			<option value="1" <?php echo $show_status_rss; ?>> <?php echo JText::_('BC_YES');?> </option>
 			<option value="0" <?php echo $show_status_rss_no; ?>> <?php echo JText::_('BC_NO');?> </option>
 			</select>
+			</td>
+		</tr>
+		<tr>
+			<td align="left" width="10%"><?php 
+			echo JHTML::tooltip(JText::_('RSS_LIMIT_PER_USER_DES'), JText::_('RSS_LIMIT_PER_USER'), '', JText::_('RSS_LIMIT_PER_USER'));?></td>			<td width="90%">
+			<input type="text" class="inputbox " name="data[rss_limit_per_user]" width="90%" value="<?php
+			if($broadcast_config['rss_limit_per_user'])		 
+				echo $broadcast_config['rss_limit_per_user'];
+			else
+				echo '5';
+			 ?>"  >
 			</td>
 		</tr>
 		<tr>
