@@ -156,7 +156,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
   	if (!empty($decoded_response->error)) {
   	// check to see if this is an oAuth error:
     if ($decoded_response->error->type== "OAuthException") {
-    		$sendmail=@techjoomlaHelperLogs::emailtoClient('ACCESS_TOKEN_EXPIRE','Facebook');
+    		//$sendmail=@techjoomlaHelperLogs::emailtoClient('ACCESS_TOKEN_EXPIRE','Facebook');
     		return false;
     
     	}
