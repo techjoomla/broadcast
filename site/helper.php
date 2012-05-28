@@ -166,6 +166,32 @@ if (!class_exists('techjoomlaHelperLogs'))
 {
 class techjoomlaHelperLogs
 {	
+
+	/*
+	$message['subject']
+	$message['message']
+	$message['to']
+	$message['FROM']
+	*/
+
+	function emailtoClient($type,$plugin)
+	{
+		if($type=='ACCESS_TOKEN_EXPIRE')
+		{
+		$user=JFactory::getUser();
+		$link=JRoute::_(JURI::base()."index.php?option=com_broadcast&view=config");
+		$app 		=& JFactory::getApplication();
+		$sitename	= array();
+		$sitename	= $app->getCfg('sitename');
+		$subject=JText::sprintf('BC_ACCESS_TOKEN_EXPIRE_SUB',$plugin,$sitename);
+		$message=JText::sprintf('BC_ACCESS_TOKEN_EXPIRE_MESSAGE',$user->name,$link);
+		$mailfrom = $app->getCfg('mailfrom');
+		$fromname = $app->getCfg('fromname');
+		$result=JUtility::sendMail($mailfrom,$fromname,$user->email,$subject,$message,$html=1,null,null);
+		
+		}
+
+	}
 	function simpleLog($comment,$userid='',$type,$filename,$path="", $display=1,$params=array())
     {
     		 

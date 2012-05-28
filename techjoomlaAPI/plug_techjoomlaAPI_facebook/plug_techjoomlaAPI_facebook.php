@@ -79,13 +79,26 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		{	
 		$uaccess=json_decode($result);		
 		if ($uaccess->facebook_uid && $uaccess->facebook_secret)
+		{
+			//Check if token is valid if not then remove token from database and return false
+			$validtoken=$this->isAccessTokenValid($uaccess->facebook_secret);
+
+			if(!$validtoken)
+			{
+				$this->remove_token('broadcast',$this->user->id);
+				return 0;
+				
+			}
 			return 1;
+			
+		}	
 		else
 			return 0;
 		}
 		else
 		return 0;
 	}
+	
 	
 	function get_request_token($callback) 
 	{
@@ -133,8 +146,46 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		
 	}
 	
+	function isAccessTokenValid($accesstoken)
+	{
+	  // Attempt to query the graph:
+  	$graph_url = "https://graph.facebook.com/me?access_token=" . $accesstoken;
+  	$response = $this->curl_get_file_contents($graph_url);
+  	$decoded_response = json_decode($response); 
+ 	 	//Check for errors 
+  	if (!empty($decoded_response->error)) {
+  	// check to see if this is an oAuth error:
+    if ($decoded_response->error->type== "OAuthException") {
+    		$sendmail=@techjoomlaHelperLogs::emailtoClient('ACCESS_TOKEN_EXPIRE','Facebook');
+    		return false;
+    
+    	}
+    	return false;
+    }
+    return true;
+  }
+    
+  // note this wrapper function exists in order to circumvent PHP’s 
+  //strict obeying of HTTP error codes.  In this case, Facebook 
+  //returns error code 400 which PHP obeys and wipes out 
+  //the response.
+  function curl_get_file_contents($URL) {
+    $c = curl_init();
+    curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($c, CURLOPT_URL, $URL);
+    $contents = curl_exec($c);
+    $err  = curl_getinfo($c,CURLINFO_HTTP_CODE);
+    curl_close($c);
+    if ($contents) return $contents;
+    else return FALSE;
+  }
+
+
 	function store($client,$data) 
 	{
+		$qry 	= "DELETE FROM #__techjoomlaAPI_users WHERE user_id ={$this->user->id} AND client='{$client}'	AND api='{$this->_name}'";
+		$this->db->setQuery($qry);	
+		$this->db->query();
 		
 		$qry = "SELECT id FROM #__techjoomlaAPI_users WHERE user_id ={$this->user->id} AND client='{$client}' AND api='{$this->_name}' ";
 		$this->db->setQuery($qry);
@@ -161,6 +212,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	
 	function getToken($user='',$client=''){
 	
+		//Delete Entries Where token is blank
+		$qry 	= "DELETE FROM #__techjoomlaAPI_users WHERE  token=''";
+		$this->db->setQuery($qry);	
+		$this->db->query();
+		//Delete Entries Where token is blank
 			$this->removeDeletedUsers();
 		$where = '';
 		if($user)
@@ -176,10 +232,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		return $this->db->loadObjectlist();
 	}
 	
+
 	
 	//This is function to remove users from Broadcast which are deleted from joomla
 	function removeDeletedUsers()
 	{
+	
+
 		$query = "SELECT user_id FROM #__techjoomlaAPI_users";
 		$this->db->setQuery($query);
 		$brusers=$this->db->loadObjectlist();
@@ -205,13 +264,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	
 	}
 	
-	function remove_token($client)
+	function remove_token($client,$userid='')
 	{ 
+	if(empty($userid))
+	$userid=$this->user->id;
 		if($client!='')
 		$where="AND client='{$client}' AND api='{$this->_name}'";
 		
 		#TODO add condition for client also
-		$qry 	= "UPDATE #__techjoomlaAPI_users SET token='' WHERE user_id = {$this->user->id} ".$where;
+		$qry 	= "UPDATE #__techjoomlaAPI_users SET token='' WHERE user_id = {$userid} ".$where;
 		$this->db->setQuery($qry);	
 		$this->db->query();
 	}
@@ -358,6 +419,17 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	 	foreach($oauth_keys as $oauth_key){	
 	 		
 			$token =json_decode($oauth_key->token);	
+			//Check if token is valid if not then remove token from database
+			$validtoken=$this->isAccessTokenValid($token->facebook_secret);
+
+			if(!$validtoken)
+			{
+			
+				$this->remove_token('broadcast',$oauth_key->user_id);
+
+				return false;
+				
+			}
 			try{		
 				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit));
 			}
@@ -372,6 +444,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			{
 				$returndata[$i]['user_id'] 	= $oauth_key->user_id;
 				$returndata[$i]['status'] 	= $status;	
+
 				$response=$this->raiseLog(JText::_('LOG_GET_STATUS_SUCCESS'),JText::_('LOG_GET_STATUS'),$oauth_key->user_id,1);
 			}
 			else
@@ -382,7 +455,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			
 			$i++;
 		}
-		
+						//print_r($returndata['0']);die;
 		if(!empty($returndata['0']))
 		return $returndata;
 		else
@@ -416,7 +489,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		return false;
 		else
 		$token =json_decode($oauth_key[0]->token);	
-		
+		//Check if token is valid if not then remove token from database
+		$validtoken=$this->isAccessTokenValid($token->facebook_secret);
+		if(!$validtoken)
+		{
+			$this->remove_token('broadcast',$oauth_key[0]->user_id);
+			return false;
+			
+		}
+
 		$post=array();
 		if(!$content)
 		return array();
