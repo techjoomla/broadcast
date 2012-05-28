@@ -75,12 +75,13 @@ class plgEasyblogbroadcasteasyblog extends JPlugin
 					/*construct the msg to push into the queue*/
 					$username = $user->username;
 					$app = JFactory::getApplication();
-					if($app->isAdmin())
+					require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+					/*if($app->isAdmin())
 					{
-						require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+
 						$path = JRoute::_(JURI::root()."index.php?option=com_easyblog&view=entry&id=".$param->id);
 					}
-					else
+					else*/
 						$path = JURI::root().substr(JRoute::_('index.php?option=com_easyblog&view=entry&id='.$param->id),strlen(JURI::base(true))+1);
 					
 					$title = $param->title;

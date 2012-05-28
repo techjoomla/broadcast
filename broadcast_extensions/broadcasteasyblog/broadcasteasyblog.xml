@@ -18,7 +18,7 @@
 	</files>
 	<!-- parameters for Joomla 1.5.x -->
 	<params addpath="/administrator/components/com_broadcast/plugins/elements">
-		<param name="category" type="sqlmultilistx" default="1" label="Select categoies of Blog" sql="SELECT title FROM #__easyblog_category WHERE published = 1 " key_field='id' value_field='title' multiple="multiple" description="Select categories to add blog" size="auto"/>
+		<param name="category" type="sqlmultilistx" default="1" label="Select categoies of Blog" sql="SELECT id,title FROM #__easyblog_category WHERE published = 1 " key_field='name' value_field='title' multiple="multiple" description="Select categories to add blog" size="auto"/>
 		<param name="msg" type="text" default="{username} added a Blog {title} {path}" label="Message"	description="Use this to define the message you want to broadcast, you can use the placeholders to dynamically change the message" size="50"/>
 	</params>
 	
@@ -26,7 +26,7 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
-				<field name="category" type="sql" default="1" label="Allowed Category of Blog" query="SELECT title FROM #__easyblog_category WHERE published = 1" key_field='id' value_field='name' multiple="multiple" description="Allowed Category of Blog" />        
+				<field name="category" type="sql" default="1" label="Allowed Category of Blog" query="SELECT id,title FROM #__easyblog_category WHERE published = 1" key_field='id' value_field='title' multiple="multiple" description="Allowed Category of Blog" />        
 				<field name="msg" type="text" default="{username} added a Blog {title} {path}" label="Message"	description="Use this to define the message you want to broadcast, you can use the placeholders to dynamically change the message" size="50"/>
 			</fieldset>
 		</fields>
