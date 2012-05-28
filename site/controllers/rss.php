@@ -45,7 +45,7 @@ class BroadcastControllerrss extends JController
 			$database->setQuery($fbquery);
 			$this->links = $database->loadObjectlist();
 			$links=explode('|',$this->links[0]->broadcast_rss_url);
-			if(!empty($broadcast_config['rss_limit_per_user'])
+			if(!empty($broadcast_config['rss_limit_per_user']))
 			$rss_limit_per_user=$broadcast_config['rss_limit_per_user'];
 			else
 			$rss_limit_per_user=5;
