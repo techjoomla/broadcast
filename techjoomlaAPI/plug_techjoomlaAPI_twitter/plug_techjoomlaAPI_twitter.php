@@ -384,15 +384,17 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 
 				$params = array('count'=>$twitter_profile_limit,'user_id'=>$token['user_id'],'screen_name'=>$token['screen_name']);
 				try{
-				$tmhOAuth->request('GET', $tmhOAuth->url('1/statuses/user_timeline.json'),$params);
+				$tmhOAuth->request('GET', $tmhOAuth->url('1/statuses/user_timeline'),$params);
 				}
 				catch (Exception $e) 
 				{
-					$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL'),JText::_('LOG_GET_STATUS'),$oauth_key->user_id,0);
-					return false;
+					$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL_TWITTER'),$e->getMessage(),$oauth_key->user_id,1);
+
 				}	
 				$content=json_decode($tmhOAuth->response['response'],true);
 				$data=$this->renderstatus($content);
+				if(empty($data))
+		 		 continue;
 				if($data)
 				{
 					$returndata[$i]['user_id'] = $oauth_key->user_id;

@@ -435,11 +435,14 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			}
 			catch (FacebookApiException $e) 
 			{
-				$this->raiseException($e->getMessage());
-				return false;
+					$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL_FACEBOOK'),$e->getMessage(),$oauth_key->user_id,1);
+
 		  }
 		  $status='';
+		  
 		  $status=$this->renderstatus($json_facebook['data'])	;
+		  if(empty($status))
+		  continue;
 		  if($status)
 			{
 				$returndata[$i]['user_id'] 	= $oauth_key->user_id;
@@ -455,7 +458,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			
 			$i++;
 		}
-						//print_r($returndata['0']);die;
 		if(!empty($returndata['0']))
 		return $returndata;
 		else

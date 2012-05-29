@@ -455,8 +455,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			}
 			catch(LinkedInException $e)
 			{ 
-				$this->raiseException($e->getMessage(),$oauth_key->user_id,1);
-				//return false;
+					$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL_LINKEDIN'),$e->getMessage(),$oauth_key->user_id,1);
 			}
 			
 			if(!$response_updates)	
