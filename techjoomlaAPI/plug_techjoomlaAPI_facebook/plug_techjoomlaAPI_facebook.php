@@ -424,11 +424,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 
 			if(!$validtoken)
 			{
-			
 				$this->remove_token('broadcast',$oauth_key->user_id);
-
-				return false;
-				
+				$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL_FACEBOOK'),'Not Valid Access Token',$oauth_key->user_id,1);
+				continue;
+			
 			}
 			try{		
 				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit));
