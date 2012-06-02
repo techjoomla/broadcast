@@ -24,8 +24,6 @@ class BroadcastModelrss extends JModel
 		 	$str_title_link = $rssobj->get_title()." <a href=".$shortURL['id']." target='_blank'>".$shortURL['id']."</a>";
 		 	if($broadcast_config['status_via'])
 		   		$str_title_link	.= " (via RSS)";
-		 							 	
-			echo $str_title_link."<br>";
 
  		 	$str_title_link = "<img style='height: 20px;' src=".JURI::base().'modules'.DS.'mod_broadcast'.DS.'images'.DS.'rss.png'."> ".$str_title_link;
 			
