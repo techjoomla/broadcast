@@ -430,7 +430,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			
 			}
 			try{		
-				$json_facebook = $this->facebook->api($token->facebook_uid.'/feed',array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit));
+				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit));
 			}
 			catch (FacebookApiException $e) 
 			{
