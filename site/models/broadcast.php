@@ -103,8 +103,8 @@ class BroadcastModelbroadcast extends JModel
 					if($broadcast_config['status_via'])
 						$status_content = $status_content.' (via '.ucfirst($api_name).')';
 
-					$status_content = combroadcastHelper::makelink($status_content);
-					//$status_content=$this->target_links($status_content); 
+					$status_content = combroadcastHelper::makelink($status_content,$api_name);
+
 					$today_date	= & JFactory::getDate($status['timestamp']);
 					combroadcastHelper::inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toMySQL() );
 					combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toMySQL(),$api );
@@ -115,14 +115,7 @@ class BroadcastModelbroadcast extends JModel
 		}
 	}
 	
-		function target_links( $html )
-    {       
-        $pattern = "/<(a)([^>]+)>/i";
-        $replacement = "<\\1 target=\"_blank\"\\2>";
-        $new_str = preg_replace($pattern,$replacement,str_replace('target="_blank"','',$html));     
-        return $new_str;
-    }
-
+		
 	
 	function getqueue(){
 		$query 		= "SELECT * FROM #__broadcast_queue";
