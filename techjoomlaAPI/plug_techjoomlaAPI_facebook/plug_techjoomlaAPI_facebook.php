@@ -505,7 +505,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		
 		try{
 		if(isset($token))
-		$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $content));
+		$post = $this->facebook->api($token->facebook_uid.'/statuses', 'POST', array('access_token'=>$token->facebook_secret,'message' => $content));
 		
 		} 
 		catch (FacebookApiException $e) 
