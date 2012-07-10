@@ -21,6 +21,7 @@ class BroadcastControllerrss extends JController
 	{	
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 		$pkey = JRequest::getVar('pkey', '');
+		$integration=$broadcast_config['integration'];
 		if($pkey!=$broadcast_config['private_key_cronjob'])
 		{
 			echo  JText::_("NOT_AUTH_KEY");
@@ -28,7 +29,7 @@ class BroadcastControllerrss extends JController
 		}
 
 		$database = JFactory::getDBO();
-		$fbquery = "SELECT user_id FROM #__broadcast_config where broadcast_rss_url<>'' ";
+		$fbquery = "SELECT user_id FROM #__broadcast_config where broadcast_rss<>'' ";
 		$database->setQuery($fbquery);
 		$this->uaccess = $database->loadObjectlist();
     	$model = $this->getModel('rss');
@@ -40,17 +41,26 @@ class BroadcastControllerrss extends JController
 			echo '<br>';
 			
 			$userid = $v->user_id;
-			$fbquery = "SELECT user_id,broadcast_rss_url
-			FROM #__broadcast_config where broadcast_rss_url <> '' and user_id=".$v->user_id;
+			$fbquery = "SELECT user_id,broadcast_rss
+			FROM #__broadcast_config where broadcast_rss <> ''  AND user_id=".$v->user_id;
 			$database->setQuery($fbquery);
-			$this->links = $database->loadObjectlist();
-			$links=explode('|',$this->links[0]->broadcast_rss_url);
+			$rsslists = $database->loadObjectlist();
+				if(empty($rsslists[0]))
+				continue;
+			$rssdts=json_decode($rsslists[0]->broadcast_rss,true);
+
+											
+
+			//$links=explode('|',$this->links[0]->broadcast_rss);
 			if(!empty($broadcast_config['rss_limit_per_user']))
 			$rss_limit_per_user=$broadcast_config['rss_limit_per_user'];
 			else
 			$rss_limit_per_user=5;
-			foreach($links as $link)
+			foreach($rssdts as $rss)
 			{
+				$link=$rss['link'];
+				$title=$rss['title'];
+			
 				if(empty($link) || $link=='')
 				    continue;
 				jimport( 'joomla.html.parameter' );
@@ -73,7 +83,7 @@ class BroadcastControllerrss extends JController
 									 	{                
 											if(!combroadcastHelper::checkexist($statuslog,$userid,'rss'))
 											{
-												$model->rssstore($userid,$currItem);
+												$model->rssstore($userid,$currItem,$title);
 											}
 										 }
 											echo "\n";

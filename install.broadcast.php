@@ -51,7 +51,7 @@ else
 echo '<br/><br/><span style="font-weight:bold;">'.JText::_('Installing Payment plugins:').'</span>';
 //install JS Broadcast plugin and publish it
 $installer = new JInstaller;
-$result = $installer->install($install_source.DS.'broadcastplugin');
+$result = $installer->install($install_source.DS.'broadcastplugin/jomsocialbroadcast');
 if (!in_array("jomsocialbroadcast", $status)) {
 	if(JVERSION >= '1.6.0')
 	{
@@ -70,6 +70,29 @@ if (!in_array("jomsocialbroadcast", $status)) {
 else
 {
 	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_('JomSocial Broadcast plugin installed').'</span>'; 	
+}
+	
+//install JOMWALL Broadcast plugin and publish it
+$installer = new JInstaller;
+$result = $installer->install($install_source.DS.'broadcastplugin/jomwallbroadcast');
+if (!in_array("jomwall", $status)) {
+	if(JVERSION >= '1.6.0')
+	{
+		$query = "UPDATE #__extensions SET enabled=1 WHERE element='jomwallbroadcast' AND folder='system'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	else
+	{
+		$query = "UPDATE #__plugins SET published=1 WHERE element='jomwallbroadcast' AND folder='system'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_('Jomwall Broadcast plugin installed and published').'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_('Jomwall Broadcast plugin not installed').'</span>'; 	
+}
+else
+{
+	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_('Jomwall Broadcast plugin installed').'</span>'; 	
 }
 	
 //install techjoomlaAPI plugins 
@@ -140,6 +163,26 @@ else
 }
 
 //install broadcast_external plugins
+
+/*$rssdts=explode('|',$rsslists);
+							$irss=0;
+							foreach($rssdts as $rsskey=>$rssvalue)
+							{
+							
+								if(is_int($rsskey))
+								{
+								$final_rss[$irss]['title']='';
+
+								}
+								else
+								$final_rss[$irss]['title']=$key;
+								$final_rss[$irss]['url']=$rssvalue;
+							$irss++;
+							}
+							$vv=$final_rss;
+						$ss=	json_encode($vv);
+*/
+
 echo '<br/><br/><span style="font-weight:bold;">'.JText::_('Installing Extensions Intregration plugins:').'</span>';
 //bradcast_content
 $installer = new JInstaller;
@@ -258,8 +301,67 @@ else
 
 function com_install()
 {
+
 	$errors = FALSE;
 	$db = & JFactory::getDBO();
+	$query = "CREATE TABLE IF NOT EXISTS `#__broadcast_config` (
+  `user_id` int(11) NOT NULL,
+  `broadcast_activity_config` varchar(500) NOT NULL,
+  `broadcast_rss` text NOT NULL
+);";
+
+$db->setQuery($query);
+	$db->query();
+	
+	$query = "SHOW COLUMNS FROM `#__broadcast_config`";
+	$db->setQuery($query);
+	$columns = $db->loadobjectlist();
+	
+	for($i = 0; $i < count($columns); $i++) {
+				$field_array[] = $columns[$i]->Field;
+	}
+	
+
+	$oldbroadcast=0;
+	if (in_array('broadcast_rss_url', $field_array)) { 
+	$oldbroadcast=1;
+		echo $query = "ALTER TABLE #__broadcast_config CHANGE `broadcast_rss_url` `broadcast_rss` TEXT NOT NULL  ";
+		$db->setQuery($query);
+		if(!$db->query() )
+		{
+			echo $img_ERROR.JText::_('Unable to Alter #__broadcast_config').$BR;
+			echo $db->getErrorMsg();
+			return FALSE;
+		}			
+	}
+	
+	$query = "SELECT user_id,broadcast_rss FROM `#__broadcast_config`";
+	$db->setQuery($query);
+	$rssdatas = $db->loadobjectlist();
+	if(!empty($rssdatas) and $oldbroadcast==1)
+	{
+		foreach($rssdatas as $rss)
+		{
+				$json_arr=array();
+				$rssurlarrs=explode('|',$rss->broadcast_rss);
+				$i=0;
+				foreach($rssurlarrs as $rssurlarr)
+				{
+				
+					$json_arr[$i]['title']='';
+					$json_arr[$i]['link']=$rssurlarr;			
+					$i++;
+				}
+					
+				$dat = new stdClass;
+				$dat->user_id  = $rss->user_id;		
+				$dat->broadcast_rss = json_encode($json_arr);		
+					
+				$db->updateObject('#__broadcast_config',$dat,'user_id');						
+		
+		
+		}
+	}
 	
 	//-- common images
 	$img_OK = '<img src="images/publish_g.png" />';
@@ -290,13 +392,14 @@ function com_install()
 		JFile::write($destination.'config.php',$data);
 	}
 		
-	if(JFolder::exists(JPATH_SITE.'/components/com_community/assets/favicon/'))
+	if(!JFolder::exists(JPATH_SITE.'/components/com_community/assets/favicon/'))
 	{
 		JFolder::create(JPATH_SITE.'/components/com_community/assets/favicon/');
 		JFile::move(JPATH_SITE.'/components/com_broadcast/images/twitter.png', JPATH_SITE.'/components/com_community/assets/favicon/twitter.png' );
 		JFile::move(JPATH_SITE.'/components/com_broadcast/images/linkedin.png', JPATH_SITE.'/components/com_community/assets/favicon/linkedin.png' );
 		JFile::move(JPATH_SITE.'/components/com_broadcast/images/facebook.png', JPATH_SITE.'/components/com_community/assets/favicon/facebook.png' );
 	}
+	
 	JFile::delete($destination.'configdefault.php');
 	
 }

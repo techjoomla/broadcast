@@ -127,6 +127,7 @@ class BroadcastModelbroadcast extends JModel
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
 		return $grt_response = $dispatcher->trigger($api_used.'setstatus',array($userid,$status));
 	}
+	
 	function purgequeue(){
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 		

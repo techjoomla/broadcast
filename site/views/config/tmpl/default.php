@@ -6,6 +6,25 @@ require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'con
 
 $document = &JFactory::getDocument();
 $document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css' );
+$rsslists = $this->subscribedlists->broadcast_rss;
+							/*$rssdts=explode('|',$rsslists);
+							$irss=0;
+							foreach($rssdts as $rsskey=>$rssvalue)
+							{
+							
+								if(is_int($rsskey))
+								{
+								$final_rss[$irss]['title']='';
+
+								}
+								else
+								$final_rss[$irss]['title']=$key;
+								$final_rss[$irss]['url']=$rssvalue;
+							$irss++;
+							}
+							$vv=$final_rss;
+						echo $ss=	json_encode($vv);die;*/
+
 
 $session =& JFactory::getSession();
 
@@ -14,9 +33,9 @@ $session->set('itemid_session',$itemid);
 $u =& JURI::getInstance();
 $currentMenu= $u->toString();
 $session->set('currentMenu', $currentMenu);
-if(isset($this->subscribedlists->broadcast_rss_url) )
+if(isset($this->subscribedlists->broadcast_rss) )
 {
-	$rsslists = explode('|', $this->subscribedlists->broadcast_rss_url);
+	$rsslists = explode('|', $this->subscribedlists->broadcast_rss);
 }
 
 $user=JFactory::getUser();
@@ -33,7 +52,7 @@ if(!$user->id){
 <script type="text/javascript">
 	 var limit="<?php echo $broadcast_config['rss_link_limit']; ?>";
 	 <?php
-	 if(isset($this->subscribedlists->broadcast_rss_url))
+	 if(isset($this->subscribedlists->broadcast_rss))
 	 {
 	 ?>
 	 	var counter="<?php echo count($rsslists)+1; ?>";
@@ -107,7 +126,10 @@ if(!$user->id){
 			<div id="broadcast_activity1"  class="broadcast-expands">
 				<div style="padding-left: 8px;">		
 					<?php
-						$brodfile 	= JPATH_SITE."/components/com_broadcast/broadcast.ini";
+					if($broadcast_config['integration']==0)
+						$brodfile 	= JPATH_SITE."/components/com_broadcast/jomsocial.ini";
+						else if($broadcast_config['integration']==1)
+						$brodfile 	= JPATH_SITE."/components/com_broadcast/jomwall.ini";
 						$activities = parse_ini_file($brodfile);
 						$lists 	= array();	
 						if (isset($this->subscribedlists->broadcast_activity_config))
@@ -124,7 +146,13 @@ if(!$user->id){
 						}
 					?>
 				</div>	
-				<div style="padding-left: 8px;"><?php echo JText::_('BC_ACT_MSG')?></div>
+				<?php
+					if($broadcast_config['integration']==0){
+				?>
+				<div style="padding-left: 8px;"><?php echo JText::_('JS_BC_ACT_MSG')?></div>
+				<?php
+				}
+				?>
 			</div>
 		</div>
 		<div class="content_bottom">
@@ -148,7 +176,7 @@ if(!$user->id){
 	        	    alert("<?php echo JText::sprintf('LIMIT_RSS',$broadcast_config['rss_link_limit']);?>");
 				}
 				else{
-					appendElement("container1", "element" + latestId, "<input size='50' type='text' class='inputbox' name='rss_link[]' value='' /><a href=\"javascript:removeItem(" + latestId + ")\"><?php echo JText::_('REM_RSS');?></a>");		
+					appendElement("container1", "element" + latestId, "<input size='50' type='text' class='inputbox' name='rss_title[]' value='' /><br><input size='50' type='text' class='inputbox' name='rss_link[]' value='' /><a href=\"javascript:removeItem(" + latestId + ")\"><?php echo JText::_('REM_RSS');?></a>");		
 					latestId++;
 					counter++;
 				}
@@ -190,14 +218,21 @@ if(!$user->id){
 			<div id="broadcast_rss">
 				<div id="container1" style="padding-left: 20px;">
 					<?php 
-						if(isset($this->subscribedlists->broadcast_rss_url) )
+						if(isset($this->subscribedlists->broadcast_rss) )
 						{
-							$rsslists = explode('|', $this->subscribedlists->broadcast_rss_url);						
+							$rsslists = $this->subscribedlists->broadcast_rss;
+							$rssdts=json_decode($rsslists,true);
+
+											
 							$i=0;
-							foreach($rsslists as $rss)
+							foreach($rssdts as $rss)
 							{
+							
+
+
 								echo '<div id="element'.$i.'">';													
-								echo '<input size="50" type="text" class="inputbox" name="rss_link['.$i.']" value="'.$rss.'" />';
+								echo '<input size="50" type="text" class="inputbox" name="rss_title['.$i.']" value="'.$rss['title'].'" />
+								<input size="50" type="text" class="inputbox" name="rss_link['.$i.']" value="'.$rss['link'].'" />';
 								echo '<a href="javascript:removeItem('.$i.');" > '.JText::_('REM_RSS').'</a>'."<br />";
 								echo '</div>';
 								$i++;

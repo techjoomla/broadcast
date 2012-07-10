@@ -117,17 +117,17 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 	function makelink($text,$thisapi)
 	{
 	
-		if(strtolower($thisapi)=="twitter")
+		/*if(strtolower($thisapi)=="twitter")
 		{
 
 			$text = preg_replace('@(https?://([-\w\.]+)+(d+)?(/([\w/_\.]*(\?\S+)?)?)?)@', '<a target="_blank" href="$1">$1</a>',  $text );
 			$text = preg_replace("#(^|[\n ])@([^ \"\t\n\r<]*)#ise", "'\\1<a target=\"_blank\" href=\"http://www.twitter.com/\\2\" >@\\2</a>'", $text);  
 			$text = preg_replace("#(^|[\n ])\#([^ \"\t\n\r<]*)#ise", "'\\1<a target=\"_blank\" href=\"http://hashtags.org/search?query=\\2\" >#\\2</a>'", $text);
 	
-			return $text;
+			 $text;die;
 	
 		}
-		else
+		else*/
 		{
 			$text1=$text;
 			$text2=combroadcastHelper::htmlEscapeAndLinkUrls($text1);
@@ -147,10 +147,14 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 	 * @param int short to shorten the url or not
 	*/
 	function addtoQueue($userid,$message,$date,$count,$interval,$media='',$supplier,$short){
+
 		if($short==1)	// replacement of url in message with short url	
-			$message = combroadcastHelper::givShortURL($message);
+		{
+			
+		}
 		if(is_array($userid) )
 		{
+
 			foreach($userid as $id){
 
 			if(trim($id)){
@@ -160,15 +164,20 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 			}
 		}
 		else{
-			
+
+
 			combroadcastHelper::inQueue($userid,$message,$count,$interval,$supplier,$media);		
 			combroadcastHelper::intempAct($userid,$message,$date);
 		}
 		return true;
 	}
+	
+	
+
 	#inQueue function called from plugin as well can be called from custom place	
 	function inQueue($userid,$newstatus, $count, $interval, $supplier, $media)
 	{
+
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 				if($media == '')
 			$touseapi = $broadcast_config['api'];
@@ -178,6 +187,7 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 		if(!$count)	$count = 1;
 	    $db =& JFactory::getDBO();
 		foreach($touseapi as $api){
+			
 			$obj		   	= new StdClass();
 			$obj->id	   	= '';
 			$obj->status   	= $newstatus;
@@ -188,6 +198,7 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 			$obj->interval	= $interval;
 			$obj->api 		= $api;
 			$obj->supplier	= $supplier ;
+
 				
 			if(!$db->insertObject('#__broadcast_queue', $obj)){
 	      			$db->stderr();
@@ -200,21 +211,103 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 	#populate the temp activity table of broadcast called from broadcast & rss models 
 	function intempAct($id, $act, $date, $api='')
 	{
+			require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 		$db 			=& JFactory::getDBO();
 		$obj			= new StdClass();
 		$obj->uid 		= $id;
-		$obj->status 	= $act;
+		$obj->status 	=  combroadcastHelper::stripUrl($act);
+		if(!$obj->status)
+		$obj->status 	=$act;
 		$obj->created_date	= $date;	
 		$obj->type		= $api; 
+
 		if(!$db->insertObject('#__broadcast_tmp_activities', $obj)){		
       		$db->stderr();
       		return false;
   		}
 		return true;
 	}
+	
+	function stripUrl($url)
+	{
+
+  $U = explode(' ',$url);
+
+  $W =array();
+  foreach ($U as $k => $u) {
+    if (stristr($u,'http') || (count(explode('.',$u)) > 1)) {
+      unset($U[$k]);
+      return combroadcastHelper::stripUrl(implode(' ',$U));
+    }
+  }
+  return implode(' ',$U);
+	}
+
+	
+	function urlpresent($url) {
+		$count=0;
+		$U = explode(' ',$url);
+		$W =array();
+		foreach ($U as $k => $u) {
+			if (stristr($u,'http') || (count(explode('.',$u)) > 1)) {
+			unset($U[$k]);
+			$count=1;
+			break;
+			}
+		}
+		
+		return $count;
+	}
+	
+	function seperateurl($url) {
+	
+	$newurl='';
+  $U = explode(' ',$url);
+
+  $W =array();
+  foreach ($U as $k => $u) {
+    if (stristr($u,'http') || (count(explode('.',$u)) > 1)) {
+      $newurl=$U[$k];
+      
+      $count=1;
+
+    }
+  }
+  return $newurl;
+}
+	
+	function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm)
+	{
+			require_once( JPATH_SITE . DS . 'components' . DS . 'com_awdwall' . DS . 'helpers' . DS . 'user.php'); 
+			
+			$attachment='';
+
+			$type='text';
+			$urlpresent='';
+			$params=array();
+			$link=combroadcastHelper::makelink($comment,$api_nm);
+			$link=trim($link);
+			$comment=trim($comment);
+			if($link!=$comment)
+			{				
+				$type='link';
+				$attachment=combroadcastHelper::seperateurl($comment);
+				$comment=str_replace($attachment,'',$comment);
+			}
+			
+			$api=str_replace('plug_techjoomlaAPI_','',$api_nm);
+
+			$imgpath=JURI::base().'/components/com_broadcast/images/'.$api.'.png';
+			AwdwallHelperUser::addtostream($comment,$attachment,$type,$userid,$imgpath,$params);
+				
+		
+		
+	}
 	#populate the Jomsocial activity table called from broadcast & rss models 
 	function inJSAct($actor,$target,$title,$content,$api,$cid,$date)
 	{
+
+
 			require_once( JPATH_SITE . DS . 'components' . DS . 'com_community' . DS . 'libraries' . DS . 'core.php'); 
 		$act = new stdClass();
 		$act->cmd 	= 'wall.write';
@@ -233,6 +326,8 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 		$act->like_id     = CActivities::LIKE_SELF;		
 		CActivityStream::add($act);
 	}
+	
+	
 	#set the current Jomsocial status, called from broadcast & rss models 
 	function updateJSstatus($userid,$status,$date)
 	{
@@ -242,28 +337,172 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 		$db->setQuery( $query );
 		$result =$db->query();
 	}
+	
+	function checkexistparams($id,$userid,$api,$column)
+	{
+		$db 			=& JFactory::getDBO();
+		$query = "SELECT params FROM #__broadcast_config WHERE user_id ={$userid}";
+		$db->setQuery($query);
+		$json=$db->loadResult();
+		$dataarr=json_decode($json,true);
+		if(empty($dataarr['paramsdata'][$column]))
+			return 0;
+		foreach($dataarr['paramsdata'][$column] as $multipledata)
+		{
+			
+			if($multipledata['id']==$id)
+						return 1;
+			
+		}
+					return 0;
+	}
+	/*This function is used to get parameter of plugins
+	*	@group:string  group of plugin 
+	*	@api:string name of plugin 
+	*	@params:string name of required parameters seperated by comma(,) 
+	*/
+		function getpluginparams($group,$api,$paramstr)
+		{
+			if(!$group and !$api	and !$paramstr)
+			return '';
+			if(JVERSION>=1.6)
+				{
+					$plugin = JPluginHelper::getPlugin($group, $api);
+					$pluginParams = new JRegistry();    
+					if(!empty($plugin->params))
+					$pluginParams->loadString($plugin->params);				
+				}
+				else
+				{
+					$plugin = &JPluginHelper::getPlugin($group, $api);
+					if(!empty($plugin->params))
+					$pluginParams = new JParameter($plugin->params);
+				
+				}
+
+				if($pluginParams)   
+				{
+						$params=explode(',',$paramstr);
+						$params_data=array();
+						foreach($params as $param)
+						{
+									if($pluginParams->get($param))
+									$params_data[$param] = $pluginParams->get($param);	
+
+						}
+				}
+				return $params_data;
+		}
+	#check if the status exist in the temp table of broadcast
+	/*function checkexist($status,$uid,$api='')
+	{
+		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$integration=$broadcast_config['integration'];
+		$db 		=& JFactory::getDBO();
+		$status		= explode('(via',$status);		
+		$newstatus	= trim($status[0]);
+		$pattern = '#(www\.|https?:\/\/){1}[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\S*)#i';
+		$newstatus	=$db->getEscaped($newstatus);
+		$where = '';
+		if($api)
+			$where = ' AND (type="'.$api.'" OR type="") ';
+		 $query = "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid}   ".$where ;
+		$db->setQuery($query);
+		$dbstatus=$db->loadResult();
+		//if status contains shortened
+		preg_match_all($pattern, $newstatus, $newmatches, PREG_PATTERN_ORDER);
+		preg_match_all($pattern, $dbstatus, $matches, PREG_PATTERN_ORDER);
+
+		if(!empty($matches[0]) and !empty($newmatches[0]))
+		{
+		   
+		   
+				$url = $matches[0][0];
+				$ch = curl_init($url);
+				curl_setopt($ch,CURLOPT_HEADER,true);
+				curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+				curl_setopt($ch, CURLOPT_FOLLOWLOCATION,false);
+				$data = curl_exec($ch);
+				$pdata = combroadcastHelper::http_parse_headers($data);
+
+				$dburl=$pdata['Location'];
+				if(empty($pdata['Location']))
+								$dburl=$pdata['location'];
+
+
+				$url = $newmatches[0][0];
+				$ch = curl_init($url);
+				curl_setopt($ch,CURLOPT_HEADER,true);
+				curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+				curl_setopt($ch, CURLOPT_FOLLOWLOCATION,false);
+				$data = curl_exec($ch);
+				$ndata = combroadcastHelper::http_parse_headers($data);
+			$newurl=$pdata['Location'];
+				if(empty($pdata['Location']))
+								$newurl=$pdata['location'];
+
+			echo $dburl;
+							echo "<br/>--------------";
+				echo $newurl;
+
+	 			if(trim($dburl)!=trim($newurl))
+	 			return 0;					
+	
+	
+		}
+		else
+		{
+		if($newstatus==$dbstatus)			
+			return 1;					
+		else
+			return 0;
+		}
+
+		
+	}*/
 	#check if the status exist in the temp table of broadcast
 	function checkexist($status,$uid,$api='')
 	{
 		$db 		=& JFactory::getDBO();
+		
 		$status		= explode('(via',$status);		
-		$newstatus	= trim($status[0]);
+		$originalstatus=$newstatus	= trim($status[0]);
+		$newstatus 	=  combroadcastHelper::stripUrl($newstatus);
+		if(!$newstatus)
+		$newstatus 	=$originalstatus;
 		$newstatus	=$db->getEscaped($newstatus);
 		$where = '';
 		if($api)
 			$where = ' AND (type="'.$api.'" OR type="") ';
 		$query = "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid} AND status = '{$newstatus}' ".$where ;
 		$db->setQuery($query);
+		
 		if($db->loadResult())			
 			return 1;					
 		else
 			return 0;
 	}
+	function http_parse_headers( $header )
+	    {
+	        $retVal = array();
+	        $fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
+	        foreach( $fields as $field ) {
+            if( preg_match('/([^:]+): (.+)/m', $field, $match) ) {
+	                $match[1] = preg_replace('/(\?< =^|[\x09\x20\x2D])./e', 'strtoupper("")', strtolower(trim($match[1])));
+	                if( isset($retVal[$match[1]]) ) {
+	                    $retVal[$match[1]] = array($retVal[$match[1]], $match[2]);
+	                } else {
+	                    $retVal[$match[1]] = trim($match[2]);
+	                }
+	            }
+	        }
+	        return $retVal;
+	    }
 	#strips the long urls to short url with Google shortening
 	function givShortURL($string){
 		require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'googlshorturl.php');
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
-		$api_key=$broadcast_config['url_apikey'];
+		$api_key=trim($broadcast_config['url_apikey']);
 		$goo = new Googl($api_key);//if you have an api key
 	
 		// replacement of url in title
@@ -277,6 +516,41 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 		}
 		return $string;
 	}
+
+	function getContentFromUrl($url)
+	{
+	if (!$url)
+		return false;
+
+	$response = '';
+	if (function_exists('curl_init'))
+	{		
+		$ch =curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$response = curl_exec($ch);
+		curl_close($ch);
+	}
+	else
+	{
+		$fp = fsockopen($url, 80, $errno, $errstr, 30);
+		if (!$fp) {
+			return false;
+		} else {
+		    $header  = 'GET / HTTP/1.1\r\n';
+		    $header .= 'Host: ' . $url . '\r\n';
+		    $header .= 'Connection: Close\r\n\r\n';
+		    fwrite($fp, $header);
+		    while (!feof($fp)) {
+		        $response .= fgets($fp, 128);
+		    }
+		    fclose($fp);
+		}
+	}
+	return $response;
+}
+
+
 }
 }
 //this class is used to make log for f/l/t controllers 
@@ -484,5 +758,7 @@ class techjoomlaHelperLogs
     return($xml_array);
 }  
 }	
+
+
 }
 ?>

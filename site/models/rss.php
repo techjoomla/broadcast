@@ -7,7 +7,7 @@ include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 class BroadcastModelrss extends JModel
 {
 		
-	 function rssstore($uid,$rssobj)
+	 function rssstore($uid,$rssobj,$title)
 	 {
 	 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 	 		require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'googlshorturl.php');
@@ -22,15 +22,26 @@ class BroadcastModelrss extends JModel
 			$goo = new Googl($api_key);
 			$shortURL = $goo->set_short($rssobj->get_link());
 		 	$str_title_link = $rssobj->get_title()." <a href=".$shortURL['id']." target='_blank'>".$shortURL['id']."</a>";
-		 	if($broadcast_config['status_via'])
-		   		$str_title_link	.= " (via RSS)";
-
- 		 	$str_title_link = "<img style='height: 20px;' src=".JURI::base().'modules'.DS.'mod_broadcast'.DS.'images'.DS.'rss.png'."> ".$str_title_link;
+		 		//if Jomsocial
+				if($broadcast_config['integration']==0)
+				{			
+					if($broadcast_config['status_via'])
+						$str_title_link	.= " (via RSS)->".$title;
+						$str_title_link .= "<img style='height: 16px;width: 16px;' src=".JPATH_SITE.'modules'.DS.'mod_broadcast'.DS.'images'.DS.'rss.png'."> ";
 			
-			combroadcastHelper::inJSAct($uid,$uid,$str_title_link,'', 'rss',$uid, $date);
-			combroadcastHelper::intempAct($uid, $rssobj->get_title(), $date,'rss' );
-			if($broadcast_config['show_status_rss'])
-				combroadcastHelper::updateJSstatus($uid, $rssobj->get_title(),$date );
+					combroadcastHelper::inJSAct($uid,$uid,$str_title_link,'', 'rss',$uid, $date);
+					combroadcastHelper::intempAct($uid, $rssobj->get_title(), $date,'rss' );
+					if($broadcast_config['show_status_rss'])
+					combroadcastHelper::updateJSstatus($uid, $rssobj->get_title(),$date );
+				}
+				//if Jomwall
+				if($broadcast_config['integration']==1)
+				{
+
+					combroadcastHelper::inJomwallact($uid, $rssobj->get_title(),$rssobj->get_title(),'',$get_date,'rss');
+					combroadcastHelper::intempAct($uid, $rssobj->get_title(), $date,'rss' );
+				}
+			
 	  }
 
 		

@@ -24,7 +24,9 @@
 		<folder>views</folder>
 		<folder>images</folder>
 		<file>broadcast.php</file>
+		<file>jomwall.ini</file>
 		<file>broadcast.ini</file>
+		<file>jomsocial.ini</file>
 		<file>controller.php</file>
 		<file>helper.php</file>
 		<file>index.html</file>	

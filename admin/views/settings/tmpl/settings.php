@@ -38,6 +38,13 @@ require(JPATH_SITE.DS."administrator".DS."components".DS."com_broadcast".DS."con
 		$apis =	$broadcast_config['api'];
 	else
 		$apis = '';
+		$import = array(0=>JText::_('BC_JOMSOCIAL'),1=>JText::_('BC_JOMWALL'));
+					$options_integr= array();
+					foreach($import as $key=>$value) {
+						 	 $options_integr[] = JHTML::_('select.option', $key, $value);
+		 					 }
+		$value= '';
+		
 /* if($broadcast_config['show_status_update'])
 		$show_status_update ='SELECTED=true';
 	else
@@ -94,6 +101,21 @@ else
 
 	?>
 	<table border="0" width="100%" class="adminlist">
+	<tr>
+			
+			<?php
+					$value= '';
+					if($broadcast_config['integration']==0)
+						$value = 0;
+					else if($broadcast_config['integration']==1)
+						$value = 1;
+					
+			?>
+				<td  width="25%"><?php echo JHTML::tooltip(JText::_('INTEGRATION_TOOLTIP'), JText::_('INTEGRATION'), '', JText::_('INTEGRATION'));?></td>
+				<td class="setting-td">
+					<?php echo $radiolist = JHTML::_('select.radiolist', $options_integr, 'data[integration]', 'class="inputbox fieldlist"  ', 'value', 'text', $broadcast_config['integration']);?>
+				</td>
+		</tr>
 		<tr>
 			<td align="left" width="10%"><?php echo JHTML::tooltip(JText::_('SHOW_NAME_BEFORE_DES'), JText::_('SHOW_NAME_BEFORE'), '', JText::_('SHOW_NAME_BEFORE'));?></td>
 			<td width="90%"><select class="inputbox" name="data[show_name]">

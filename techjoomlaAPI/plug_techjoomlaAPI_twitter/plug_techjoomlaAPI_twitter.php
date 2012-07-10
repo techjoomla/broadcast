@@ -430,7 +430,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 				break;
 				if(!empty($data['text']))
 				{
-					if( !($data['source']=='web') )		//for converting the urls t.co into goo.gl
+					if( !($data['source']=='web') and  !empty($data['entities']['urls']))		//for converting the urls t.co into goo.gl
 					{
 						foreach($data['entities']['urls'] as $url)
 						{
