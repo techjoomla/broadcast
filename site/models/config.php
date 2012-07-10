@@ -17,7 +17,7 @@ class BroadcastModelconfig extends JModel
 	function getsubscribedlist()
 	{
 		$user 	= JFactory::getUser();
-		$qry 	= "SELECT broadcast_activity_config,broadcast_rss_url  FROM #__broadcast_config  WHERE  user_id  = {$user->id}";
+		$qry 	= "SELECT broadcast_activity_config,broadcast_rss  FROM #__broadcast_config  WHERE  user_id  = {$user->id} ";
 		$this->_db->setQuery($qry);
 	 	$sub_list 	= $this->_db->loadObject();		 	
 	 	return $sub_list;
@@ -26,6 +26,8 @@ class BroadcastModelconfig extends JModel
 	/**** Start Added & Modified By - Deepak */
 	function save()
 	{	
+	require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$integration=$broadcast_config['integration'];
 		$user = JFactory::getUser();
 		$row = new stdClass;
 		$data = JRequest::get('post');
@@ -38,13 +40,22 @@ class BroadcastModelconfig extends JModel
 		$broadcast_activity = implode('|', $data['broadcast_activity']); 
 		else
 		$broadcast_activity ='';
-		if($data['rss_link'])
-		$rss_link 			= implode('|', $data['rss_link']);
-		else
-		$rss_link 			='';
+		
+		
+		$i=0;
+
+
+			
+		foreach($data['rss_title'] as $key=>$title){
+			$rss[$i]['title']=$title;
+			$rss[$i]['link']=$data['rss_link'][$key];
+			$i++;
+		
+		}
+
 				
 		$row->broadcast_activity_config = $broadcast_activity;
-		$row->broadcast_rss_url = $rss_link;		
+		$row->broadcast_rss = json_encode($rss);
 		$qry = "SELECT user_id FROM #__broadcast_config WHERE  user_id = {$user->id}";
 		$this->_db->setQuery($qry);
 	 	$userexists = $this->_db->loadResult();		
@@ -52,7 +63,7 @@ class BroadcastModelconfig extends JModel
 	 	{
 			if(!$this->_db->updateObject('#__broadcast_config', $row, 'user_id'))
 			{
-				echo $this->_db->stderr();
+				echo $this->_db->stderr();die;
 				return false;
 			}
 		} 

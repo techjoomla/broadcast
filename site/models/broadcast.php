@@ -51,6 +51,8 @@ class BroadcastModelbroadcast extends JModel
 	}
 	function checkuserconfig($userid){
 		$sub_list = '';
+		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$integration=$broadcast_config['integration'];
 		$qry 	= "SELECT broadcast_activity_config FROM #__broadcast_config WHERE user_id  = {$userid}";
 		$this->_db->setQuery($qry);
 	 	$sub_list 	= $this->_db->loadResult();		 	
@@ -68,23 +70,30 @@ class BroadcastModelbroadcast extends JModel
 		
 		$dispatcher = &JDispatcher::getInstance();
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
+		
+		
 		$statuses = $dispatcher->trigger($api_used.'getstatus'); 
+		$api_name = str_replace('plug_techjoomlaAPI_', '', $api_used);
+		
+
 		if(isset($statuses[0]) && !empty($statuses[0]))
 			$this->storestatus($statuses[0],$api_used); 		
 	}
 	
 	function storestatus($apistatuses,$api){
+
 		jimport('joomla.utilities.date');
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 		
-		$api_name = str_replace('plug_techjoomlaAPI_', '', $api);
-
+		
+				$api_name = str_replace('plug_techjoomlaAPI_', '', $api);
 		foreach($apistatuses as $apistatus){
 			$userid = $apistatus['user_id'];
 			$apistatus['status'] = array_reverse($apistatus['status']);
 			foreach ($apistatus['status'] as $status )
 			{	
+			
 				if((!combroadcastHelper::checkexist($status['comment'],$userid,$api)))
 				{
 					$obj = new StdClass();
@@ -103,21 +112,37 @@ class BroadcastModelbroadcast extends JModel
 					if($broadcast_config['status_via'])
 						$status_content = $status_content.' (via '.ucfirst($api_name).')';
 
-					$status_content = combroadcastHelper::makelink($status_content,$api_name);
 
-					$today_date	= & JFactory::getDate($status['timestamp']);
-					combroadcastHelper::inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toMySQL() );
-					combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toMySQL(),$api );
-					$today =& JFactory::getDate();
-					combroadcastHelper::updateJSstatus($userid, $status['comment'],$today->toMySQL() );
+
+						//if Jomsocial
+						if($broadcast_config['integration']==0)
+						{		
+							$status_content = combroadcastHelper::makelink($status_content,$api_name);	
+							$today_date	= & JFactory::getDate($status['timestamp']);
+							combroadcastHelper::inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toMySQL() );
+							combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toMySQL(),$api );
+							$today =& JFactory::getDate();
+							combroadcastHelper::updateJSstatus($userid, $status['comment'],$today->toMySQL() );
+						}
+						//if Jomwall
+						if($broadcast_config['integration']==1)
+						{
+
+							$today_date	= & JFactory::getDate($status['timestamp']);
+							$today =& JFactory::getDate();
+							combroadcastHelper::inJomwallact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
+							combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toMySQL(),$api);
+						}
 				}
 			}
 		}
 	}
 	
-		
+
 	
 	function getqueue(){
+		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$integration=$broadcast_config['integration'];
 		$query 		= "SELECT * FROM #__broadcast_queue";
 		$this->_db->setQuery($query);
 	 	return $this->_db->loadObjectList();
@@ -127,13 +152,13 @@ class BroadcastModelbroadcast extends JModel
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
 		return $grt_response = $dispatcher->trigger($api_used.'setstatus',array($userid,$status));
 	}
-	
 	function purgequeue(){
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$integration=$broadcast_config['integration'];
 		
 		$query = "SELECT id 
 					FROM #__broadcast_queue 
-					WHERE count=0 ORDER BY date desc LIMIT ".$broadcast_config['purgelimit'];
+					WHERE count=0  ORDER BY date desc LIMIT ".$broadcast_config['purgelimit'];
 		$this->_db->setQuery($query);
 	 	$queue = $this->_db->loadResultArray();
 	 	if(!empty($queue))
