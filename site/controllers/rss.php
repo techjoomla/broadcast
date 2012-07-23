@@ -45,11 +45,12 @@ class BroadcastControllerrss extends JController
 			FROM #__broadcast_config where broadcast_rss <> ''  AND user_id=".$v->user_id;
 			$database->setQuery($fbquery);
 			$rsslists = $database->loadObjectlist();
+
 				if(empty($rsslists[0]))
 				continue;
 			$rssdts=json_decode($rsslists[0]->broadcast_rss,true);
 
-											
+									
 
 			//$links=explode('|',$this->links[0]->broadcast_rss);
 			if(!empty($broadcast_config['rss_limit_per_user']))
@@ -58,8 +59,9 @@ class BroadcastControllerrss extends JController
 			$rss_limit_per_user=5;
 			foreach($rssdts as $rss)
 			{
-				$link=$rss['link'];
-				$title=$rss['title'];
+
+		echo		$link=$rss['link'];
+		echo		$title=$rss['title'];
 			
 				if(empty($link) || $link=='')
 				    continue;

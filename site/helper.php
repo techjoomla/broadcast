@@ -279,7 +279,7 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 	function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm)
 	{
 			require_once( JPATH_SITE . DS . 'components' . DS . 'com_awdwall' . DS . 'helpers' . DS . 'user.php'); 
-			
+
 			$attachment='';
 
 			$type='text';
@@ -349,6 +349,7 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 			return 0;
 		foreach($dataarr['paramsdata'][$column] as $multipledata)
 		{
+			
 			
 			if($multipledata['id']==$id)
 						return 1;

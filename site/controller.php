@@ -18,5 +18,19 @@ class BroadcastController extends JController
 			
 		$this->setRedirect( JURI::base()."index.php?option=com_broadcast&view=config", $msg );
 	}
+	
+	function saveotheraccounts()
+	{
+		 
+		$model	= $this->getModel( 'config' );
+		$res=$model->saveotheraccounts();
+		//if($res)
+			$msg = JText::_( 'CONFIG_SAV' );
+		//else
+		//	$msg = JText::_( 'ERR_CONFIG_SAV' );
+			
+		$this->setRedirect( JURI::base()."index.php?option=com_broadcast&view=config&tmpl=component&layout=otheraccounts", $msg );
+	
+	}
 }		
 ?>

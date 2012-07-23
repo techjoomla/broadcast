@@ -22,11 +22,18 @@ class BroadcastModelconfig extends JModel
 	 	$sub_list 	= $this->_db->loadObject();		 	
 	 	return $sub_list;
 	}
-	
-	/**** Start Added & Modified By - Deepak */
+	function renderHTML_other()
+	{
+		$dispatcher = &JDispatcher::getInstance();
+		JPluginHelper::importPlugin('techjoomlaAPI');
+		$grt_response = $dispatcher->trigger('get_otherAccountData');
+		return $grt_response['0'];	
+			
+	}
+
 	function save()
 	{	
-	require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 		$integration=$broadcast_config['integration'];
 		$user = JFactory::getUser();
 		$row = new stdClass;
@@ -63,7 +70,7 @@ class BroadcastModelconfig extends JModel
 	 	{
 			if(!$this->_db->updateObject('#__broadcast_config', $row, 'user_id'))
 			{
-				echo $this->_db->stderr();die;
+				echo $this->_db->stderr();
 				return false;
 			}
 		} 
@@ -76,7 +83,72 @@ class BroadcastModelconfig extends JModel
 			}		
 		}
 		return true;
+	}
+	function checkparamexist()
+	{
+		$qry = "SELECT config FROM #__broadcast_config WHERE  user_id = {$user->id}";
+		$this->_db->setQuery($qry);
+	 	$config = $this->_db->loadResult();
+	 	$configarray=json_decode($config,true)		;
 	}	
-	/**** End Added & Modified By - Deepak */
+	
+	function saveotheraccounts()
+	{
+	
+	$session =& JFactory::getSession();
+	
+		$user=JFactory::getUser();
+		$dataids = JRequest::get('post');
+		
+		$otherdataArr=$session->get("API_otherAccountData");
+
+		$i=0;
+
+		foreach($otherdataArr['data'] as $key=>$otherdata)
+		{
+
+			foreach($otherdata as $singledata)
+			{
+
+					$singledataids[$i]['key']=$key;
+					$singledataids[$i]['id']=$singledata['id'];
+					$singledataids[$i]['data']=$singledata;
+
+					$i++;
+				}
+			
+		}
+		
+		
+
+				
+				
+		foreach($dataids as $dts){
+			foreach($dts as  $dt){
+			foreach($singledataids as  $singledataid){
+					if($singledataid['id']==$dt){
+					$finaldata['paramsdata'][$singledataid['key']][]=$singledataid;
+												
+					}
+
+					
+			}
+		}
+		}
+
+
+		$row->user_id=$user->id;
+		$row->params = json_encode($finaldata);
+		
+	 	if($this->_db->updateObject('#__broadcast_config', $row, 'user_id'))
+			{
+				echo $this->_db->stderr();
+				return false;
+			}
+	
+				return 1;
+	
+	}
+
 
 }
