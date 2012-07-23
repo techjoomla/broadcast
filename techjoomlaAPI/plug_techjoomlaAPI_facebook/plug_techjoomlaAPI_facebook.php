@@ -106,7 +106,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		$this->callbackUrl=$callback;
 		$params = array(
 							'redirect_uri' => $callback,
-							'scope' =>'email,read_stream,user_status,publish_stream,offline_access', 
+							'scope' =>'email,read_stream,user_status,publish_stream,offline_access,manage_pages,user_groups', 
 							);
 			
 		try	{
@@ -389,11 +389,12 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		$subject	=	str_replace("[SITENAME]", $raw_mail['sitename'], $subject);
 		$parameters = array(
 		'app_id' => $this->facebook->getAppId(),
-		'to' => $inviteeidstr,
+
 		'link' => $regurl,
 		'redirect_uri' => JURI::base()."index.php?option=com_invitex&view=invites&fb_redirect=success",
 		'name'=>$subject,
-		'description'=>$message
+		'description'=>$message,
+		'to' => $inviteeidstr
  		);
  		
 		$url = 'http://www.facebook.com/dialog/send?'.http_build_query($parameters);
@@ -412,7 +413,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	 	if($this->params->get('broadcast_limit'))
 	 	$facebook_profile_limit=$this->params->get('broadcast_limit');
 	 	else
-	 	$facebook_profile_limit=2;
+	 	$facebook_profile_limit=10;
 		$returndata = array();
 		if(!$oauth_keys)
 		return false;
@@ -431,15 +432,40 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			}
 			try{		
 				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit));
+				$json_pagedata=$this->plug_techjoomlaAPI_facebookget_page_status($token,$oauth_key->user_id,$facebook_profile_limit);
+				$json_groupdata=$this->plug_techjoomlaAPI_facebookget_group_status($token,$oauth_key->user_id,$facebook_profile_limit);
+
 			}
 			catch (FacebookApiException $e) 
 			{
 					$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL_FACEBOOK'),$e->getMessage(),$oauth_key->user_id,1);
 
 		  }
-		  $status='';
 		  
 		  $status=$this->renderstatus($json_facebook['data'])	;
+
+		 
+		  if(!empty($json_pagedata))
+		  {
+		  	foreach($json_pagedata as $pgdts)
+		  	{
+			  	foreach($pgdts as $pgdt)			  	
+		  		$status[]=$pgdt;
+		  	
+		  	}
+		  }
+
+		  if(!empty($json_groupdata))
+		  {
+		  	foreach($json_groupdata as $pgdts)
+		  	{
+			  	foreach($pgdts as $pgdt)			  	
+		  		$status[]=$pgdt;
+		  	
+		  	}
+		  }
+
+
 		  if(empty($status))
 		  continue;
 		  if($status)
@@ -457,6 +483,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			
 			$i++;
 		}
+
 		if(!empty($returndata['0']))
 		return $returndata;
 		else
@@ -506,6 +533,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		try{
 		if(isset($token))
 		$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $content));
+		if(isset($token))
+		$this->plug_techjoomlaAPI_facebookset_page_status($token,$oauth_key[0]->user_id,$content);
+		if(isset($token))
+		$this->plug_techjoomlaAPI_facebookset_group_status($token,$oauth_key[0]->user_id,$content);
 		
 		} 
 		catch (FacebookApiException $e) 
@@ -522,6 +553,336 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	
 	}
 	
+	
+	
+  function get_otherAccountData()
+	{
+			$data='';
+				$session = JFactory::getSession();	
+					$pagedata=$this->plug_techjoomlaAPI_facebookgetpagedata();
+
+					$fbpagesessiondata='';
+					$i=0;
+					$column='facebook_page_update';
+					if($pagedata)
+					{
+						foreach($pagedata as $fbpage)
+						{
+							if($fbpage['category']=='Application')
+							continue;
+						
+							$checkexist=combroadcastHelper::checkexistparams($fbpage['id'],$this->user->id,$this->_name,$column='facebook_page_update');
+						
+							$fbpage['image']='http://graph.facebook.com/'.$fbpage['id'].'/picture';
+							if($checkexist)
+							$fbpage['connectionstatus']=1;
+							else
+							$fbpage['connectionstatus']=0;
+							$fbpage['displayname']='Your Facebook Pages';
+							$fbpage['fieldname']='facebook_page_update';
+						
+							$fbpage['techjoomlaapiname']='facebook';
+							$data['data'][$column][]=$fbpage;
+
+							$i++;
+						}
+					}
+			$groupdata=$this->plug_techjoomlaAPI_facebookgetgroupdata();
+			$i=0;
+			$column='facebook_group_update';
+			if($groupdata)
+					{
+						foreach($groupdata as $group)
+						{
+
+							$checkexist=combroadcastHelper::checkexistparams($group['gid'],$this->user->id,$this->_name,$column='facebook_group_update');
+							$group['id']=$group['gid'];
+							$group['image']=$group['icon'];
+							$group['name']=$group['name'];
+							if($checkexist)
+							$group['connectionstatus']=1;
+							else
+							$group['connectionstatus']=0;
+						
+							$group['fieldname']='facebook_group_update';
+							$group['displayname']='Your Facebook Groups';
+							$group['techjoomlaapiname']='facebook';
+							$data['data'][$column][]=$group;
+
+							$i++;
+						}
+					}
+			
+		return $data;
+		
+		$pfdata['pagedata']=$pagedata;
+		$pfdata['groupdata']=$group;
+		$pfdata['pagehtml']=$data;
+
+		
+		return $pfdata;
+	}
+	
+	function plug_techjoomlaAPI_facebookgetgroupdata()
+	{
+	$groupData='';
+		$oauth_keys=$this->getToken($this->user->id,'broadcast');
+	 	foreach($oauth_keys as $oauth_key){	
+	 		$token =json_decode($oauth_key->token);	
+			try{			
+				$fql    =   "select  gid from group_member where uid=".$token->facebook_uid;
+				$param  =   array(
+       'method'     => 'fql.query',
+        'query'     => $fql,
+      'callback'    => '');
+			$groupids   =   $this->facebook->api($param);
+
+
+
+			}
+			catch (FacebookApiException $e) 
+			{
+				$response=$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
+				return false;
+			}
+		}
+		if(!empty($groupids))
+		{
+			foreach($groupids as $gid)
+			{
+
+				try{			
+					$fql    =   "select  gid,icon,creator,name from group where gid=".$gid['gid'];
+					$param  =   array(
+		     'method'     => 'fql.query',
+		      'query'     => $fql,
+		    	'callback'    => '');
+					$grdata   =   $this->facebook->api($param);
+					$groupData[]=$grdata[0];
+
+				}
+				catch (FacebookApiException $e) 
+				{
+
+					$response=$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
+				}
+				
+	
+		
+			}
+		}
+		
+
+
+		return $groupData;
+		
+	}
+	
+  function plug_techjoomlaAPI_facebookgetpagedata()
+  {
+  	$pageData='';
+  	$oauth_keys=$this->getToken($this->user->id,'broadcast');
+	 	foreach($oauth_keys as $oauth_key){	
+	 		$token =json_decode($oauth_key->token);	
+			try{			
+			$pageData= $this->facebook->api($token->facebook_uid.'/accounts','GET', array('access_token'=>$token->facebook_secret));
+
+			}
+			catch (FacebookApiException $e) 
+			{
+				$response=$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
+				return false;
+			}
+		}
+		if(!empty($pageData))
+		return $pageData['data'];
+		
+  }
+  		
+	function	plug_techjoomlaAPI_facebookset_group_status($token,$userid,$content)
+	{
+			
+
+				$groupData='';
+				$fql    =   "select  gid from group_member where uid=".$token->facebook_uid;
+				$param  =   array(
+       'method'     => 'fql.query',
+       'query'     => $fql,
+	    'callback'    => '');
+	    	try{
+					$groupids   =   $this->facebook->api($param);
+				}
+				catch (FacebookApiException $e) 
+				{
+					$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
+				}
+		
+				foreach($groupids as $grp)
+				{
+						$checkexist=0;
+						$checkexist=combroadcastHelper::checkexistparams($grp['gid'],$userid,$api='plug_techjoomlaAPI_facebook',$column='facebook_group_update');
+					if(!$checkexist)
+					continue;
+					try{
+							
+							$post = $this->facebook->api($grp['gid'].'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $content));
+
+						}
+						catch (FacebookApiException $e) 
+						{
+							$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
+						}
+				}
+
+
+	}
+	
+	function	plug_techjoomlaAPI_facebookget_group_status($token,$userid,$facebook_profile_limit)
+	{
+			
+
+			$groupData=$groupids='';
+				$fql    =   "select  gid from group_member where uid=".$token->facebook_uid;
+				$param  =   array(
+       'method'     => 'fql.query',
+       'query'     => $fql,
+	    'callback'    => '');
+	    	try{
+					$groupids   =   $this->facebook->api($param);
+
+					
+				}
+				catch (FacebookApiException $e) 
+				{
+					//$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
+				}
+
+				$statuses='';
+				foreach($groupids as $grp)
+				{
+						$checkexist=0;
+					$checkexist=combroadcastHelper::checkexistparams($grp['gid'],$userid,$api='plug_techjoomlaAPI_facebook',$column='facebook_group_update');
+					if(!$checkexist)
+					continue;
+					try{
+								$response = $this->facebook->api($grp['gid'].'/feed', 'GET', array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit,));
+
+							if(!empty($response))
+						  $statuses[]=$this->renderstatus($response['data']);
+
+						}
+					catch (FacebookApiException $e) 
+						{
+
+							//$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
+						}
+						
+
+				}
+
+
+			if(!empty($statuses))
+				{
+
+					
+					return $statuses;
+				
+				}
+				else
+				{
+									return '';
+				}
+
+	}
+	
+
+	function plug_techjoomlaAPI_facebookset_page_status($token,$userid,$content)
+  {
+			
+				$pageData= $this->facebook->api($token->facebook_uid.'/accounts','GET', array('access_token'=>$token->facebook_secret));
+				if($pageData)
+				{
+					foreach($pageData as $pages)
+					{
+						foreach($pages as $page)
+						{
+
+						$checkexist='';
+						$checkexist=combroadcastHelper::checkexistparams($page['id'],$userid,$api='plug_techjoomlaAPI_facebook',$column='facebook_page_update');
+							if($checkexist)
+							{
+								$attachment = array(
+								'access_token' => $page['access_token'],
+								'message'=> $content,
+								);
+								
+								try{	
+								$response=$this->facebook->api($page['id']."/feed",'POST', $attachment);
+								}
+								catch (FacebookApiException $e) 
+								{
+									$response=$this->raiseLog(JText::_('LOG_SET_PAGE_STATUS').JText::_('LOG_SET_PAGE_STATUS'),$e->getMessage(),$userid,1);
+
+								}
+
+					
+					}
+					}
+				}
+
+				}
+				
+	}
+	
+	function plug_techjoomlaAPI_facebookget_page_status($token,$userid,$facebook_profile_limit)
+  {
+  		
+  	
+				$pageData= $this->facebook->api($token->facebook_uid.'/accounts','GET', array('access_token'=>$token->facebook_secret));
+
+				if($pageData['data'])
+				{
+					foreach($pageData['data'] as $page)
+					{
+						$checkexist='';
+						$checkexist=combroadcastHelper::checkexistparams($page['id'],$userid,$api='plug_techjoomlaAPI_facebook',$column='facebook_page_update');
+						if($checkexist)
+						{
+							$attachment = array(
+							'access_token' => $page['access_token'],
+							'limit'=>$facebook_profile_limit,
+							);
+							try{
+								$response='';
+								$response=$this->facebook->api($page['id']."/feed",'GET', $attachment);
+							}
+							catch (FacebookApiException $e) 
+							{
+								$response=$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
+								//return false;
+							}
+							if(!empty($response))
+						  $statuses[]=$this->renderstatus($response['data']);
+
+						}
+					}
+
+				}
+
+				if(!empty($statuses))
+				{
+					
+					return $statuses;
+				
+				}
+				else
+				{
+									return '';
+				}
+
+
+ 
+  }
 	function raiseException($exception,$userid='',$display=1,$params=array())
 	{
 		$path="";
