@@ -158,6 +158,7 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 			foreach($userid as $id){
 
 			if(trim($id)){
+			
 				combroadcastHelper::inQueue($id,$message,$count,$interval,$supplier,$media);
 				combroadcastHelper::intempAct($id,$message,$date);
 				}
@@ -172,7 +173,26 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 		return true;
 	}
 	
+	function getuserconnectionstatus($config)
+	{
+		$db =& JFactory::getDBO();
+		$userid=$config->userid;
+		$client=$config->supplier;
+		$api=$config->api;
 	
+		$where='';
+		if($client)
+		$where=" AND client='broadcast'";		
+	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE user_id = {$userid}  AND api='{$api}'".$where;
+		$db->setQuery($query);
+		$result	= $db->loadResult();	
+		if(!empty($result))
+			return 1;
+		else
+			return 0;
+		
+	
+	}
 
 	#inQueue function called from plugin as well can be called from custom place	
 	function inQueue($userid,$newstatus, $count, $interval, $supplier, $media)
@@ -200,11 +220,17 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 			$obj->supplier	= $supplier ;
 
 				
-			if(!$db->insertObject('#__broadcast_queue', $obj)){
-	      			$db->stderr();
-	      			return false;
-	  		}
-	    }
+			if(!empty($userid))
+				{
+
+					$flag=combroadcastHelper::getuserconnectionstatus($obj);
+					if($flag)
+					{
+					if(!$db->insertObject('#__broadcast_queue', $obj)){
+			    			continue;
+					}
+			 	 	}
+			 	 }
   		return true;
 	}
 	
@@ -279,7 +305,7 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 	function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm)
 	{
 			require_once( JPATH_SITE . DS . 'components' . DS . 'com_awdwall' . DS . 'helpers' . DS . 'user.php'); 
-
+			
 			$attachment='';
 
 			$type='text';
@@ -292,7 +318,10 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 			{				
 				$type='link';
 				$attachment=combroadcastHelper::seperateurl($comment);
+				//expand url $attachment
+
 				$comment=str_replace($attachment,'',$comment);
+				$attachment=combroadcastHelper::expandShortUrl($attachment);
 			}
 			
 			$api=str_replace('plug_techjoomlaAPI_','',$api_nm);

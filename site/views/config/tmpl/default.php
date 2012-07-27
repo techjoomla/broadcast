@@ -176,7 +176,7 @@ if(!$user->id){
 	        	    alert("<?php echo JText::sprintf('LIMIT_RSS',$broadcast_config['rss_link_limit']);?>");
 				}
 				else{
-					appendElement("container1", "element" + latestId, "<input size='50' type='text' class='inputbox' name='rss_title[]' value='' /><br><input size='50' type='text' class='inputbox' name='rss_link[]' value='' /><a href=\"javascript:removeItem(" + latestId + ")\"><?php echo JText::_('REM_RSS');?></a>");		
+					appendElement("container1", "element" + latestId, "Title <input size='50' type='text' class='inputbox' name='rss_title[]' value='' /><br>Link <input size='50' type='text' class='inputbox' name='rss_link[]' value='' /><a href=\"javascript:removeItem(" + latestId + ")\"><?php echo JText::_('REM_RSS');?></a>");		
 					latestId++;
 					counter++;
 				}
@@ -225,17 +225,20 @@ if(!$user->id){
 
 											
 							$i=0;
-							foreach($rssdts as $rss)
+							if(!empty($rssdts))
 							{
+								foreach($rssdts as $rss)
+								{
 							
 
 
-								echo '<div id="element'.$i.'">';													
-								echo '<input size="50" type="text" class="inputbox" name="rss_title['.$i.']" value="'.$rss['title'].'" />
-								<input size="50" type="text" class="inputbox" name="rss_link['.$i.']" value="'.$rss['link'].'" />';
-								echo '<a href="javascript:removeItem('.$i.');" > '.JText::_('REM_RSS').'</a>'."<br />";
-								echo '</div>';
-								$i++;
+									echo '<div id="element'.$i.'">';													
+									echo JText::_('Title').' <input size="50" type="text" class="inputbox" name="rss_title['.$i.']" 
+									value="'.$rss['title'].'" /><br/>'.JText::_('Link').' <input size="50" type="text" class="inputbox" name="rss_link['.$i.']" value="'.$rss['link'].'" />';
+									echo '<a href="javascript:removeItem('.$i.');" > '.JText::_('REM_RSS').'</a>'."<br />";
+									echo '</div>';
+									$i++;
+								}
 							}
 						}
 					?>

@@ -24,10 +24,17 @@ class BroadcastModelrss extends JModel
 		 	$str_title_link = $rssobj->get_title()." <a href=".$shortURL['id']." target='_blank'>".$shortURL['id']."</a>";
 		 		//if Jomsocial
 				if($broadcast_config['integration']==0)
-				{			
+				{		
+
 					if($broadcast_config['status_via'])
+					{
+						if($title)
 						$str_title_link	.= " (via RSS)->".$title;
-						$str_title_link .= "<img style='height: 16px;width: 16px;' src=".JPATH_SITE.'modules'.DS.'mod_broadcast'.DS.'images'.DS.'rss.png'."> ";
+						else
+						$str_title_link	.= " (via RSS)";
+
+					}
+						$str_title_link .= "<img style='height: 16px;width: 16px;' src=".JPATH_SITE.DS.'modules'.DS.'mod_broadcast'.DS.'images'.DS.'rss.png'."> ";
 			
 					combroadcastHelper::inJSAct($uid,$uid,$str_title_link,'', 'rss',$uid, $date);
 					combroadcastHelper::intempAct($uid, $rssobj->get_title(), $date,'rss' );
