@@ -34,7 +34,7 @@ class BroadcastModelrss extends JModel
 						$str_title_link	.= " (via RSS)";
 
 					}
-						$str_title_link .= "<img style='height: 16px;width: 16px;' src=".JPATH_SITE.DS.'modules'.DS.'mod_broadcast'.DS.'images'.DS.'rss.png'."> ";
+						$str_title_link .= "<img style='height: 16px;width: 16px;' src=".'modules'.DS.'mod_broadcast'.DS.'images'.DS.'rss.png'."> ";
 			
 					combroadcastHelper::inJSAct($uid,$uid,$str_title_link,'', 'rss',$uid, $date);
 					combroadcastHelper::intempAct($uid, $rssobj->get_title(), $date,'rss' );
