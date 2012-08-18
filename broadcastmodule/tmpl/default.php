@@ -73,7 +73,7 @@ for($i=0; $i<count($apidata); $i++)
 	<div class="<?php echo $outclass ?>" >
 		<div class="<?php echo $inclass ?>">
 			<a href="<?php echo $rss_link; ?>" style="color:black; text-decoration:none;">
-				<img src="<?php echo $base; ?>images/rss.png" height="20">
+				<img src="<?php echo $base; ?>images/setting.png" height="20">
 			</a>
 			<div><a href="<?php echo $rss_link; ?>" style="color:black; text-decoration:none;">
 			<b style="vertical-align:middle; padding-bottom:25px;">

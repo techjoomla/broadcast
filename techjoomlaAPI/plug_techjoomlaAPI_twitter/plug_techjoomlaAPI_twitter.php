@@ -367,6 +367,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		return false;
 		$i=0;
 		$returndata=array(array());
+		if(empty($oauth_keys))
+		return;
 	 	foreach($oauth_keys as $oauth_key)
 	 	{	
 	 		
