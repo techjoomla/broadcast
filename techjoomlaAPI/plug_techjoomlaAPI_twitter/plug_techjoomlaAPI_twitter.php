@@ -426,6 +426,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 			if(count($response)>=1)
 			{
 			$j=0;
+			if(empty($response))
+			return array();
 			foreach($response as $data)
 			{
 				if($j==10)
