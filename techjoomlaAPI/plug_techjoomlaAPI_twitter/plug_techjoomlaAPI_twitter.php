@@ -371,7 +371,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		return;
 	 	foreach($oauth_keys as $oauth_key)
 	 	{	
-	 		
+	 		if(empty($oauth_key->token))
+			continue;
 				$token =	json_decode($oauth_key->token,true);	
 				$tmhOAuth = new tmhOAuth(array(
 				'consumer_key'    => $this->appKey,
