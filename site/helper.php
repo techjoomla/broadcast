@@ -583,6 +583,7 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 
 }
 }
+}
 //this class is used to make log for f/l/t controllers 
 if (!class_exists('techjoomlaHelperLogs'))
 {
@@ -791,4 +792,6 @@ class techjoomlaHelperLogs
 
 
 }
+
 ?>
+
