@@ -432,7 +432,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			}
 			try{		
 				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit));
+				if($this->params->get('pages')==1)			
 				$json_pagedata=$this->plug_techjoomlaAPI_facebookget_page_status($token,$oauth_key->user_id,$facebook_profile_limit);
+				if($this->params->get('groups')==1)
 				$json_groupdata=$this->plug_techjoomlaAPI_facebookget_group_status($token,$oauth_key->user_id,$facebook_profile_limit);
 
 			}
@@ -532,12 +534,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		
 		try{
 		if(isset($token))
+		{
 		$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $content));
-		if(isset($token))
+		if($this->params->get('pages')==1)
 		$this->plug_techjoomlaAPI_facebookset_page_status($token,$oauth_key[0]->user_id,$content);
-		if(isset($token))
+		if($this->params->get('groups')==1)
 		$this->plug_techjoomlaAPI_facebookset_group_status($token,$oauth_key[0]->user_id,$content);
-		
+		}
 		} 
 		catch (FacebookApiException $e) 
 		{
@@ -558,8 +561,14 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
   function get_otherAccountData()
 	{
 			$data='';
+			
+			//	echo $this->params->get('pages');
+				//echo "===========";
+					//			echo $this->params->get('groups');
 				$session = JFactory::getSession();	
-					$pagedata=$this->plug_techjoomlaAPI_facebookgetpagedata();
+				if($this->params->get('pages')==1)
+				{
+				$pagedata=$this->plug_techjoomlaAPI_facebookgetpagedata();
 
 					$fbpagesessiondata='';
 					$i=0;
@@ -587,6 +596,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 							$i++;
 						}
 					}
+					
+					}
+
+			if($this->params->get('groups')==1)
+			{
 			$groupdata=$this->plug_techjoomlaAPI_facebookgetgroupdata();
 			$i=0;
 			$column='facebook_group_update';
@@ -613,14 +627,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 						}
 					}
 			
-		return $data;
-		
-		$pfdata['pagedata']=$pagedata;
-		$pfdata['groupdata']=$group;
-		$pfdata['pagehtml']=$data;
 
 		
-		return $pfdata;
+		
+		}
+	//	print_r($data);die;
+
+				return $data;
+		
+
 	}
 	
 	function plug_techjoomlaAPI_facebookgetgroupdata()
@@ -798,7 +813,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 
 	function plug_techjoomlaAPI_facebookset_page_status($token,$userid,$content)
   {
-			
+			if($this->params->get('pages')!=1)
+			return;
+							
 				$pageData= $this->facebook->api($token->facebook_uid.'/accounts','GET', array('access_token'=>$token->facebook_secret));
 				if($pageData)
 				{
@@ -837,7 +854,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	function plug_techjoomlaAPI_facebookget_page_status($token,$userid,$facebook_profile_limit)
   {
   		
-  	
+  		if($this->params->get('pages')!=1)
+			return;
 				$pageData= $this->facebook->api($token->facebook_uid.'/accounts','GET', array('access_token'=>$token->facebook_secret));
 
 				if($pageData['data'])

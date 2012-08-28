@@ -86,7 +86,7 @@ if(!$user->id){
 							{
 								foreach($otherdata as $dts)
 								{?>
-								<div id="broadcast_connect1"  class="broadcast-expands" style="float:left;padding-left:40px">
+								<div id="broadcast_connect1"  class="broadcast-expands" style="float:left;">
 								<div> <?php echo $dts[0]['displayname'];?>	</div>	
 								<?php
 									$i=0;
@@ -109,7 +109,7 @@ if(!$user->id){
 										$data='';
 				 						$data.='<div class="page_status_config_inner" style="float:left;padding-left:40px">
 				 							<input class="api_checkbox" type="checkbox"  id="'.$singledata['fieldname'].'[]" name="'.$singledata['fieldname'].'[]" "'.$checked.'" value="'.$singledata['id'].'" />';
-										$data.='<img class="bcapi_img"  src="'.$image.'" class="page_picture"  >'.$title;
+										$data.='<img class="bcapi_img"  src="'.$image.'"  >'.$title;
 										//$data.='<img class="bcapi_img" src="'.JURI::base().'components/com_broadcast/images/'.$singledata['techjoomlaapiname'].'.png" border="0" alt="Tooltip" />';
 										$data.='</div>';
 										echo $data;
@@ -118,13 +118,13 @@ if(!$user->id){
 									}
 									?>
 
-									<div style="clear:both">
-							</div>
 
+
+									<div style="clear:both">
 								<?php
 								}
 							?>
-														
+																			</div>		
 
 													
 							<?php

@@ -1,6 +1,7 @@
 <?php 
 defined( '_JEXEC' ) or die( 'Restricted access' );
-
+JHTML::_('behavior.tooltip');
+JHTML::_('behavior.modal', 'a.modal');
 $u =& JURI::getInstance();
 $currentMenu= $u->toString();
 if(!stristr($currentMenu, 'index.php'))
@@ -68,8 +69,13 @@ for($i=0; $i<count($apidata); $i++)
 }
 ?>
 
-<?php if(isset($show_rss)){
-	 if($show_rss == 1){?>
+<?php 
+$view= JRequest::getVar('view');
+$option= JRequest::getVar('option');
+
+	if($option!='com_broadcast' and $view!='config')
+	{
+?>
 	<div class="<?php echo $outclass ?>" >
 		<div class="<?php echo $inclass ?>">
 			<a href="<?php echo $rss_link; ?>" style="color:black; text-decoration:none;">
@@ -80,15 +86,19 @@ for($i=0; $i<count($apidata); $i++)
 			<?php
 			echo JText::_('BC_RSS');
 			?>
-			</b></a></div>
+			</b></a>
+			</div>
 		</div>	
-	</div>
+		</div>
+		<?php
+		}
+		?>
+		
+
 	
-	<div style="clear:left;"></div>
-<?php
-	}
-}
-?>
+	<div style="clear:both;"></div>
+
+	
 	<?php if($posttext){?>
 	<div class="broadcast_foot" style="width:100%"><?php echo $posttext; ?></div>
 	<?php }?>

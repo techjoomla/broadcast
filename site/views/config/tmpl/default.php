@@ -104,6 +104,14 @@ if(!$user->id){
 				ob_end_clean();
 				echo $html ;	
 				?>
+			
+					<?php
+						$link = JRoute::_('index.php?option=com_broadcast&view=config&tmpl=component&layout=otheraccounts');
+					?>
+					<br/><a rel="{handler: 'iframe', size: {x: 800, y: 800}}" href="<?php echo $link; ?>" class="modal">
+						<span class="editlinktip hasTip" title="<?php echo JText::_('OTHER_ACCNT');?>" ><?php echo JText::_('OTHER_ACCNT');?></span>
+					</a>
+					
 			</div><!--End of Div Broadcast_Connect -->
 		</div>
 		<div class="content_bottom">
