@@ -10,7 +10,66 @@ class combroadcastHelper
 		$apis=BroadcastModelbroadcast::getapistatus();
 		return $apis;
 	}
+	function expandShortUrl($url) {
+ 
+	$headers = get_headers($url,1);
+ 
+	if (!empty($headers['Location'])) 
+	{
+		$headers['Location'] = (array) $headers['Location'];
+		$url = array_pop($headers['Location']);
+	}
+ 
+	return $url;
+}
+	function seperateurl($url) {
+	
+	$newurl='';
+  $U = explode(' ',$url);
 
+  $W =array();
+  foreach ($U as $k => $u) {
+    if (stristr($u,'http') || (count(explode('.',$u)) > 1)) {
+      $newurl=$U[$k];
+      
+      $count=1;
+
+    }
+  }
+  return $newurl;
+}
+function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm)
+	{
+			require_once( JPATH_SITE . DS . 'components' . DS . 'com_awdwall' . DS . 'helpers' . DS . 'user.php'); 
+			
+			$attachment='';
+
+			$type='text';
+			$urlpresent='';
+			$params=array();
+			$link=combroadcastHelper::makelink($comment,$api_nm);
+			$link=trim($link);
+			$comment=trim($comment);
+			if($api_nm!='rss')
+			{
+				if($link!=$comment)
+				{				
+					$type='link';
+					 $attachment=combroadcastHelper::seperateurl($comment);
+					//expand url $attachment
+
+						$comment=str_replace($attachment,'',$comment);
+					$attachment=combroadcastHelper::expandShortUrl($attachment);
+				}
+			}
+			$api=str_replace('plug_techjoomlaAPI_','',$api_nm);
+
+			$imgpath=JURI::base().'/components/com_broadcast/images/'.$api.'.png';
+			AwdwallHelperUser::addtostream($comment,$attachment,$type,$userid,$imgpath,$params);
+				
+		
+		
+	}
 	#populate the Jomsocial activity table called from broadcast & rss models 
 	function inJSAct($actor,$target,$title,$content,$api,$cid,$date)
 	{
@@ -469,53 +528,9 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 		return $count;
 	}
 	
-	function seperateurl($url) {
 	
-	$newurl='';
-  $U = explode(' ',$url);
-
-  $W =array();
-  foreach ($U as $k => $u) {
-    if (stristr($u,'http') || (count(explode('.',$u)) > 1)) {
-      $newurl=$U[$k];
-      
-      $count=1;
-
-    }
-  }
-  return $newurl;
-}
 	
-	function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm)
-	{
-			require_once( JPATH_SITE . DS . 'components' . DS . 'com_awdwall' . DS . 'helpers' . DS . 'user.php'); 
-			
-			$attachment='';
-
-			$type='text';
-			$urlpresent='';
-			$params=array();
-			$link=combroadcastHelper::makelink($comment,$api_nm);
-			$link=trim($link);
-			$comment=trim($comment);
-			if($link!=$comment)
-			{				
-				$type='link';
-				$attachment=combroadcastHelper::seperateurl($comment);
-				//expand url $attachment
-
-				$comment=str_replace($attachment,'',$comment);
-				$attachment=combroadcastHelper::expandShortUrl($attachment);
-			}
-			
-			$api=str_replace('plug_techjoomlaAPI_','',$api_nm);
-
-			$imgpath=JURI::base().'/components/com_broadcast/images/'.$api.'.png';
-			AwdwallHelperUser::addtostream($comment,$attachment,$type,$userid,$imgpath,$params);
-				
-		
-		
-	}
+	
 	
 
 

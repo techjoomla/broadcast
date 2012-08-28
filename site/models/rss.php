@@ -45,7 +45,7 @@ class BroadcastModelrss extends JModel
 				if($broadcast_config['integration']==1)
 				{
 
-					combroadcastHelper::inJomwallact($uid, $rssobj->get_title(),$rssobj->get_title(),'',$get_date,'rss');
+					combroadcastHelper::inJomwallact($uid, $str_title_link,$rssobj->get_title(),'',$get_date,'rss');
 					combroadcastHelper::intempAct($uid, $rssobj->get_title(), $date,'rss' );
 				}
 			
