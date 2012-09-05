@@ -467,7 +467,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		  	}
 		  }
 
-
+		
 		  if(empty($status))
 		  continue;
 		  if($status)
@@ -647,6 +647,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			try{			
 				$fql    =   "select  gid from group_member where uid=".$token->facebook_uid;
 				$param  =   array(
+				'access_token'=>$token->facebook_secret,
        'method'     => 'fql.query',
         'query'     => $fql,
       'callback'    => '');
@@ -721,11 +722,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 				$groupData='';
 				$fql    =   "select  gid from group_member where uid=".$token->facebook_uid;
 				$param  =   array(
+				'access_token'=>$token->facebook_secret,
        'method'     => 'fql.query',
        'query'     => $fql,
 	    'callback'    => '');
 	    	try{
-					$groupids   =   $this->facebook->api($param);
+					$groupids   =$this->facebook->api($param);
+					print_r($groupids);
 				}
 				catch (FacebookApiException $e) 
 				{
@@ -735,7 +738,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 				foreach($groupids as $grp)
 				{
 						$checkexist=0;
-						$checkexist=combroadcastHelper::checkexistparams($grp['gid'],$userid,$api='plug_techjoomlaAPI_facebook',$column='facebook_group_update');
+					$checkexist=combroadcastHelper::checkexistparams($grp['gid'],$userid,$api='plug_techjoomlaAPI_facebook',$column='facebook_group_update');
 					if(!$checkexist)
 					continue;
 					try{
@@ -759,6 +762,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			$groupData=$groupids='';
 				$fql    =   "select  gid from group_member where uid=".$token->facebook_uid;
 				$param  =   array(
+				'access_token'=>$token->facebook_secret,
        'method'     => 'fql.query',
        'query'     => $fql,
 	    'callback'    => '');
