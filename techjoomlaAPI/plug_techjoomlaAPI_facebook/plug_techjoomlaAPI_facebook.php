@@ -278,50 +278,49 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		$this->db->query();
 	}
 	
-	        
-	function plug_techjoomlaAPI_facebookget_contacts() 
+	function plug_techjoomlaAPI_facebookget_contacts($offset,$limit)  
 	{
-		
+		//$start=183;
 		try{	
 			$contacts=array();
-			$friends= $this->facebook->api('/me/friends');
+			if($offset==0 && $limit==0)	
+					$friends= $this->facebook->api('/me/friends');
+			else
+			$friends= $this->facebook->api('/me/friends&limit='.$limit.'&offset='.$offset);
 		}
 		catch (FacebookApiException $e) 
 		{
 			$this->raiseException($e->getMessage());
 			return false;
     }	
-		
-		
-		
 		$connections =$friends;	
-		
 		$cnt=0;
 		$emails=array(array());
-		foreach ($connections['data'] as $contact)
-			{
+		$contacts = array();
+		if($connections['data'])
+		{
+			foreach ($connections['data'] as $contact)
+				{
 				
-				$emails[$cnt]['id']= $contact['id'];	
-				$emails[$cnt]['name']= $contact['name'];
-				$emails[$cnt]['picture-url']= 'https://graph.facebook.com/'.$emails[$cnt]['id'].'/picture';																						
-				$cnt++;
+					$emails[$cnt]['id']= $contact['id'];	
+					$emails[$cnt]['name']= $contact['name'];
+					$emails[$cnt]['picture-url']= 'https://graph.facebook.com/'.$emails[$cnt]['id'].'/picture';																						
+					$cnt++;
 				
-			}
+				}
 			
-			$contacts=$this->renderContacts($emails);
-			if(count($contacts)==0)
-			{
-				$this->raiseException(JText::_('NO_CONTACTS'));
-				$this->raiseLog(JText::_('NO_CONTACTS'),JText::_('LOG_GET_CONTACTS'),$this->user->id,0);
-			}
-			else
-			
-			$this->raiseLog(JText::_('CONTACTS_FOUND'),JText::_('LOG_GET_CONTACTS'),$this->user->id,0);
-		
+				$contacts=$this->renderContacts($emails);
+				if(count($contacts)==0)
+				{
+					$this->raiseException(JText::_('NO_CONTACTS'));
+					$this->raiseLog(JText::_('NO_CONTACTS'),JText::_('LOG_GET_CONTACTS'),$this->user->id,0);
+				}
+				else
+				$this->raiseLog(JText::_('CONTACTS_FOUND'),JText::_('LOG_GET_CONTACTS'),$this->user->id,0);
+		}
 		return $contacts;
 		
 	}
-	
 	function renderContacts($emails)
 	{
 			
@@ -357,53 +356,111 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	
 	function plug_techjoomlaAPI_facebooksend_message($raw_mail,$invitee_data)
 	{	
-		require(JPATH_SITE.DS.'components'.DS.'com_invitex'.DS.'config.php');
+		require(JPATH_SITE.DS.'components'.DS.'com_invitex'.DS.'helper.php');
+		$invitex_settings	= cominvitexHelper::getconfigData();
 		$session = JFactory::getSession();	
-		foreach($invitee_data as $id=>$invitee_name)
-		{
-				$invitee_email[]	= "'".$invitee_name.'|'.$id."'";
-				$inviteid[]=$id;	
-		}
-	
-		$inviteeidstr=implode(',',$inviteid);
-		$userid=md5($this->user->id);
-		$regurl= cominvitexHelper::getinviteURL();
-		if($session->get('invite_anywhere'))
-		{
-					$invitee_string=implode(',',$invitee_email);
-					$db				= JFactory::getDBO();
-					$user_id	=	JFactory::getUser()->id;
-					$query="select i.id from #__invitex_imports as i, #__invitex_imports_emails as ie
-									WHERE invitee_email IN($invitee_string) AND i.id=ie.import_id AND i.inviter_id=$user_id group by ie.import_id order by i.id DESC LIMIT 1";
-					$db->setQuery($query);
-					$import_id=trim($db->loadResult());
-					
-					$raw_mail['message_join']=cominvitexHelper::getIAinviteURL($import_id);
-		}
-		else
-		{
-			$raw_mail['message_register']=cominvitexHelper::getinviteURL();
-		}							
-		$message	=	cominvitexHelper::tagreplace($raw_mail);	
-		
-		$subject	= $invitex_settings['pm_message_body_no_replace_sub'];
-		$subject	=	str_replace("[SITENAME]", $raw_mail['sitename'], $subject);
-		$parameters = array(
-		'app_id' => $this->facebook->getAppId(),
+		$feedbackMessage	=	'';
 
-		'link' => $regurl,
-		'redirect_uri' => JURI::base()."index.php?option=com_invitex&view=invites&fb_redirect=success",
-		'name'=>$subject,
-		'description'=>$message,
-		'to' => $inviteeidstr
- 		);
+		$action	=& $this->params->get('fb_api_action');
+		$error_users=array();
+		
+		$flag=0;
+		if($action)
+	 	{
+				
+				foreach($invitee_data as $id=>$invitee_name)
+				{
+					$invitee_email[]	= $invitee_id_name = $invitee_name."|".$id;
+					$inviteid[]=$id;
+					$query="select id from #__invitex_imports_emails
+											WHERE invitee_email='$invitee_id_name' order by id DESC LIMIT 1";
+					$this->db->setQuery($query);
+					$res=trim($this->db->loadResult());
+					$invite_id		=	md5($res);
+					$mail	=	cominvitexHelper::buildPM($raw_mail,$invitee_name,$invite_id);		
+					$msg_PM	=	cominvitexHelper::tagreplace($mail,1);
+
+					$sendTo = $id;
+					$attachment = array('message' => $msg_PM );
+					try{
+							$result = $this->facebook->api("/$sendTo/feed/",'post', $attachment);
+					}
+					catch (FacebookApiException $e) 
+					{
+						$error_users[]=$invitee_name;
+						continue;
+					}
+					//echo $invitee_id_name;
+					if(!empty($result)) {
+							$update_data =new stdClass();
+							$update_data->invitee_email=$invitee_id_name;
+							$update_data->sent = '1';
+							$update_data->sent_at = time();
+							$this->db->updateObject('#__invitex_imports_emails',$update_data,'invitee_email');
+							
+					}
+					else
+					{
+						return -1;
+					}
+					$flag=1;
+				}
+				if($error_users){
+					$error_message="Error in sending Invites to:".implode(',',$error_users);
+					$this->raiseException($error_message);
+				}
+				if($flag==1)
+					return 1;
+				else
+					return -1;
+		}
+		if(!$action)
+		{
+				foreach($invitee_data as $id=>$invitee_name)
+				{
+					$inviteid[]=$id;
+				}
+				$inviteeidstr=implode(',',$inviteid);
+		
+				$userid=md5($this->user->id);
+				$regurl= cominvitexHelper::getinviteURL();
+				if($session->get('invite_anywhere'))
+				{
+							$invitee_string=implode(',',$invitee_email);
+							$db				= JFactory::getDBO();
+							$user_id	=	JFactory::getUser()->id;
+							$query="select i.id from #__invitex_imports as i, #__invitex_imports_emails as ie
+											WHERE invitee_email IN($invitee_string) AND i.id=ie.import_id AND i.inviter_id=$user_id group by ie.import_id order by i.id DESC LIMIT 1";
+							$db->setQuery($query);
+							$import_id=trim($db->loadResult());
+					
+							$raw_mail['message_join']=cominvitexHelper::getIAinviteURL($import_id);
+				}
+				else
+				{
+					$raw_mail['message_register']=cominvitexHelper::getinviteURL();
+				}							
+				$flag=1;					
+				$message	=	cominvitexHelper::tagreplace($raw_mail,$flag);		
+		
+				$subject	= $invitex_settings['pm_message_body_no_replace_sub'];
+				$subject	=	str_replace("[SITENAME]", $raw_mail['sitename'], $subject);
+
+				$parameters = array(
+				'app_id' => $this->facebook->getAppId(),
+				'to' => $inviteeidstr,
+				'link' =>JURI::root(),
+				'redirect_uri' => JURI::root().substr(JRoute::_("index.php?option=com_invitex&view=invites&fb_redirect=success&Itemid=".$in_itemid,false),strlen(JURI::base(true))+1),
+				'name'=>$subject,
+				'description'=>$message
+		 		);
  		
-		$url = 'http://www.facebook.com/dialog/send?'.http_build_query($parameters);
-		header('Location:'.$url);	
-		die;
-	
+				$url = 'http://www.facebook.com/dialog/send?'.http_build_query($parameters);
+				header('Location:'.$url);	
+				die;
+		}
+		return 1;
   }//end send message
-  
   
   function plug_techjoomlaAPI_facebookgetstatus()
 	{ 
@@ -530,7 +587,7 @@ function seperateurl($url) {
 	{
 			require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'helper.php');
 		$oauth_key = $this->getToken($userid,'broadcast');
-		$response='';
+		
 		if(!$oauth_key)
 		return false;
 		else
