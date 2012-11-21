@@ -29,7 +29,8 @@ class BroadcastController extends JController
 		//else
 		//	$msg = JText::_( 'ERR_CONFIG_SAV' );
 			
-		$this->setRedirect( JURI::base()."index.php?option=com_broadcast&view=config&tmpl=component&layout=otheraccounts", $msg );
+		//$this->setRedirect( JURI::base()."index.php?option=com_broadcast&view=config&tmpl=component&layout=otheraccounts", $msg );
+		$this->setRedirect( JRoute::_("index.php?option=com_broadcast&view=config&tmpl=component&layout=otheraccounts"), $msg );
 	
 	}
 }		

@@ -274,7 +274,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_hotmail extends JPlugin
 	{  
 	
 	}
-	function plug_techjoomlaAPI_hotmailsetstatus()
+	function plug_techjoomlaAPI_hotmailsetstatus($userid,$originalContent,$comment,$attachment='')
 	{  
 	}
 	

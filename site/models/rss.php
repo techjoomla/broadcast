@@ -21,7 +21,10 @@ class BroadcastModelrss extends JModel
 			$api_key = $broadcast_config['url_apikey'];
 			$goo = new Googl($api_key);
 			$shortURL = $goo->set_short($rssobj->get_link());
+			
+	 	//	combroadcastHelper::inQueue($uid,$rssobj->get_title().' '.$shortURL['id'], 1, 0, '','');
 		 	$str_title_link = $rssobj->get_title()." <a href=".$shortURL['id']." target='_blank'>".$shortURL['id']."</a>";
+
 		 		//if Jomsocial
 				if($broadcast_config['integration']==0)
 				{		
@@ -34,10 +37,11 @@ class BroadcastModelrss extends JModel
 						$str_title_link	.= " (via RSS)";
 
 					}
-						$str_title_link .= "<img style='height: 16px;width: 16px;' src=".'modules'.DS.'mod_broadcast'.DS.'images'.DS.'rss.png'."> ";
+						//$str_title_link .= "<img style='height: 16px;width: 16px;' src=".'modules'.DS.'mod_broadcast'.DS.'images'.DS.'rss.png'."> ";
 			
 					combroadcastHelper::inJSAct($uid,$uid,$str_title_link,'', 'rss',$uid, $date);
-					combroadcastHelper::intempAct($uid, $rssobj->get_title(), $date,'rss' );
+					combroadcastHelper::intempAct($uid, $rssobj->get_title(), $date,'' );
+					
 					if($broadcast_config['show_status_rss'])
 					combroadcastHelper::updateJSstatus($uid, $rssobj->get_title(),$date );
 				}
@@ -46,7 +50,7 @@ class BroadcastModelrss extends JModel
 				{
 
 					combroadcastHelper::inJomwallact($uid, $str_title_link,$rssobj->get_title(),'',$get_date,'rss');
-					combroadcastHelper::intempAct($uid, $rssobj->get_title(), $date,'rss' );
+					combroadcastHelper::intempAct($uid, $rssobj->get_title(), $date,'' );
 				}
 			
 	  }

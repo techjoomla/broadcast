@@ -38,7 +38,19 @@
 				{
 					
 					if($this->id=='jform_params_pathapi_gmail')
-						return '<a href="https://www.google.com/accounts/ManageDomains" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
+						$return	=	'<div style="clear:both"></div>
+											<div class="instructions">
+											Go to <a href="https://www.google.com/accounts/ManageDomains" target="_blank">https://www.google.com/accounts/ManageDomains</a>.<br />
+											Enter <input style="float:none" type="text" value="'. str_replace( "http://",'',JURI::root()). '" readonly="true"/> for the Add domain.<br />
+											Scroll down to <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Manage Registration</span>.<br />
+											Click on the domain you entered.<br />
+											Follow the given instructions to <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Verify Ownership</span>.<br />
+											Click on <input style="float:none" type="button" value="Verify"/>
+											Enter <input style="float:none" type="text" value="'. JURI::root(). '" readonly="true"/> for the <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;"> Target URL path prefix</span>.<br />
+											Click <input style="float:none" type="button" value="Save"/>.<br />
+											Copy the values of <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;"> OAuth consumer Key </span> and <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;"> OAuth Consumer Secret </span> to their respective fields above.<br />
+											</div>';
+						return $return;
 		
 				} //function
 				
@@ -52,7 +64,19 @@
 				var $_name = 'pathapi';
 				function fetchElement($name, $value, &$node, $control_name)
 				{
-					return '<a href="https://www.google.com/accounts/ManageDomains" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
+					$return	=	'<div style="clear:both"></div>
+											<div class="instructions">
+											Go to <a href="https://www.google.com/accounts/ManageDomains" target="_blank">https://www.google.com/accounts/ManageDomains</a>.<br />
+											Enter <input style="float:none" type="text" value="'. str_replace( "http://",'',JURI::root()). '" readonly="true"/> for the Add domain.<br />
+											Scroll down to <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Manage Registration</span>.<br />
+											Click on the domain you entered.<br />
+											Follow the given instructions to <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Verify Ownership</span>.<br />
+											Click on <input style="float:none" type="button" value="Verify"/>
+											Enter <input style="float:none" type="text" value="'. JURI::root(). '" readonly="true"/> for the <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;"> Target URL path prefix</span>.<br />
+											Click <input style="float:none" type="button" value="Save"/>.<br />
+											Copy the values of <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;"> OAuth consumer Key </span> and <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;"> OAuth Consumer Secret </span> to their respective fields above.<br />
+											</div>';
+						return $return;
 				
 				}//function
 		}//class

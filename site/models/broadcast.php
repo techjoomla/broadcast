@@ -133,6 +133,15 @@ class BroadcastModelbroadcast extends JModel
 							combroadcastHelper::inJomwallact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
 							combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toMySQL(),$api);
 						}
+            //if Superactivity  
+						if($broadcast_config['integration']==2)
+						{
+
+							$today_date	= & JFactory::getDate($status['timestamp']);
+							$today =& JFactory::getDate();
+							combroadcastHelper::inSuperaact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
+							combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toMySQL(),$api);
+						}
 				}
 			}
 		}
@@ -148,9 +157,27 @@ class BroadcastModelbroadcast extends JModel
 	 	return $this->_db->loadObjectList();
 	}
 	function setStatus($api_used,$userid,$status){
+	$attachment='';
 		$dispatcher = &JDispatcher::getInstance();
+		include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
-		return $grt_response = $dispatcher->trigger($api_used.'setstatus',array($userid,$status));
+		
+		$comment=$status;
+		$link=combroadcastHelper::makelink($comment,'');
+			$link=trim($link);
+			$comment=trim($comment);
+			if($api_used!='rss')
+			{
+				if($link!=$comment)
+				{				
+					$type='link';
+					 $attachment=combroadcastHelper::seperateurl($comment);
+						$comment=str_replace($attachment,'',$comment);
+
+				}
+			}
+
+		return $grt_response = $dispatcher->trigger($api_used.'setstatus',array($userid,$status,$comment,$attachment));
 	}
 	function purgequeue(){
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');

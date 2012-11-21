@@ -5,26 +5,21 @@ defined('_JEXEC') or die( 'Restricted access' );
 require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 
 $document = &JFactory::getDocument();
+if(JVERSION>=3.0)
+jimport('joomla.html.html.bootstrap'); // get bootstrap 
+else
+{
+$document=JFactory::getDocument();
+$document->addScript(JURI::base().'components/com_broadcast/assets/javascript/jquery-1.8.0.min.js');
+$document->addScript(JURI::base().'components/com_broadcast/assets/javascript/jquery.validate.js');
+//load bootstrap
+$document->addStyleSheet(JURI::base().'components/com_broadcast/bootstrap/css/bootstrap.min.css');
+}
 $document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css' );
+$rsslists='';
+if(!empty($this->subscribedlists->broadcast_rss))
 $rsslists = $this->subscribedlists->broadcast_rss;
-							/*$rssdts=explode('|',$rsslists);
-							$irss=0;
-							foreach($rssdts as $rsskey=>$rssvalue)
-							{
 							
-								if(is_int($rsskey))
-								{
-								$final_rss[$irss]['title']='';
-
-								}
-								else
-								$final_rss[$irss]['title']=$key;
-								$final_rss[$irss]['url']=$rssvalue;
-							$irss++;
-							}
-							$vv=$final_rss;
-						echo $ss=	json_encode($vv);die;*/
-
 
 $session =& JFactory::getSession();
 
@@ -81,6 +76,7 @@ if(!$user->id){
 	<h1 class="contentheading">											
 			 <?php echo JText::_('BC_SETT');?>
 	</h1>
+	<div class="akeeba-bootstrap">
 	<div class="bc_connect">
 		<div class="box-container-t">
 			<div class="box-tl"></div>
@@ -108,7 +104,7 @@ if(!$user->id){
 					<?php
 						$link = JRoute::_('index.php?option=com_broadcast&view=config&tmpl=component&layout=otheraccounts');
 					?>
-					<br/><a rel="{handler: 'iframe', size: {x: 800, y: 800}}" href="<?php echo $link; ?>" class="modal">
+					<br/><a rel="{handler: 'iframe', size: {x: 800, y: 500}}" href="<?php echo $link; ?>" class="modal">
 						<span class="editlinktip hasTip" title="<?php echo JText::_('OTHER_ACCNT');?>" ><?php echo JText::_('OTHER_ACCNT');?></span>
 					</a>
 					
@@ -168,7 +164,8 @@ if(!$user->id){
 			<div class="box-br"></div>
 			<div class="box-b"></div>
 		</div>
-	</div>		
+	</div>	
+		
 	<div class="bc_connect">
 		<div class="box-container-t">
 			<div class="box-tl"></div>
@@ -263,9 +260,12 @@ if(!$user->id){
 	</div>
 	<!-- **** End Added & Modified By Deepak -->
 
-	<div id="manual_div" align="left" style="display:block; padding-top: 10px;">
-		<input type="hidden" name="option" value="com_broadcast">		
-		<input type="hidden" id="task" name="task" value="save">
-		<input type="button" value="<?php echo JText::_('BC_SAVE')?>" onclick="submit(this.form);">
+
+		<div class="form-actions">
+				<input type="hidden" name="option" value="com_broadcast">		
+				<input type="hidden" id="task" name="task" value="save">
+				<div align="center"><input type="button" class="btn btn-primary" value="<?php echo JText::_('BC_SAVE')?>" onclick="submit(this.form);"></div>
 	</div>
+		
  </form>
+ </div>

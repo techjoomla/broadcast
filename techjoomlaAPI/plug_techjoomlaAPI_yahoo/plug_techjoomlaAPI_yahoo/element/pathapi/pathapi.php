@@ -39,7 +39,24 @@
 				{
 					
 					if($this->id=='jform_params_pathapi_yahoo')
-					return '<a href="https://developer.apps.yahoo.com/projects" target="_blank">'.JText::_('API_KEY_PATH').'</a>';;
+					$return	=	'<div style="clear:both"></div>
+											<div class="instructions">
+											Login to <a href="https://developer.apps.yahoo.com/projects" target="_blank">https://developer.apps.yahoo.com/projects</a>.<br />
+											Click on  <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">My projects</span>.<br />
+											Click on <input style="float:none" type="button" value="New project"/>.<br />
+											Choose the type of Application as <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Standard</span>.<br />
+											Click <input style="float:none" type="button" value="Continue"/>.<br />
+											Enter <input style="float:none" type="text" value="'. JURI::root(). '" readonly="true"/> for Application URL.<br />
+											Scroll down to <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Security and privacy</span>.<br />
+											Enter <input style="float:none" type="text" value="'. JURI::root(). '" readonly="true"/> for Application Domain.<br />
+											Select <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">This app requires access to private user data.</span>as Access Scopes:<br />
+											Click <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Contacts</span> to expand it.<br />
+											Select <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">	Read/Write </span><br />
+											Accept the "Terms of use"<br />
+											Click <input style="float:none" type="button" value="Get API keys"/>.<br />
+											Copy the values of <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;"> Application ID </span><span style="background-color: #EDEFF4;border: 1px dotted #CC3333;"> Consumer Key </span> and <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Consumer Secret</span> to their respective fields above.<br />
+											</div>';
+						return $return;
 		
 				} //function
 				
@@ -53,7 +70,24 @@
 				var $_name = 'pathapi';
 				function fetchElement($name, $value, &$node, $control_name)
 				{
-					return '<a href="https://developer.apps.yahoo.com/projects" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
+					$return	=	'<div style="clear:both"></div>
+											<div class="instructions">
+											Login to <a href="https://developer.apps.yahoo.com/projects" target="_blank">https://developer.apps.yahoo.com/projects</a>.<br />
+											Click on  <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">My projects</span>.<br />
+											Click on <input style="float:none" type="button" value="New project"/>.<br />
+											Choose the type of Application as <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Standard</span>.<br />
+											Click <input style="float:none" type="button" value="Continue"/>.<br />
+											Enter <input style="float:none" type="text" value="'. JURI::root(). '" readonly="true"/> for Application URL.<br />
+											Scroll down to <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Security and privacy</span>.<br />
+											Enter <input style="float:none" type="text" value="'. JURI::root(). '" readonly="true"/> for Application Domain.<br />
+											Select <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">This app requires access to private user data.</span>as Access Scopes:<br />
+											Click <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Contacts</span> to expand it.<br />
+											Select <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">	Read/Write </span><br />
+											Accept the "Terms of use"<br />
+											Click <input style="float:none" type="button" value="Get API keys"/>.<br />
+											Copy the values of <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;"> Application ID </span><span style="background-color: #EDEFF4;border: 1px dotted #CC3333;"> Consumer Key </span> and <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Consumer Secret</span> to their respective fields above.<br />
+											</div>';
+						return $return;
 				
 				}//function
 		}//class

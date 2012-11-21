@@ -61,7 +61,7 @@ class LinkedInAPI {
 	const _URL_ACCESS                  = 'https://api.linkedin.com/uas/oauth/accessToken';
 	const _URL_API                     = 'https://api.linkedin.com';
 	const _URL_AUTH                    = 'https://www.linkedin.com/uas/oauth/authenticate?oauth_token=';
-	const _URL_REQUEST                 = 'https://api.linkedin.com/uas/oauth/requestToken';
+	const _URL_REQUEST                 = 'https://api.linkedin.com/uas/oauth/requestToken?scope=r_network+w_messages+rw_nus+rw_groups';
 	const _URL_REVOKE                  = 'https://api.linkedin.com/uas/oauth/invalidateToken';
 	
   // Library version
@@ -247,7 +247,7 @@ class LinkedInAPI {
 	 *   'oauth'     => The OAuth request string that was sent to LinkedIn	 
 	 * )	 
 	 */
-	protected function fetch($method, $url, $data = NULL, $parameters = array()) {
+	 function fetch($method, $url, $data = NULL, $parameters = array()) {
 	  // check for cURL
 	  if(!extension_loaded('curl')) {
 	    // cURL not present

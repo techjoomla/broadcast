@@ -7,14 +7,15 @@ class broadcastModelcp extends JModel
 	 
 	function getqueue()
 	{
-		$query 		= "SELECT * FROM #__broadcast_queue";
+		$query 		= "SELECT * FROM #__broadcast_queue order by id,status desc";
 		$this->_db->setQuery($query);
 	 	return $this->_db->loadObjectList();
 	}	
 	
 	function store($post)
 	{
-		include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+		
+		require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 		if(isset($post['api_status']) && !empty($post['api_status']))
 			$apis = $post['api_status'];
 		else

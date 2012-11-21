@@ -70,6 +70,7 @@ class BroadcastControllerrss extends JController
 				$params->set('rssurl', trim($link));
 				try{
 						$feed = modFeedHelper::getFeed($params);
+						//print_r($feed);
 						if(!$feed) 
 						 continue;   
 								  

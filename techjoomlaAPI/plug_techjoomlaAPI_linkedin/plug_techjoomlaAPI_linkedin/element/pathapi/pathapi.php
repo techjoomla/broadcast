@@ -39,7 +39,14 @@
 				{
 					
 					if($this->id=='jform_params_pathapi_linkedin')
-						return '<a href="https://www.linkedin.com/secure/developer" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
+						$return	=	'<div style="clear:both"></div>
+											<div class="instructions">
+											Go to <a href="https://www.linkedin.com/secure/developer" target="_blank">https://www.linkedin.com/secure/developer</a>.<br />
+											Create an application with your site name. Give the Application a Generalised name for example name of your site.<br />
+											Click <input style="float:none" type="button" value="Add Application"/>.<br />
+											Copy the values of <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">API Key</span> and <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Secret Key</span> to their respective fields above.<br />
+											</div>';
+						return $return;
 		
 				} //function
 				
@@ -54,7 +61,14 @@
 				function fetchElement($name, $value, &$node, $control_name)
 				{
 					if($name=='pathapi_linkedin')
-					return '<a href="https://www.linkedin.com/secure/developer" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
+					$return	=	'<div style="clear:both"></div>
+											<div class="instructions">
+											Go to <a href="https://www.linkedin.com/secure/developer" target="_blank">https://www.linkedin.com/secure/developer</a>.<br />
+											Create an application with your site name. Give the Application a Generalised name for example name of your site.<br />
+											Click <input style="float:none" type="button" value="Add Application"/>.<br />
+											Copy the values of <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">API Key</span> and <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Secret Key</span> to their respective fields above.<br />
+											</div>';
+						return $return;
 				
 				}//function
 		}//class

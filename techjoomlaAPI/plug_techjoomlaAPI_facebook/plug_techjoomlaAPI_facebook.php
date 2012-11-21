@@ -266,6 +266,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	
 	function remove_token($client,$userid='')
 	{ 
+	
 	if(empty($userid))
 	$userid=$this->user->id;
 		if($client!='')
@@ -431,7 +432,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			
 			}
 			try{		
-				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit));
+				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'limit'=>5));
 				if($this->params->get('pages')==1)			
 				$json_pagedata=$this->plug_techjoomlaAPI_facebookget_page_status($token,$oauth_key->user_id,$facebook_profile_limit);
 				if($this->params->get('groups')==1)
@@ -509,12 +510,27 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		  }
 		return $status;
 	}
-
-	function plug_techjoomlaAPI_facebooksetstatus($userid,$content='')
-	{
+function seperateurl($url) {
 	
+	$newurl='';
+  $U = explode(' ',$url);
+
+  $W =array();
+  foreach ($U as $k => $u) {
+    if (stristr($u,'http') || (count(explode('.',$u)) > 1)) {
+      $newurl=$U[$k];
+      
+      $count=1;
+
+    }
+  }
+  return $newurl;
+}
+	function plug_techjoomlaAPI_facebooksetstatus($userid,$originalContent,$comment,$attachment='')
+	{
+			require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'helper.php');
 		$oauth_key = $this->getToken($userid,'broadcast');
-		
+		$response='';
 		if(!$oauth_key)
 		return false;
 		else
@@ -527,30 +543,42 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			return false;
 			
 		}
-
+		$api_nm='';
 		$post=array();
-		if(!$content)
+		if(!$comment)
 		return array();
 		
 		try{
 		if(isset($token))
 		{
-		$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $content));
+		
+	/*if($attachment)
+		$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $comment,'title'=>$attachment,'link'=>$attachment));
+		else
+		$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $comment));
+	*/
+			$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $originalContent));
+		
+				
 		if($this->params->get('pages')==1)
-		$this->plug_techjoomlaAPI_facebookset_page_status($token,$oauth_key[0]->user_id,$content);
+		$this->plug_techjoomlaAPI_facebookset_page_status($token,$oauth_key[0]->user_id,$originalContent,$comment,$attachment);
 		if($this->params->get('groups')==1)
-		$this->plug_techjoomlaAPI_facebookset_group_status($token,$oauth_key[0]->user_id,$content);
+		$this->plug_techjoomlaAPI_facebookset_group_status($token,$oauth_key[0]->user_id,$originalContent,$comment,$attachment);
 		}
 		} 
 		catch (FacebookApiException $e) 
 		{
+
 			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_SET_STATUS'),$e->getMessage(),$userid,1);
+		  
 		  return false;
     }
-		if($post)
-			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS').JText::_('LOG_SET_STATUS'),$content,$userid,1);
+		if($response)
+		$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_SET_STATUS'),$e->getMessage(),$userid,1);
 		else
-			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_SET_STATUS'),$e->getMessage(),$userid,1);
+		$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS').JText::_('LOG_SET_STATUS'),$originalContent,$userid,1);
+		
+
 			
 		return $response;
 	
@@ -562,9 +590,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	{
 			$data='';
 			
-			//	echo $this->params->get('pages');
-				//echo "===========";
-					//			echo $this->params->get('groups');
+			
 				$session = JFactory::getSession();	
 				if($this->params->get('pages')==1)
 				{
@@ -573,14 +599,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 					$fbpagesessiondata='';
 					$i=0;
 					$column='facebook_page_update';
+					$allparams=combroadcastHelper::getallparamsforOtherAccounts($this->user->id,$column='facebook_page_update');
 					if($pagedata)
 					{
 						foreach($pagedata as $fbpage)
 						{
-							if($fbpage['category']=='Application')
-							continue;
-						
-							$checkexist=combroadcastHelper::checkexistparams($fbpage['id'],$this->user->id,$this->_name,$column='facebook_page_update');
+							
+							$checkexist=combroadcastHelper::checkexistparams($allparams,'facebook_page_update',$fbpage['id']);
 						
 							$fbpage['image']='http://graph.facebook.com/'.$fbpage['id'].'/picture';
 							if($checkexist)
@@ -602,14 +627,17 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			if($this->params->get('groups')==1)
 			{
 			$groupdata=$this->plug_techjoomlaAPI_facebookgetgroupdata();
+			
 			$i=0;
 			$column='facebook_group_update';
+			$allparams=combroadcastHelper::getallparamsforOtherAccounts($this->user->id,$column='facebook_group_update');
 			if($groupdata)
 					{
 						foreach($groupdata as $group)
 						{
 
-							$checkexist=combroadcastHelper::checkexistparams($group['gid'],$this->user->id,$this->_name,$column='facebook_group_update');
+							//$checkexist=combroadcastHelper::checkexistparams($group['gid'],$this->user->id,$this->_name,$column='facebook_group_update');
+							$checkexist=combroadcastHelper::checkexistparams($allparams,'facebook_group_update',$group['gid']);
 							$group['id']=$group['gid'];
 							$group['image']=$group['icon'];
 							$group['name']=$group['name'];
@@ -631,7 +659,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		
 		
 		}
-	//	print_r($data);die;
+
 
 				return $data;
 		
@@ -701,7 +729,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	 	foreach($oauth_keys as $oauth_key){	
 	 		$token =json_decode($oauth_key->token);	
 			try{			
-			$pageData= $this->facebook->api($token->facebook_uid.'/accounts','GET', array('access_token'=>$token->facebook_secret));
+			$pageData= $this->facebook->api($token->facebook_uid.'/accounts?type=page','GET', array('access_token'=>$token->facebook_secret));
 
 			}
 			catch (FacebookApiException $e) 
@@ -715,7 +743,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		
   }
   		
-	function	plug_techjoomlaAPI_facebookset_group_status($token,$userid,$content)
+	function	plug_techjoomlaAPI_facebookset_group_status($token,$userid,$originalContent,$comment,$attachment='')
 	{
 			
 
@@ -728,22 +756,30 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	    'callback'    => '');
 	    	try{
 					$groupids   =$this->facebook->api($param);
-					print_r($groupids);
+
 				}
 				catch (FacebookApiException $e) 
 				{
 					$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
 				}
-		
+				
+		if($groupids)
+		{
+				$allparams=combroadcastHelper::getallparamsforOtherAccounts($this->user->id,$column='facebook_group_update');
 				foreach($groupids as $grp)
 				{
 						$checkexist=0;
-					$checkexist=combroadcastHelper::checkexistparams($grp['gid'],$userid,$api='plug_techjoomlaAPI_facebook',$column='facebook_group_update');
+						$checkexist=combroadcastHelper::checkexistparams($allparams,'facebook_group_update',$grp['gid']);
 					if(!$checkexist)
 					continue;
 					try{
-							
-							$post = $this->facebook->api($grp['gid'].'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $content));
+							/*if($attachment)						
+							$post = $this->facebook->api($grp['gid'].'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $comment,'title'=>$attachment,'link'=>$attachment));
+							else
+							$post = $this->facebook->api($grp['gid'].'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $comment));
+							*/
+							$post = $this->facebook->api($grp['gid'].'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $originalContent));
+
 
 						}
 						catch (FacebookApiException $e) 
@@ -751,7 +787,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 							$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
 						}
 				}
-
+		}
 
 	}
 	
@@ -777,10 +813,14 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 				}
 
 				$statuses='';
+				$allparams=combroadcastHelper::getallparamsforOtherAccounts($this->user->id,$column='facebook_group_update');
+				
+			if($groupids)
+			{
 				foreach($groupids as $grp)
 				{
 						$checkexist=0;
-					$checkexist=combroadcastHelper::checkexistparams($grp['gid'],$userid,$api='plug_techjoomlaAPI_facebook',$column='facebook_group_update');
+					$checkexist=combroadcastHelper::checkexistparams($allparams,'facebook_group_update',$grp['gid']);
 					if(!$checkexist)
 					continue;
 					try{
@@ -790,15 +830,15 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 						  $statuses[]=$this->renderstatus($response['data']);
 
 						}
-					catch (FacebookApiException $e) 
+						catch (FacebookApiException $e) 
 						{
 
 							//$this->raiseLog(JText::_('LOG_GET_PROFILE_FAIL').JText::_('LOG_GET_PROFILE'),$e->getMessage(),$userid,1);
 						}
-						
+					
 
 				}
-
+			}
 
 			if(!empty($statuses))
 				{
@@ -815,7 +855,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 	}
 	
 
-	function plug_techjoomlaAPI_facebookset_page_status($token,$userid,$content)
+	function plug_techjoomlaAPI_facebookset_page_status($token,$userid,$originalContent,$comment,$attachment='')
   {
 			if($this->params->get('pages')!=1)
 			return;
@@ -823,22 +863,35 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 				$pageData= $this->facebook->api($token->facebook_uid.'/accounts','GET', array('access_token'=>$token->facebook_secret));
 				if($pageData)
 				{
+					$allparams=combroadcastHelper::getallparamsforOtherAccounts($this->user->id,$column='facebook_page_update');
 					foreach($pageData as $pages)
 					{
 						foreach($pages as $page)
 						{
 
-						$checkexist='';
-						$checkexist=combroadcastHelper::checkexistparams($page['id'],$userid,$api='plug_techjoomlaAPI_facebook',$column='facebook_page_update');
+							$checkexist='';
+							$checkexist=combroadcastHelper::checkexistparams($allparams,'facebook_page_update',$page['id']);
 							if($checkexist)
 							{
-								$attachment = array(
-								'access_token' => $page['access_token'],
-								'message'=> $content,
-								);
-								
+								/*if($attachment)
+								{
+									$attachmentarr = array(
+									'access_token' => $page['access_token'],
+									'message' => $comment,'title'=>$attachment,'link'=>$attachment
+									);
+								}
+								else{								
+									$attachmentarr = array(
+									'access_token' => $page['access_token'],
+									'message'=> $comment,
+									);
+								}*/
+								$attachmentarr = array(
+									'access_token' => $page['access_token'],
+									'message'=> $originalContent,
+									);
 								try{	
-								$response=$this->facebook->api($page['id']."/feed",'POST', $attachment);
+									$response=$this->facebook->api($page['id']."/feed",'POST', $attachmentarr);
 								}
 								catch (FacebookApiException $e) 
 								{
@@ -847,7 +900,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 								}
 
 					
-					}
+							}
 					}
 				}
 
@@ -864,10 +917,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 
 				if($pageData['data'])
 				{
+									$allparams=combroadcastHelper::getallparamsforOtherAccounts($this->user->id,$column='facebook_page_update');
 					foreach($pageData['data'] as $page)
 					{
 						$checkexist='';
-						$checkexist=combroadcastHelper::checkexistparams($page['id'],$userid,$api='plug_techjoomlaAPI_facebook',$column='facebook_page_update');
+							$checkexist=combroadcastHelper::checkexistparams($allparams,'facebook_page_update',$page['id']);
 						if($checkexist)
 						{
 							$attachment = array(

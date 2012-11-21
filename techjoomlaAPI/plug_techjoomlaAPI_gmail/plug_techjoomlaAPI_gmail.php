@@ -279,7 +279,7 @@ jimport('joomla.plugin.plugin');
 	{  
 	
 	}
-	function plug_techjoomlaAPI_gmailsetstatus()
+	function plug_techjoomlaAPI_gmailsetstatus($userid,$originalContent,$comment,$attachment='')
 	{  
 	}
 	

@@ -39,7 +39,19 @@
 				{
 					
 					if($this->id=='jform_params_pathapi_facebook')
-						return '<a href="https://developers.facebook.com/apps" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
+						$return	=	'<div style="clear:both"></div>
+											<div class="instructions">
+											Go to <a href="https://developers.facebook.com/apps" target="_blank">https://developers.facebook.com/apps</a>.<br />
+											Click on <input style="float:none" type="button" value="Create New APP"/>.<br />
+											Enter an <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">App display name</span>.Give the Application a Generalised name for example name of your site.<br />
+											Accept the "Facebook platform policies" and click on <input style="float:none" type="button" value="Continue"/><br />
+											Enter <input style="float:none" type="text" value="'. str_replace( "http://",'',JURI::root()). '" readonly="true"/> for the App Domain.<br />
+											Scroll down to <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Select how your app integrates with Facebook</span>. Click <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Website</span> to expand it.<br />
+											Enter <input style="float:none" type="text" value="'. JURI::root(). '" readonly="true"/> for the Site URL.<br />
+											Click <input style="float:none" type="button" value="Save changes"/>.<br />
+											Copy the values of <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">App ID</span> and <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">App secret</span> to their respective fields above.<br />
+											</div>';
+						return $return;
 		
 				} //function
 				
@@ -53,7 +65,19 @@
 				var $_name = 'pathapi';
 				function fetchElement($name, $value, &$node, $control_name)
 				{
-					return '<a href="https://developers.facebook.com/apps" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
+					$return	=	'<div style="clear:both"></div>
+											<div class="instructions">
+											Go to <a href="https://developers.facebook.com/apps" target="_blank">https://developers.facebook.com/apps</a>.<br />
+											Click on <input style="float:none" type="button" value="Create New APP"/>.<br />
+											Enter an <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">App display name</span>.Give the Application a Generalised name for example name of your site.<br />
+											Accept the "Facebook platform policies" and click on <input style="float:none" type="button" value="Continue"/><br />
+											Enter <input style="float:none" type="text" value="'. str_replace( "http://",'',JURI::root()). '" readonly="true"/> for the App Domain.<br />
+											Scroll down to <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Select how your app integrates with Facebook</span>. Click <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Website</span> to expand it.<br />
+											Enter <input style="float:none" type="text" value="'. JURI::root(). '" readonly="true"/> for the Site URL.<br />
+											Click <input style="float:none" type="button" value="Save changes"/>.<br />
+											Copy the values of <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">App ID</span> and <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">App secret</span> to their respective fields above.<br />
+											</div>';
+						return $return;
 				
 				}//function
 		}//class

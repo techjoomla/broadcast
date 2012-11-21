@@ -328,7 +328,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_yahoo extends JPlugin
 	{  
 	
 	}
-	function plug_techjoomlaAPI_yahoosetstatus()
+	function plug_techjoomlaAPI_yahoosetstatus($userid,$originalContent,$comment,$attachment='')
 	{  
 	}
 	

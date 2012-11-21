@@ -1,6 +1,6 @@
 <?php
 /*
-	* @package LinkedIn plugin for Invitex
+	* @package orkut plugin for Invitex
 	* @copyright Copyright (C)2010-2011 Techjoomla, Tekdi Web Solutions . All rights reserved.
 	* @license GNU GPLv2 <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
 	* @link http://www.techjoomla.com
@@ -10,7 +10,7 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.plugin.plugin');
 
-// include the LinkedIn class
+// include the orkut class
 if(JVERSION >='1.6.0')
 {
 	require_once(JPATH_SITE.DS.'plugins'.DS.'techjoomlaAPI'.DS.'plug_techjoomlaAPI_orkut'.DS.'plug_techjoomlaAPI_orkut'.DS.'lib'.DS.'orkut.php');
@@ -44,7 +44,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_orkut extends JPlugin
 		'appSecret'    => $appSecret,
 		'callbackUrl'  => NULL 
 		);
-		//$this->linkedin = new LinkedInAPI($this->API_CONFIG);
+		//$this->orkut = new orkutAPI($this->API_CONFIG);
 		$orkutApi = new Orkut($this->API_CONFIG['appKey'], $this->API_CONFIG['appSecret']);
 		}
 	
@@ -201,7 +201,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_orkut extends JPlugin
 						$contacts=$friends->execute();
 						
 			}
-			catch(LinkedInException $e)
+			catch(orkutException $e)
 			{ 
 				$this->raiseException($e->getMessage());
 				return false;
@@ -319,7 +319,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_orkut extends JPlugin
 		}
   }//end send message
  
-	function plug_techjoomlaAPI_linkedingetstatus()
+	function plug_techjoomlaAPI_orkutgetstatus()
 	{  	
 		$i = 0;
 		$returndata = array();
@@ -328,21 +328,21 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_orkut extends JPlugin
 		foreach($oauth_keys as $oauth_key){
 			
 			$oauth_token		 	= json_decode($oauth_key->token);
-			$oauth_token_arr	=	json_decode($oauth_token->linkedin_oauth);
+			$oauth_token_arr	=	json_decode($oauth_token->orkut_oauth);
 			try{
-			$this->linkedin->retrieveTokenRequest();
+			$this->orkut->retrieveTokenRequest();
 			$this->API_CONFIG['callbackUrl']=NULL;
 			$oauth_token_arr1=JArrayHelper::fromObject($oauth_token_arr);
-			$this->linkedin->setTokenAccess($oauth_token_arr1);	
+			$this->orkut->setTokenAccess($oauth_token_arr1);	
 			if($this->params->get('broadcast_limit'))
-			$linkedin_profile_limit=$this->params->get('broadcast_limit');
+			$orkut_profile_limit=$this->params->get('broadcast_limit');
 			else
-			$linkedin_profile_limit=2;
-			$options='&type=SHAR&format=json&count='.$linkedin_profile_limit;
+			$orkut_profile_limit=2;
+			$options='&type=SHAR&format=json&count='.$orkut_profile_limit;
 			
-			$response_updates = $this->linkedin->updates($options);
+			$response_updates = $this->orkut->updates($options);
 			}
-			catch(LinkedInException $e)
+			catch(orkutException $e)
 			{ 
 				$this->raiseException($e->getMessage(),$oauth_key->user_id,1);
 				//return false;
@@ -353,9 +353,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_orkut extends JPlugin
 			$response=$this->raiseLog($response_updates,JText::_('LOG_GET_STATUS'),$oauth_key->user_id,1);
 			if($response)
 			{
-					$json_linkedin= $response_updates['linkedin']; 	
+					$json_orkut= $response_updates['orkut']; 	
 					$returndata[$i]['user_id'] = $oauth_key->user_id;
-					$returndata[$i]['status'] = $this->renderstatus(json_decode($json_linkedin));
+					$returndata[$i]['status'] = $this->renderstatus(json_decode($json_orkut));
 					$i++;
 			}
 		}
@@ -395,34 +395,10 @@ print_r($r['data']);die;
 		//	return ($r['data']);
 } 
 	  	
-	function plug_techjoomlaAPI_linkedinsetstatus($userid,$comment='')
+	function plug_techjoomlaAPI_orkutsetstatus($userid,$originalContent,$comment,$attachment='')
 	{
 	
-		//To do use json encode decode for this	
-		$oauth_key = $this->getToken($userid); 
-		if(!isset($oauth_key))
-		return false;
-		$oauth_token		 	= json_decode($oauth_key[0]->token);
-		$oauth	=	json_decode($oauth_token->linkedin_oauth, true);
 		
-		try{
-			$this->linkedin = new LinkedInAPI($this->API_CONFIG);  	
-			$this->linkedin->setTokenAccess($oauth);			
-
-			$content = array ('comment' => $comment);
-			//$content = array ('comment' => $comment, 'title' => '', 'submitted-url' => '', 'submitted-image-url' => '', 'description' => '');
-			$status= $this->linkedin->share('new',$content); 
-		
-		}
-		catch(LinkedInException $e)
-		{
-			
-			$this->raiseException($e->getMessage(),$userid,1);
-			return false;
-		} 
-		
-		$response=$this->raiseLog($status,JText::_('LOG_SET_STATUS'),$userid,1);
-		return $response;
 	}
 	
 	function raiseException($exception,$userid='',$display=1,$params=array())
@@ -454,8 +430,8 @@ print_r($r['data']);die;
 				$params['http_code']		=	$status['info']['http_code'];
 				if(!$status['success'])
 				{
-						if(isset($status['linkedin']))				
-							$response_error=techjoomlaHelperLogs::xml2array($status['linkedin']);
+						if(isset($status['orkut']))				
+							$response_error=techjoomlaHelperLogs::xml2array($status['orkut']);
 				
 			
 					$params['success']			=	false;
@@ -478,7 +454,7 @@ print_r($r['data']);die;
 	}
 	
 	
-	function plug_techjoomlaAPI_linkedinget_profile()
+	function plug_techjoomlaAPI_orkutget_profile()
 	{
 
   }

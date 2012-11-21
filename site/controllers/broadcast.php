@@ -22,6 +22,33 @@ class BroadcastControllerbroadcast extends JController
 		$grt_response=$model->getRequestToken($api_used);
 	}
 	
+	/*single cron URL for running all the functions*/
+	function br_allfunc_cron(){
+		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$pkey = JRequest::getVar('pkey', '');
+		if($pkey!=$broadcast_config['private_key_cronjob'])		
+		{
+			echo JText::_("CRON_KEY_MSG");
+			return;
+		}
+		
+		$func = JRequest::getVar('func');
+		if($func)
+			$this->$func();
+		else{	
+			$funcs = array ('get_status','set_status');	 /*add the function names you need to add here*/
+			foreach ($funcs as $func){
+			echo '<br>***************************************<br>';
+				$this->$func();
+			echo '<br>***************************************<br>';			
+			}
+		}
+		
+		require_once(JPATH_SITE.DS."components".DS."com_broadcast".DS."controllers".DS."rss.php");
+		$rssobj=new BroadcastControllerrss;
+		$rssobj->getrssdata();
+	}		
+	
 	/*call model for access token*/
 	function get_access_token()
 	{

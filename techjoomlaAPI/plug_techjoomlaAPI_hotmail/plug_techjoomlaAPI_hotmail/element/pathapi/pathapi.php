@@ -38,7 +38,15 @@
 				{
 					
 					if($this->id=='jform_params_pathapi_hotmail')
-					return '<a href="https://manage.dev.live.com/Applications/Index" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
+					$return	=	'<div style="clear:both"></div>
+											<div class="instructions">
+											Go to <a href="https://manage.dev.live.com" target="_blank">https://manage.dev.live.com</a>.<br />
+											Click on <input style="float:none" type="button" value="Create Application"/>.<br />
+											Enter an <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Application name</span>.Give the Application a Generalised name for example name of your site.<br />
+											Click on <input style="float:none" type="button" value="I accept"/><br />
+											Copy the values of <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Client ID</span> and <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Client secret</span> to their respective fields above.<br />
+											</div>';
+						return $return;
 		
 				} //function
 				
@@ -52,7 +60,15 @@
 				var $_name = 'pathapi';
 				function fetchElement($name, $value, &$node, $control_name)
 				{
-					return '<a href="https://manage.dev.live.com/Applications/Index" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
+					$return	=	'<div style="clear:both"></div>
+											<div class="instructions">
+											Go to <a href="https://manage.dev.live.com" target="_blank">https://manage.dev.live.com</a>.<br />
+											Click on <input style="float:none" type="button" value="Create Application"/>.<br />
+											Enter an <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Application name</span>.Give the Application a Generalised name for example name of your site.<br />
+											Click on <input style="float:none" type="button" value="I accept"/><br />
+											Copy the values of <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Client ID</span> and <span style="background-color: #EDEFF4;border: 1px dotted #CC3333;">Client secret</span> to their respective fields above.<br />
+											</div>';
+						return $return;
 				
 				}//function
 		}//class

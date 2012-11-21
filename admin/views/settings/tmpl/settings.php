@@ -6,7 +6,7 @@ JHTML::_('behavior.tooltip');
 JHTML::_('behavior.formvalidation');
 require(JPATH_SITE.DS."administrator".DS."components".DS."com_broadcast".DS."config".DS."config.php");
 	
-	$push_only_public_acts=$push_only_public_acts_no=$status_via=$status_via_no='';
+	$integration=$rss_limit_per_user=$show_status_rss=$push_only_public_acts=$push_only_public_acts_no=$status_via=$status_via_no='';
 	$show_status_update=$show_status_update_no='';
 	//$show_status_viarss=$show_status_viarss_no='';
 	$show_name=$show_name_no='';

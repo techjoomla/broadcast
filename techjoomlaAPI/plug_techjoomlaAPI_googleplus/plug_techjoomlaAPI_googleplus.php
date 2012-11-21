@@ -363,7 +363,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_googleplus extends JPlugin
 			} 
 	  	return $status;
 		}
-	function plug_techjoomlaAPI_googleplussetstatus($userid,$comment='')
+	function plug_techjoomlaAPI_googleplussetstatus($userid,$originalContent,$comment,$attachment='')
 	{
 	
 		//To do use json encode decode for this	

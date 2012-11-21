@@ -6,10 +6,22 @@ require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'con
 
 $document = &JFactory::getDocument();
 $document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css' );
+if(JVERSION>=3.0)
+jimport('joomla.html.html.bootstrap'); // get bootstrap 
+else
+{
+$document=JFactory::getDocument();
+$document->addScript(JURI::base().'components/com_broadcast/assets/javascript/jquery-1.8.0.min.js');
+$document->addScript(JURI::base().'components/com_broadcast/assets/javascript/jquery.validate.js');
+//load bootstrap
+$document->addStyleSheet(JURI::base().'components/com_broadcast/bootstrap/css/bootstrap.min.css');
+}
+$document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css' );
 $rsslists = $this->subscribedlists->broadcast_rss;
 $model	= $this->getModel( 'config' );					
 $session =& JFactory::getSession();
-
+$cache = & JFactory::getCache();
+$cache->clean();
 $itemid = JRequest::getVar('Itemid', '','GET');
 $session->set('itemid_session',$itemid);	
 $u =& JURI::getInstance();
@@ -33,23 +45,10 @@ if(!$user->id){
 </script>
  
 <script type="text/javascript">
-	 var limit="<?php echo $broadcast_config['rss_link_limit']; ?>";
-	 <?php
-	 if(isset($this->subscribedlists->broadcast_rss))
-	 {
-	 ?>
-	 	var counter="<?php echo count($rsslists)+1; ?>";
-	 <?php
-	 }
-	 else
-	 {
-	 ?>
-		var counter=1;
-	<?php
-	}
-	?>
+	 var limit="5";
+		var counter=1;	
 	function divhide(thischk){
-
+thischk.id
 		if(document.getElementById(thischk.id+'1').style.display == "none" ){
 			document.getElementById(thischk.id+'1').style.display="block";
 		}
@@ -61,39 +60,44 @@ if(!$user->id){
 	
 </script>
 <form action=""  method="POST" name="manualform1" >
-	<h1 class="contentheading">											
+	<h3 class="contentheading">											
 			 <?php echo JText::_('BC_SETT');?>
-	</h1>
-	<div class="bc_connect">
-		<div class="box-container-t">
-			<div class="box-tl"></div>
-			<div class="box-tr"></div>
-			<div class="box-t"></div>
-		</div>									
-		<div class="content_cover">	
-				<div id="broadcast_connect" onclick="divhide(this);" > <b> <?php echo JText::_('CONN_SER')?> </b></div>	
-			
-			
-				<?php 
-						$otherdataArr=$model->renderHTML_other();
-					if(empty($otherdataArr))
-					{
-					echo "No Other Account Data</div></div>";
-					return;
-					}
-							$otherdataArr=$session->set("API_otherAccountData",$otherdataArr);
-						foreach($otherdataArr as $otherdata)
-							{
-								foreach($otherdata as $dts)
-								{?>
-								<div id="broadcast_connect1"  class="broadcast-expands" style="float:left;">
-								<div> <?php echo $dts[0]['displayname'];?>	</div>	
-								<?php
-									$i=0;
+	</h3>
+		<div class="akeeba-bootstrap">
+	<?php 
+
+	if(empty($this->otherdataArr))
+	{
+		echo "No Other Account Data</div></div>";
+		return;
+	}
+	
+	$jj=0;
+	$session->set("API_otherAccountData",$this->otherdataArr);
+	foreach($this->otherdataArr as $otherdata)
+		{
+		
+			foreach($otherdata as $dts)
+			{
+
+					$divnm="broadcast_connect".$jj;
+				?>
+				<div class="bc_connect" id="<?php echo $divnm;?>"  >
+					<div class="box-container-t">
+						<div class="box-tl"></div>
+						<div class="box-tr"></div>
+						<div class="box-t"></div>
+					</div>									
+					<div class="content_cover">	
+					<div id="<?php echo $dts[0]['displayname'];?>" onclick="divhide(this);" ><b><?php echo $dts[0]['displayname'];?></b></div>	      
+						<div id="<?php echo $dts[0]['displayname'].'1';?>"  class="broadcast-expands">
+							<?php
+									$i=1;
+									$jj++;
 									foreach($dts as $singledata)
 									{
-										$i++;
 							
+				
 										if($singledata['connectionstatus']==1)						
 										$checked=" checked='checked'";
 										else
@@ -107,52 +111,50 @@ if(!$user->id){
 
 										$finaldata['data'][$fieldname][]=$singledata;
 										$data='';
-				 						$data.='<div class="page_status_config_inner" style="float:left;padding-left:40px">
+										if($i%3!=0)
+										{
+										$i=1;
+										$float="float:left;margin-top:20px;";
+										}
+										else
+										$float="";
+										$i++;
+				 						$data.='<div class="page_status_config_inner" style="'.$float.'padding-left:30px">
 				 							<input class="api_checkbox" type="checkbox"  id="'.$singledata['fieldname'].'[]" name="'.$singledata['fieldname'].'[]" "'.$checked.'" value="'.$singledata['id'].'" />';
-										$data.='<img class="bcapi_img"  src="'.$image.'"  >'.$title;
-										//$data.='<img class="bcapi_img" src="'.JURI::base().'components/com_broadcast/images/'.$singledata['techjoomlaapiname'].'.png" border="0" alt="Tooltip" />';
-										$data.='</div>';
+										$data.='<img class="bcapi_img"  src="'.$image.'"  >'.$title.'</div>';
+
+
 										echo $data;
-										//if($i%3==0)
-										//echo "<br/>";
+
+										?>
+							
+
+										<?php
+				
 									}
 									?>
 
+								</div><!--content-cover-->
+							</div><!--content-cover-->
+							<div class="content_bottom">
+								<div class="box-bl"></div>
+								<div class="box-br"></div>
+								<div class="box-b"></div>
+							</div>
+				</div><!--bc-connect-->		
 
+			<?php
+			}
+		
+	}
+?>
 
-									<div style="clear:both">
-								<?php
-								}
-							?>
-																			</div>		
-
-													
-							<?php
-						}
-				
-
-
-
-				?>
-
-			
+		<div class="form-actions">
+					<input type="hidden" name="option" value="com_broadcast">		
+					<input type="hidden" id="task" name="task" value="saveotheraccounts">
+					<div align="center"><input class="btn btn-primary" type="button" value="<?php echo JText::_('BC_SAVE')?>" onclick="submit(this.form);"></div>
+				</div>
 		
 
-
-
-	
-
-	<div id="manual_div" align="left" style="display:block; padding-top: 10px;">
-		<input type="hidden" name="option" value="com_broadcast">		
-		<input type="hidden" id="task" name="task" value="saveotheraccounts">
-		<input type="button" value="<?php echo JText::_('BC_SAVE')?>" onclick="submit(this.form);">
-	</div>
-	<div class="content_bottom">
-			<div class="box-bl"></div>
-			<div class="box-br"></div>
-			<div class="box-b"></div>
-	</div>
-	</div></div>
-									<div style="clear:both">
-
  </form>
+ </div>

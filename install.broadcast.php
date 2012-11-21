@@ -94,6 +94,35 @@ else
 {
 	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_('Jomwall Broadcast plugin installed').'</span>'; 	
 }
+
+
+
+//install SUPERA Broadcast plugin and publish it
+/*$installer = new JInstaller;
+$result = $installer->install($install_source.DS.'broadcastplugin/superabroadcast');
+if (!in_array("supera", $status)) {
+	if(JVERSION >= '1.6.0')
+	{
+		$query = "UPDATE #__extensions SET enabled=1 WHERE element='superabroadcast' AND folder='system'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	else
+	{
+		$query = "UPDATE #__plugins SET published=1 WHERE element='superabroadcast' AND folder='system'";
+		$db->setQuery($query);
+		$db->query();
+	}
+	echo ($result)?'<br/><span style="font-weight:bold; color:green;">'.JText::_('Super Activity Broadcast plugin installed and published').'</span>':'<br/><span style="font-weight:bold; color:red;">'.JText::_('Super Activity Broadcast plugin not installed').'</span>'; 	
+}
+else
+{
+	echo '<br/><span style="font-weight:bold; color:green;">'.JText::_('Super Activity Broadcast plugin installed').'</span>'; 	
+}*/
+
+
+
+
 	
 //install techjoomlaAPI plugins 
 $installer = new JInstaller;
@@ -307,7 +336,7 @@ function com_install()
 	$query = "CREATE TABLE IF NOT EXISTS `#__broadcast_config` (
   `user_id` int(11) NOT NULL,
   `broadcast_activity_config` varchar(500) NOT NULL,
-  `broadcast_rss` text NOT NULL
+	`params` text NOT NULL
 );";
 
 $db->setQuery($query);
@@ -325,11 +354,23 @@ $db->setQuery($query);
 	$oldbroadcast=0;
 	if (in_array('broadcast_rss_url', $field_array)) { 
 	$oldbroadcast=1;
-		echo $query = "ALTER TABLE #__broadcast_config CHANGE `broadcast_rss_url` `broadcast_rss` TEXT NOT NULL  ";
+		$query = "ALTER TABLE #__broadcast_config CHANGE `broadcast_rss_url` `broadcast_rss` TEXT NOT NULL  ";
 		$db->setQuery($query);
 		if(!$db->query() )
 		{
 			echo $img_ERROR.JText::_('Unable to Alter #__broadcast_config').$BR;
+			echo $db->getErrorMsg();
+			return FALSE;
+		}			
+	}
+	
+	if (!in_array('params', $field_array)) { 
+	$oldbroadcast=1;
+		$query = "ALTER TABLE #__broadcast_config ADD    `params` text NOT NULL ";
+		$db->setQuery($query);
+		if(!$db->query() )
+		{
+			echo $img_ERROR.JText::_('Unable to ADD Column #__broadcast_config').$BR;
 			echo $db->getErrorMsg();
 			return FALSE;
 		}			
@@ -398,6 +439,14 @@ $db->setQuery($query);
 		JFile::move(JPATH_SITE.'/components/com_broadcast/images/twitter.png', JPATH_SITE.'/components/com_community/assets/favicon/twitter.png' );
 		JFile::move(JPATH_SITE.'/components/com_broadcast/images/linkedin.png', JPATH_SITE.'/components/com_community/assets/favicon/linkedin.png' );
 		JFile::move(JPATH_SITE.'/components/com_broadcast/images/facebook.png', JPATH_SITE.'/components/com_community/assets/favicon/facebook.png' );
+		JFile::move(JPATH_SITE.'/components/com_broadcast/images/rss.png', JPATH_SITE.'/components/com_community/assets/favicon/rss.png' );
+	}
+	else
+	{
+		JFile::move(JPATH_SITE.'/components/com_broadcast/images/twitter.png', JPATH_SITE.'/components/com_community/assets/favicon/twitter.png' );
+		JFile::move(JPATH_SITE.'/components/com_broadcast/images/linkedin.png', JPATH_SITE.'/components/com_community/assets/favicon/linkedin.png' );
+		JFile::move(JPATH_SITE.'/components/com_broadcast/images/facebook.png', JPATH_SITE.'/components/com_community/assets/favicon/facebook.png' );
+		JFile::move(JPATH_SITE.'/components/com_broadcast/images/rss.png', JPATH_SITE.'/components/com_community/assets/favicon/rss.png' );
 	}
 	
 	JFile::delete($destination.'configdefault.php');

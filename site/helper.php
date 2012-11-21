@@ -38,6 +38,40 @@ class combroadcastHelper
   }
   return $newurl;
 }
+
+function inSuperaact($userid,$comment,$status_content,$today,$timestamp,$api_nm)
+	{
+			if (file_exists(JPATH_SITE . DS . 'components' . DS . 'com_cbactivity' . DS . 'onyourmind' . DS . 'shareBroadcast.php')) {
+        require_once( JPATH_SITE . DS . 'components' . DS . 'com_cbactivity' . DS . 'onyourmind' . DS . 'shareBroadcast.php');
+      } 
+			elseif (file_exists(JPATH_SITE . DS . 'components' . DS . 'com_cbsuperwall' . DS . 'onyourmind' . DS . 'shareBroadcast.php')) {
+        require_once( JPATH_SITE . DS . 'components' . DS . 'com_cbsuperwall' . DS . 'onyourmind' . DS . 'shareBroadcast.php');
+      } 
+
+			$attachment='';
+
+			$type='text';
+			$original=$comment;
+			$link=combroadcastHelper::makelink($comment,$api_nm);
+			$link=trim($link);
+			$comment=trim($comment);
+			if($link!=$comment)
+			{				
+				$type='link';
+				$attachment=combroadcastHelper::seperateurl($comment);
+				//expand url $attachment
+
+				$comment=str_replace($attachment,'',$comment);
+				$attachment=combroadcastHelper::expandShortUrl($attachment);
+			}
+			
+			$api=str_replace('plug_techjoomlaAPI_','',$api_nm);
+
+			$imgpath=JURI::base().'/components/com_broadcast/images/'.$api.'.png';
+      
+			SuperaBroadcastHelper::addtostream($comment,$attachment,$type,$userid,$imgpath,$original);
+	}
+  
 function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm)
 	{
 			require_once( JPATH_SITE . DS . 'components' . DS . 'com_awdwall' . DS . 'helpers' . DS . 'user.php'); 
@@ -243,25 +277,36 @@ function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm
   }
   return implode(' ',$U);
 	}
- function checkexistparams($id,$userid,$api,$column)
+
+ function checkexistparams($allparams,$column,$id)
 	{
-		$db 			=& JFactory::getDBO();
-		$query = "SELECT params FROM #__broadcast_config WHERE user_id ={$userid}";
-		$db->setQuery($query);
-		$json=$db->loadResult();
-		$dataarr=json_decode($json,true);
-		if(empty($dataarr['paramsdata'][$column]))
-			return 0;
-		foreach($dataarr['paramsdata'][$column] as $multipledata)
+if($allparams)
+{
+		foreach($allparams as  $multipledatas)
 		{
-			
-			
-			if($multipledata['id']==$id)
-						return 1;
-			
+		foreach($multipledatas as  $multipledata)
+		{
+	
+				if($multipledata['id']==$id)
+				return 1;
+			}
 		}
+}
 					return 0;
 	}
+	 function getallparamsforOtherAccounts($userid,$column)
+	 {
+			$db 	=& JFactory::getDBO();
+			$query = "SELECT params FROM #__broadcast_config WHERE user_id ={$userid}";
+			$db->setQuery($query);
+			$json=$db->loadResult();
+			$dataarr=json_decode($json,true);
+			if(empty($dataarr['paramsdata'][$column]))
+			return 0;
+			else 
+						return $dataarr['paramsdata'][$column];
+			
+		}
 	#check if the status exist in the temp table of broadcast
 	function checkexist($status,$uid,$api='')
 	{
@@ -279,7 +324,7 @@ function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm
 		$query = "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid} AND status = '{$newstatus}' ".$where ;
 		$db->setQuery($query);
 		
-		if($db->loadResult())			
+		if($db->loadResult())	
 			return 1;					
 		else
 			return 0;
@@ -478,6 +523,7 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 		else
 			$touseapi = $media;
 
+
 		if(!$count)	$count = 1;
 	    $db =& JFactory::getDBO();
 		foreach($touseapi as $api){
@@ -492,7 +538,6 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 			$obj->interval	= $interval;
 			$obj->api 		= $api;
 			$obj->supplier	= $supplier ;
-
 				
 			if(!empty($userid))
 				{
@@ -505,8 +550,10 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 					}
 			 	 	}
 			 	 }
-  		return true;
+
 	}
+
+	  		return true;
 	
 	
 	

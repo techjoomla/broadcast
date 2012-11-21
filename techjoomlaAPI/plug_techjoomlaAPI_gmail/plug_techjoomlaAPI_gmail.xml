@@ -7,7 +7,7 @@
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>extensions@tekdi.net</authorEmail>
 	<authorUrl>www.techjoomla.com</authorUrl>
-	<version>1.3.1</version>
+	<version>1.1</version>
 	<isapplication>true</isapplication>
 	<description>
 		Techjoomla Gmail API plugin
@@ -22,22 +22,22 @@
 	</languages>
 	<!-- parameters for Joomla 1.5.x -->
 	<params addpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_gmail/element/pathapi">
-		<param name="pathapi_gmail" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />
 		<param name="appKey" type="text" default="" label="Enter Gmail application key" description="Enter Gmail application key" />
 		<param name="appSecret" type="text" default="" label="Enter Gmail secret key" description="Enter Gmail secret key" />
 		<param name="log_file_path" type="hidden" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored" />		
 		<param name="throttle_limit_gmail" type="hidden" label="Throttle Limit of gmail API" description="This is Throttle Limit per day per application" />		
+			<param name="pathapi_gmail" type="pathapi" label="Instructions:" description="Instructions to get the application key and secret" />
 	</params>
 	
 	<!-- Fields for Joomla 1.6.x and onwards -->
 	<config name="params">
   	<fields name="params">
     	<fieldset name="basic" addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_gmail/plug_techjoomlaAPI_gmail/element/pathapi">
-				<field name="pathapi_gmail" type="pathapi" label="Get Your Keys From Here" description="Click Here to get the application key and secret" />
 				<field name="appKey" type="text" default="" label="Enter Gmail application key" description="Enter Gmail application key"/>
 				<field name="appSecret" type="text" default="" label="Enter Gmail secret key" description="Enter Gmail secret key" />
 				<field name="log_file_path" type="hidden" default="" label="Log File Path" description="Enter the Path of Folder where Log files will stored"/>		
 				<field name="throttle_limit_gmail" type="hidden" label="Throttle Limit of gmail API" description="This is Throttle Limit per day per application" />		
+							<field name="pathapi_gmail" type="pathapi" label="Instructions:" description="Instructions to get the application key and secret" />	
 			</fieldset>
 		</fields>
 	</config>

@@ -473,6 +473,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	}
   	function renderstatus($totalresponse)
   	{
+
 			$status = array();
 			$j=0;
 			for($i=0; $i <= count($totalresponse->values); $i++ )
@@ -487,7 +488,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			} 
 	  	return $status;
 		}
-	function plug_techjoomlaAPI_linkedinsetstatus($userid,$comment='')
+	function plug_techjoomlaAPI_linkedinsetstatus($userid,$originalContent,$comment,$attachment='')
 	{
 	
 		//To do use json encode decode for this	
@@ -500,9 +501,13 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		try{
 			$this->linkedin = new LinkedInAPI($this->API_CONFIG);  	
 			$this->linkedin->setTokenAccess($oauth);			
+			/*if($attachment)
+						$content = array ('comment' => $comment, 'title' => $comment, 'submitted-url' => $attachment, 'submitted-image-url' => $attachment, 'description' => $comment);
+			else
+			$content = array ('comment' => $comment);*/
+			
+						$content = array ('comment' => $originalContent);
 
-			$content = array ('comment' => $comment);
-			//$content = array ('comment' => $comment, 'title' => '', 'submitted-url' => '', 'submitted-image-url' => '', 'description' => '');
 			$status= $this->linkedin->share('new',$content); 
 
 		

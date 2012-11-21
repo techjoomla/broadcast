@@ -50,6 +50,16 @@ class plgCommunityjomsocialbroadcast extends CApplications
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_community'.DS.'libraries'.DS.'activities.php');
 		$user	= JFactory::getUser();	
 		$subscribedapp	= explode('|',$this->getusersetting($user->id)); 
+		$task=JRequest::getVar('task');
+		
+		if($bc_activity->app=="photos")
+		{
+			if(!in_array('albums',$subscribedapp))
+			{
+				if($task=='multiUpload')
+				return;
+			}
+		}
 		if(in_array($bc_activity->app,$subscribedapp))
 		{
 			$title=$this->tag_replace($bc_activity->actor,$bc_activity->target,$bc_activity->created,$bc_activity);
@@ -126,9 +136,14 @@ class plgCommunityjomsocialbroadcast extends CApplications
 				$url = JURI::base().$paramarray->get('video_url', null);
 			break;
 			case 'photos':
-				$u =& JURI::getInstance(JURI::current());
+			
+				 $u =& JURI::getInstance(JURI::current());
+				 $view=JRequest::getVar('view');
+ 				 $task=JRequest::getVar('task');
+				if($task!='multiUpload')
 				$url = 'http://'.$u->getHost().$paramarray->get('photo_url', null);
-			break;
+				else
+				$url = $paramarray->get('photo_url', null);
 		}
 //		echo $url; die;
 		return $url;

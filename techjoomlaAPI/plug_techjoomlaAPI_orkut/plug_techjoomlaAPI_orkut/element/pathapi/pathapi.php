@@ -38,7 +38,7 @@
 				{
 					
 					if($this->id=='jform_params_pathapi_orkut')
-						return '<a href="https://accounts.google.com/UpdateDomains" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
+						return '<div style="clear:both"></div>The steps to get the App key and Secret key are exactly same as Gmail .Both App key and Secret key used for Gmail API plugin can be used for the Orkut API plugin also.';
 		
 				} //function
 				
@@ -52,7 +52,7 @@
 				var $_name = 'pathapi';
 				function fetchElement($name, $value, &$node, $control_name)
 				{
-					return '<a href="https://accounts.google.com/UpdateDomains" target="_blank">'.JText::_('API_KEY_PATH').'</a>';
+					return '<div style="clear:both"></div>The steps to get the App key and Secret key are exactly same as Gmail .Both App key and Secret key used for Gmail API plugin can be used for the Orkut API plugin also.';
 				
 				}//function
 		}//class
