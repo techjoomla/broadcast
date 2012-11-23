@@ -585,6 +585,7 @@ function seperateurl($url) {
 }
 	function plug_techjoomlaAPI_facebooksetstatus($userid,$originalContent,$comment,$attachment='')
 	{
+	$response='';
 			require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'helper.php');
 		$oauth_key = $this->getToken($userid,'broadcast');
 		

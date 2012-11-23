@@ -260,7 +260,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 		$this->db->query();
 	}
 	
-	function plug_techjoomlaAPI_linkedinget_contacts() 
+	function plug_techjoomlaAPI_linkedinget_contacts($offset,$limit) 
 	{
 		$session = JFactory::getSession();
 		$this->API_CONFIG['callbackUrl']= JRoute::_(JURI::base().'index.php?option=com_invitex&view=invites&layout=apis');
@@ -271,7 +271,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 			try{
 				$this->linkedin = new LinkedInAPI($this->API_CONFIG);
 				$this->linkedin->setTokenAccess($session->get("['oauth']['linkedin']['access']",''));			
-				$response = $this->linkedin->connections('~/connections:(id,first-name,last-name,picture-url)');			
+				if($offset==0 && $limit==0)			
+					$response = $this->linkedin->connections('~/connections:(id,first-name,last-name,picture-url)');		
+				else
+				$response = $this->linkedin->connections('~/connections:(id,first-name,last-name,picture-url)?start='.$offset.'&count='.$limit);
 			}
 			catch(LinkedInException $e)
 			{ 
@@ -333,7 +336,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 					if($connection['id'])
 					{
 						$r_connections[0]->id  =$connection['id'];
-						$r_connections[0]->first_name =$connection['first-name'].' '.$connection['last-name'];
+						$r_connections[0]->name =$connection['first-name'].' '.$connection['last-name'];
 						if($connection['picture-url']	)
 						{
 							$r_connections[0]->picture_url=$connection['picture-url'];
@@ -351,7 +354,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_linkedin extends JPlugin
 	
 	function plug_techjoomlaAPI_linkedinsend_message($raw_mail,$invitee_data)
 	{
-	require(JPATH_SITE.DS.'components'.DS.'com_invitex'.DS.'config.php');
+		require(JPATH_SITE.DS.'components'.DS.'com_invitex'.DS.'helper.php');
+		$invitex_settings	= cominvitexHelper::getconfigData();
 		foreach($invitee_data as $id=>$invitee_name)
 		 {
 					$invitee_email=$invitee_name.'|'.$id;

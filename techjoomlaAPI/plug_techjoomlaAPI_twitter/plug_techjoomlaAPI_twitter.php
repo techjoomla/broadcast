@@ -239,14 +239,14 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 			$params=array();
 			$connection=array();
 			
-		$response=$tmhOAuth->request('GET', $tmhOAuth->url('1.1/followers/ids'));
+		$response=$tmhOAuth->request('GET', $tmhOAuth->url('1/followers/ids'));
 		$i=0;
 		if ($tmhOAuth->response['code'] == 200) {
     $data = json_decode($tmhOAuth->response['response'], true);
 
     	foreach($data['ids'] as $profile_id){
 
-    		$status = $tmhOAuth->request('GET', $tmhOAuth->url('1.1/users/show/'.$profile_id));
+    		$status = $tmhOAuth->request('GET', $tmhOAuth->url('1/users/show/'.$profile_id));
     		$data_profile = json_decode($tmhOAuth->response['response'], true);
     		if ($tmhOAuth->response['code'] == 200) {
     		$connection[$i]['id']=$data_profile['screen_name'];
@@ -300,34 +300,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 	
 	function plug_techjoomlaAPI_twittersend_message($raw_mail,$invitee_data)
 	{
-
-		require(JPATH_SITE.DS.'components'.DS.'com_invitex'.DS.'config.php');
 		$session = JFactory::getSession();	
-		foreach($invitee_data as $id=>$invitee_name)
-		{
-				$invitee_email[]	= "'".$invitee_name.'|'.$id."'";
-				$inviteid[]=$id;	
-		}
-	
-		$userid=md5($this->user->id);
-		$regurl= cominvitexHelper::getinviteURL();
-		if($session->get('invite_anywhere'))
-		{
-					$invitee_string=implode(',',$invitee_email);
-					$db				= JFactory::getDBO();
-					$user_id	=	JFactory::getUser()->id;
-					$query="select i.id from #__invitex_imports as i, #__invitex_imports_emails as ie
-									WHERE invitee_email IN($invitee_string) AND i.id=ie.import_id AND i.inviter_id=$user_id group by ie.import_id order by i.id DESC LIMIT 1";
-					$db->setQuery($query);
-					$import_id=trim($db->loadResult());
-					
-					$raw_mail['message_join']=cominvitexHelper::getIAinviteURL($import_id);
-		}
-		else
-		{
-			$raw_mail['message_register']=cominvitexHelper::getinviteURL();
-		}							
-		$message	=	cominvitexHelper::tagreplace($raw_mail);	
+			
 		$session = JFactory::getSession();		
 		$token = $session->get("['oauth']['twitter']['access']",'');	
 		$tmhOAuth = new tmhOAuth(array(
@@ -343,7 +317,20 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 		{
 
 			$screen_name=$id;			
-		 	$code = $tmhOAuth->request('POST', $tmhOAuth->url('1.1/direct_messages/new'), array('text' => $message,'screen_name'=>$screen_name));
+				
+			$invitee_email=$invitee_name.'|'.$id;
+
+			$query="select id from #__invitex_imports_emails
+									WHERE invitee_email='$invitee_email' order by id DESC LIMIT 1";
+			$this->db->setQuery($query);
+			$res=trim($this->db->loadResult());
+			$invite_id		=	md5($res);
+			
+			$mail	=	cominvitexHelper::buildPM($raw_mail,$invitee_name,$invite_id);
+			$message	=	cominvitexHelper::tagreplace($mail);
+
+
+		 	$code = $tmhOAuth->request('POST', $tmhOAuth->url('1/direct_messages/new'), array('text' => $message,'screen_name'=>$screen_name));
 
 			if($code==200)
 			{
@@ -352,10 +339,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 			else
 			{
 				$this->raiseLog(JText::_('LOG_SEND_MESSAGE_FAIL'),JText::_('LOG_SEND_MESSAGE'),$this->user->id,0,$code.'=>'.$tmhOAuth->response['response']);
+				return -1;
 			}
 		}
-    	
-	
+		return 1;
   }//end send message
   
   
