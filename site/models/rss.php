@@ -24,7 +24,7 @@ class BroadcastModelrss extends JModel
 			
 	 	//	combroadcastHelper::inQueue($uid,$rssobj->get_title().' '.$shortURL['id'], 1, 0, '','');
 		 	$str_title_link = $rssobj->get_title()." <a href=".$shortURL['id']." target='_blank'>".$shortURL['id']."</a>";
-
+		 
 		 		//if Jomsocial
 				if($broadcast_config['integration']==0)
 				{		

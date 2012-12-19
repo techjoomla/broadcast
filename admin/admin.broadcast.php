@@ -1,5 +1,7 @@
 <?php
 defined( '_JEXEC' ) or die( ';)' );
+
+
 require_once( JPATH_COMPONENT.DS.'controller.php' );
 require_once( JPATH_COMPONENT.DS.'config'.DS.'config.php' ); 
 

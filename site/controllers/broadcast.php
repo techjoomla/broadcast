@@ -99,6 +99,8 @@ class BroadcastControllerbroadcast extends JController
 	{
 		$db = & JFactory::getDBO();
 		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$integration=$broadcast_config['integration'];
+
 		$pkey = JRequest::getVar('pkey', '');
 		if($pkey!=$broadcast_config['private_key_cronjob'])		
 		{

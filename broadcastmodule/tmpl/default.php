@@ -38,6 +38,11 @@ if(empty($apidata))
 {
 	echo JText::_('NO_API_PLUG');
 }
+if($pretext){?>
+	<div class="broadcast_foot" style="width:100%"><?php echo $pretext; ?></div>
+<?php
+}
+
 for($i=0; $i<count($apidata); $i++)
 {
 	if(!isset( $apidata[$i]['error_message']) )
@@ -96,9 +101,9 @@ $option= JRequest::getVar('option');
 		
 
 	
-	<div style="clear:both;"></div>
-
+	<div style="clear:left;"></div>
+<?php
 	
-	<?php if($posttext){?>
+ if($posttext){?>
 	<div class="broadcast_foot" style="width:100%"><?php echo $posttext; ?></div>
 	<?php }?>

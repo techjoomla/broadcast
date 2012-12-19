@@ -2,6 +2,7 @@
 $broadcast_config = array(
 'integration'=>0,
 'rss_limit_per_user'=>2,
+'api' => array('1'=>'plug_techjoomlaAPI_facebook'),
 'show_name' => '1',
 'push_only_public_acts'=>0,
 'status_via' => '0',

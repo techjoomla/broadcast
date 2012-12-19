@@ -546,21 +546,16 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 					if($flag)
 					{
 					if(!$db->insertObject('#__broadcast_queue', $obj)){
-			    			continue;
+							echo $db->getErrorMsg();
 					}
 			 	 	}
 			 	 }
 
 	}
 
-	  		return true;
-	
-	
-	
-	
-
-	
-	function urlpresent($url) {
+	 return true;
+}
+function urlpresent($url) {
 		$count=0;
 		$U = explode(' ',$url);
 		$W =array();
@@ -575,13 +570,6 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 		return $count;
 	}
 	
-	
-	
-	
-	
-
-
-}
 }
 }
 //this class is used to make log for f/l/t controllers 

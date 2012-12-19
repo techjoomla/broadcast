@@ -376,6 +376,9 @@ $db->setQuery($query);
 		}			
 	}
 	
+	
+	
+	
 	$query = "SELECT user_id,broadcast_rss FROM `#__broadcast_config`";
 	$db->setQuery($query);
 	$rssdatas = $db->loadobjectlist();
@@ -404,6 +407,45 @@ $db->setQuery($query);
 		}
 	}
 	
+	
+	$query = "SHOW COLUMNS FROM `#__broadcast_queue`";
+	$db->setQuery($query);
+	$queuecolumns = $db->loadobjectlist();
+	for($i = 0; $i < count($queuecolumns); $i++) {
+				$field_arrayque[] = $queuecolumns[$i]->Field;
+	}
+	if (!in_array('org_count', $field_arrayque)) { 
+		$query = "ALTER TABLE #__broadcast_queue ADD     `org_count` int(5) NOT NULL ";
+		$db->setQuery($query);
+		if(!$db->query() )
+		{
+			echo $img_ERROR.JText::_('Unable to ADD Column #__broadcast_queue').$BR;
+			echo $db->getErrorMsg();
+			return FALSE;
+		}			
+	}
+	if (!in_array('api', $field_arrayque)) { 
+		$query = "ALTER TABLE #__broadcast_queue ADD  `api` varchar(150) NOT NULL ";
+		$db->setQuery($query);
+		if(!$db->query() )
+		{
+			echo $img_ERROR.JText::_('Unable to ADD Column #__broadcast_queue').$BR;
+			echo $db->getErrorMsg();
+			return FALSE;
+		}			
+	}
+	if (!in_array('supplier', $field_arrayque)) { 
+		$query = "ALTER TABLE #__broadcast_queue ADD  `supplier` varchar(100) NOT NULL";
+		$db->setQuery($query);
+		if(!$db->query() )
+		{
+			echo $img_ERROR.JText::_('Unable to ADD Column #__broadcast_queue').$BR;
+			echo $db->getErrorMsg();
+			return FALSE;
+		}			
+	}
+
+
 	//-- common images
 	$img_OK = '<img src="images/publish_g.png" />';
 	$img_WARN = '<img src="images/publish_y.png" />';
