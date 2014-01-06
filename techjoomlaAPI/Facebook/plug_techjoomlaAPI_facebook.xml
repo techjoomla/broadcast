@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.0" type="plugin" group="techjoomlaAPI" method="upgrade">
+	<name>Techjoomla-Facebook API</name>
+	<author>Techjoomla</author>
+	<creationDate>25 Oct 2011</creationDate>
+	<copyright>(C)techjoomla.com</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>extensions@tekdi.net</authorEmail>
+	<authorUrl>www.techjoomla.com</authorUrl>
+	<version>1.3.5</version>
+	<isconsumer>true</isconsumer>
+	<description>
+		Techjoomla Facebook API plugin 
+	</description>
+	
+	<files>
+		<file plugin="plug_techjoomlaAPI_facebook">plug_techjoomlaAPI_facebook.php</file>
+		<folder>plug_techjoomlaAPI_facebook</folder>
+	</files>
+	<languages folder="language"> 
+			<language tag="en-GB">en-GB/en-GB.plg_techjoomlaAPI_plug_techjoomlaAPI_facebook.ini</language>
+	</languages>
+	<!-- Fields for Joomla 1.6.x and onwards -->
+	<config name="params">
+  	<fields name="params">
+    	<fieldset name="basic"  label="PLG_TECHJOOMLA_FB_API_PARAMETER" addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_facebook/plug_techjoomlaAPI_facebook/element/pathapi">
+				<field name="pathapi_facebook" type="pathapi" label="PLG_TECHJOOMLA_FB_API_INSTRUCTIONS" description="PLG_TECHJOOMLA_FB_API_INSTRUCTIONS_DESC" />
+				<field name="appKey" type="text" default="" label="PLG_TECHJOOMLA_FB_API_FB_APPID" description="PLG_TECHJOOMLA_FB_API_FB_APPID_DESC"/>
+				<field name="appSecret" type="text" default="" label="PLG_TECHJOOMLA_FB_API_SECRETE" description="PLG_TECHJOOMLA_FB_API_SECRETE_DESC" />
+				<field name="broadcast_limit" type="text" default="5" label="PLG_TECHJOOMLA_FB_API_LIMIT" description="PLG_TECHJOOMLA_FB_API_LIMIT_DESC" />
+				<field name="pages" type="radio" default="0" class="btn-group" label="PLG_TECHJOOMLA_FB_API_ALLOW_BROADCASR" description="PLG_TECHJOOMLA_FB_API_ALLOW_BROADCASR_DESC">
+					<option value="0">PLG_TECHJOOMLA_FB_API_NO</option>
+					<option value="1">PLG_TECHJOOMLA_FB_API_YES</option>
+				</field>
+		
+				<field name="groups" type="radio" default="0" class="btn-group" label="PLG_TECHJOOMLA_FB_API_BRODCAST_UPDATE" description="PLG_TECHJOOMLA_FB_API_BRODCAST_UPDATE_DESC">
+						<option value="0">PLG_TECHJOOMLA_FB_API_NO</option>
+						<option value="1">PLG_TECHJOOMLA_FB_API_YES</option>
+				</field>	
+			</fieldset>
+			<fieldset label="INVITEX_SPECIFIC_PARAMETERS" name="invitex_spec">
+				<field name="no_allowed_invites" type="text" default="10" label="PLG_TECHJOOMLA_FB_API_LIMIT_SEND" description="PLG_TECHJOOMLA_FB_API_LIMIT_SEND_DESC"/>
+				<field name="throttle_limit_facebook_send_message" default="50"  label="PLG_TECHJOOMLA_FB_API_THROTTLE" description="PLG_TECHJOOMLA_FB_API_THROTTLE_DESC" />
+			</fieldset>
+			<fieldset name="mappingfields"  addfieldpath="/plugins/techjoomlaAPI/plug_techjoomlaAPI_facebook/plug_techjoomlaAPI_facebook/element/mappingfields" label="PLG_TECHJOOMLA_FB_API_PRO_PARAMETER">
+				<field name="pathapi_facebook_docs" class="inputbox" type="mappingfields" label="PLG_TECHJOOMLA_FB_API_READ_DOCS" description="PLG_TECHJOOMLA_FB_API_READ_DOCS_DESC" />
+				<!--<field name="mapping_field_0" class="inputbox" type="mappingfields"  rows="8" cols="50" label="Mapping Fields For Joomla" description="Enter Joomla fields on left hand side of '=' and Facebook fields on right hand side of '='.Note that every mapping field is seperated by newline." />-->
+				<field name="mapping_field_1" class="inputbox" type="mappingfields"  rows="8" cols="50" label="PLG_TECHJOOMLA_FB_API_FIELD_JOMSOCIAL" description="PLG_TECHJOOMLA_FB_API_FIELD_JOMSOCIAL_DESC" />
+				<field name="mapping_field_2" class="inputbox" type="mappingfields" rows="8" cols="50" label="PLG_TECHJOOMLA_FB_API_FIELD_CB" description="PLG_TECHJOOMLA_FB_API_FIELD_JOMSOCIAL_DESC" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<fieldset name="general_settings" label="COM_BROADCAST_GENERAL_SETTINGS" description="" addfieldpath="/administrator/components/com_broadcast/elements" >
+		<field name="integration" class="btn-group" default="js" type="radio" label="COM_BROADCAST_INTERATION" description="COM_BROADCAST_INTERATION_DESC">
+			<option value="js">COM_BROADCAST_JOMSOCIAL</option>
+			<option value="jwall">COM_BROADCAST_JOMWALL</option>
+		</field>
+
+		<field name="show_name" class="btn-group" default="1" type="radio"  label="COM_BROADCAST_SHOW_NAME" description="COM_BROADCAST_SHOW_NAME_DESC">
+			<option value="1">COM_BROADCAST_YES</option>
+			<option value="0">COM_BROADCAST_NO</option>
+		</field>
+
+		<field name="status_via" class="btn-group" default="0" type="radio" label="COM_BROADCAST_STATUS_VIA" description="COM_BROADCAST_STATUS_VIA_DESC">
+			<option value="1">COM_BROADCAST_YES</option>
+			<option value="0">COM_BROADCAST_NO</option>
+		</field>
+
+		<field name="push_only_public_acts" class="btn-group" default="0" type="radio" label="COM_BROADCAST_PUBLIC_ACT" description="COM_BROADCAST_PUBLIC_ACT_DESC">
+			<option value="1">COM_BROADCAST_YES</option>
+			<option value="0">COM_BROADCAST_NO</option>
+		</field>
+
+		<field name="user_ids" default="" type="text" label="COM_BROADCAST_DEFAULT_USERS" description="COM_BROADCAST_DEFAULT_USERS_DES"/>
+
+		<field name="status_skip" default="#,@" type="text" label="COM_BROADCAST_STATUS_SKIP_CHARACTER" description="COM_BROADCAST_STATUS_SKIP_CHARACTER_DES"/>
+
+		<field name="url_apikey" default="" type="text" label="COM_BROADCAST_URL_API" description="COM_BROADCAST_URL_API_DES"/>
+
+		<field name="purgelimit" default="50" type="text" label="COM_BROADCAST_PURG_QUEUE" description="COM_BROADCAST_PURG_QUEUE_DESC"/>
+
+		<field name="api" default="50" type="apilist" multiple="multiple" label="COM_BROADCAST_SELECT_API" description="COM_BROADCAST_SELECT_API_DES"/>
+
+		<field name="show_status_rss" class="btn-group" default="0" type="radio" label="COM_BROADCAST_SHOW_STATUS_RSS" description="COM_BROADCAST_SHOW_STATUS_RSS_DES">
+			<option value="1">COM_BROADCAST_YES</option>
+			<option value="0">COM_BROADCAST_NO</option>
+		</field>
+
+		<field name="rss_limit_per_user" default="2" type="text" label="COM_BROADCAST_RSS_LIMIT_PER_USER" description="COM_BROADCAST_RSS_LIMIT_PER_USER_DES"/>
+
+		<field name="rss_link_limit" default="3" type="text" label="COM_BROADCAST_RSS_SETTING" description="COM_BROADCAST_RSS_SETTING_DES"/>
+
+		<field name="private_key_cronjob" default="1234" type="text" label="COM_BROADCAST_PRIVATE_KEY_CRON" description="COM_BROADCAST_PRIVATE_KEY_CRON_DES"/>
+
+		<field name="cron_get" type="cron" label="COM_BROADCAST_CRON_URL_GET" description="COM_BROADCAST_CRON_URL_GET_DESC"/>
+		<field name="cron_set" type="cron" label="COM_BROADCAST_CRON_URL_SET" description="COM_BROADCAST_CRON_URL_SET_DESC"/>
+		<field name="cron_rss" type="cron" label="COM_BROADCAST_CRON_URL_RSS" description="COM_BROADCAST_CRON_URL_RSS_DESC"/>
+	</fieldset>
+</config>
+<!--COM_BROADCAST_-->

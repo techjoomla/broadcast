@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/component-install.dtd">
+<extension type="component" version="3.0" method="upgrade">
+	<name>Broadcast</name>
+	<creationDate>Feb 2012</creationDate>
+	<author>TechJoomla</author>
+	<authorEmail>TechJoomla</authorEmail>
+	<authorUrl>contact@techjoomla.com</authorUrl>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<version>1.4</version>
+	<description>Social Broadcast - Social sync for your Joomla website ! </description>
+	<!-- installation part -->
+
+	<install> <!-- Runs on install -->
+		<sql>
+			<file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+		</sql>
+	</install>
+	<scriptfile>install.broadcast.php</scriptfile>
+	<files folder="site">
+			<folder>controllers</folder>
+			<folder>css</folder>
+			<folder>models</folder>
+			<folder>views</folder>
+			<folder>images</folder>
+						<folder>sef_ext</folder>
+
+			<file>broadcast.php</file>
+			<file>jomwall.ini</file>
+			<file>supera.ini</file>
+			<file>broadcast.ini</file>
+			<file>jomsocial.ini</file>
+			<file>controller.php</file>
+			<file>helper.php</file>
+			<file>index.html</file>	
+	</files>
+	<languages folder="site/language">
+		<language tag="en-GB">en-GB/en-GB.com_broadcast.ini</language>
+		<language tag="pt-BR">pt-BR/pt-BR.com_broadcast.ini</language>
+		<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.ini</language>	
+		<language tag="sv-SE">sv-SE/sv-SE.com_broadcast.ini</language>
+		<language tag="th-TH">th-TH/th-TH.com_broadcast.ini</language>			
+	</languages>
+
+	<administration>
+		<menu link="option=com_broadcast" img="components/com_broadcast/images/broadcast16x16.png">COM_BROADCAST</menu>
+		<files folder="admin">
+			<folder>sql</folder>
+			<folder>plugins</folder>
+			<folder>controllers</folder>
+			<folder>css</folder>
+			<folder>elements</folder>
+			<folder>images</folder>
+			<folder>models</folder>
+			<folder>views</folder>
+			<file>broadcast.php</file>
+			<file>controller.php</file>
+			<file>config.xml</file>
+			<file>index.html</file>	
+		</files>
+		<languages folder="admin/language">
+			<language tag="en-GB">en-GB/en-GB.com_broadcast.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_broadcast.sys.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_broadcast.menu.ini</language>
+			<language tag="pt-BR">pt-BR/pt-BR.com_broadcast.ini</language>
+			<language tag="pt-BR">pt-BR/pt-BR.com_broadcast.sys.ini</language>
+			<language tag="pt-BR">pt-BR/pt-BR.com_broadcast.menu.ini</language>
+			<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.ini</language>
+			<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.sys.ini</language>
+			<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.menu.ini</language>
+			<language tag="sv-SE">sv-SE/sv-SE.com_broadcast.ini</language>
+			<language tag="th-TH">th-TH/th-TH.com_broadcast.ini</language>
+		</languages>
+	</administration>
+</extension>
