@@ -38,8 +38,8 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		$this->facebook = new Facebook(array(
  	 'appId'  => trim($this->appKey),
 	'secret' => trim($this->appSecret),
-	'callbackUrl'=> $this->callbackUrl,
-	'cookie' => false, // enable optional cookie support
+	'callbackUrl'=> trim($this->callbackUrl),
+	'cookie' => true, // enable optional cookie support
 		));
 		
 	}

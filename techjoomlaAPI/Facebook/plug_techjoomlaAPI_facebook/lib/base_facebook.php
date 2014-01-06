@@ -146,7 +146,6 @@ if (!class_exists('BaseFacebook'))
     'code',
     'state',
     'signed_request',
-    'base_domain', // this is the one you need to add
   );
 
   /**
