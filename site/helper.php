@@ -1,13 +1,34 @@
 <?php
+/**
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 defined( '_JEXEC' ) or die( 'Direct Access to this location is not allowed.' );
 if (!class_exists('combroadcastHelper'))
 {
 class combroadcastHelper
 { 
+	function getitemid($link)
+	{
+		$database = JFactory::getDBO();
+		$itemid = 0;
+		$app = JFactory::getApplication();
+		$menu = $app->getMenu();
+		$items= $menu->getItems('link',$link); // pass the link for which you want the ItemId.
+		if(isset($items[0])){
+			$itemid = $items[0]->id;
+		}
+		return $itemid;
+	}
 	
 	function getapistatus(){
 		require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'models'.DS.'broadcast.php');
-		$apis=BroadcastModelbroadcast::getapistatus();
+		$BroadcastModelbroadcast=new BroadcastModelbroadcast();
+		$apis=$BroadcastModelbroadcast->getapistatus();
 		return $apis;
 	}
 	function expandShortUrl($url) {
@@ -132,9 +153,9 @@ function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm
 	#set the current Jomsocial status, called from broadcast & rss models 
 	function updateJSstatus($userid,$status,$date)
 	{
-		$db 	=& JFactory::getDBO();
-		$query	= "UPDATE `#__community_users` SET `status` ='{$db->getEscaped($status)}', 
-								posted_on='{$date}', points=points +1 WHERE userid='{$userid}'";
+		$db =JFactory::getDBO();
+		$query= "UPDATE `#__community_users` SET `status` ='{$db->escape($status)}', 
+		posted_on='{$date}', points=points +1 WHERE userid='{$userid}'";
 		$db->setQuery( $query );
 		$result =$db->query();
 	}
@@ -158,7 +179,7 @@ function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm
 				}
 				else
 				{
-					$plugin = &JPluginHelper::getPlugin($group, $api);
+					$plugin =JPluginHelper::getPlugin($group, $api);
 					if(!empty($plugin->params))
 					$pluginParams = new JParameter($plugin->params);
 				
@@ -180,8 +201,8 @@ function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm
 	#populate the temp activity table of broadcast called from broadcast & rss models 
 	function intempAct($id, $act, $date, $api='')
 	{
-			require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
-		$db 			=& JFactory::getDBO();
+			//require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$db 			= JFactory::getDBO();
 		$obj			= new StdClass();
 		$obj->uid 		= $id;
 		$obj->status 	=  combroadcastHelper::stripUrl($act);
@@ -197,7 +218,7 @@ function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm
 		return true;
 	}
 	function http_parse_headers( $header )
-	    {
+	{
 	        $retVal = array();
 	        $fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
 	        foreach( $fields as $field ) {
@@ -211,12 +232,14 @@ function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm
 	            }
 	        }
 	        return $retVal;
-	    }
+	}
 	#strips the long urls to short url with Google shortening
-	function givShortURL($string){
+	function givShortURL($string)
+	{
 		require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'googlshorturl.php');
-		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
-		$api_key=trim($broadcast_config['url_apikey']);
+		//require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$com_params=JComponentHelper::getParams('com_broadcast');
+		$api_key=trim($com_params->get('url_apikey'));
 		$goo = new Googl($api_key);//if you have an api key
 	
 		// replacement of url in title
@@ -296,7 +319,7 @@ if($allparams)
 	}
 	 function getallparamsforOtherAccounts($userid,$column)
 	 {
-			$db 	=& JFactory::getDBO();
+			$db 	=JFactory::getDBO();
 			$query = "SELECT params FROM #__broadcast_config WHERE user_id ={$userid}";
 			$db->setQuery($query);
 			$json=$db->loadResult();
@@ -310,22 +333,23 @@ if($allparams)
 	#check if the status exist in the temp table of broadcast
 	function checkexist($status,$uid,$api='')
 	{
-		$db 		=& JFactory::getDBO();
-		
+		$db 		=JFactory::getDBO();
 		$status		= explode('(via',$status);		
 		$originalstatus=$newstatus	= trim($status[0]);
 		$newstatus 	=  combroadcastHelper::stripUrl($newstatus);
 		if(!$newstatus)
-		$newstatus 	=$originalstatus;
-		$newstatus	=$db->getEscaped($newstatus);
+		{	
+			$newstatus 	=$originalstatus;
+		}
+		$newstatus	=$db->escape($newstatus);
 		$where = '';
 		if($api)
 			$where = ' AND (type="'.$api.'" OR type="") ';
-		$query = "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid} AND status = '{$newstatus}' ".$where ;
+		$query = "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid} AND status = '{$newstatus}' ".$where;
 		$db->setQuery($query);
 		
 		if($db->loadResult())	
-			return 1;					
+			return 1;
 		else
 			return 0;
 	}
@@ -469,7 +493,7 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 
 		if($short==1)	// replacement of url in message with short url	
 		{
-			
+			$message=combroadcastHelper::givShortURL($message);
 		}
 		if(is_array($userid) )
 		{
@@ -494,15 +518,15 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 	
 	function getuserconnectionstatus($config)
 	{
-		$db =& JFactory::getDBO();
+		$db = JFactory::getDBO();
 		$userid=$config->userid;
 		$client=$config->supplier;
 		$api=$config->api;
 	
 		$where='';
-		if($client)
-		$where=" AND client='broadcast'";		
-	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE user_id = {$userid}  AND api='{$api}'".$where;
+		
+
+	 	$query 	= "SELECT token FROM #__techjoomlaAPI_users WHERE token<>'' AND user_id = {$userid}  AND api='{$api}'".$where;
 		$db->setQuery($query);
 		$result	= $db->loadResult();	
 		if(!empty($result))
@@ -517,15 +541,16 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 	function inQueue($userid,$newstatus, $count, $interval, $supplier, $media)
 	{
 
-		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
-				if($media == '')
-			$touseapi = $broadcast_config['api'];
+//		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$com_params=JComponentHelper::getParams('com_broadcast');
+		if($media == '')
+			$touseapi = $com_params->get('api');
 		else
 			$touseapi = $media;
 
 
 		if(!$count)	$count = 1;
-	    $db =& JFactory::getDBO();
+	    $db = JFactory::getDBO();
 		foreach($touseapi as $api){
 			
 			$obj		   	= new StdClass();
@@ -546,7 +571,7 @@ $validTlds = array_fill_keys(explode(" ", ".ac .ad .ae .aero .af .ag .ai .al .am
 					if($flag)
 					{
 					if(!$db->insertObject('#__broadcast_queue', $obj)){
-							echo $db->getErrorMsg();
+			    			continue;
 					}
 			 	 	}
 			 	 }
@@ -591,7 +616,7 @@ class techjoomlaHelperLogs
 		{
 		$user=JFactory::getUser();
 		$link=JRoute::_(JURI::base()."index.php?option=com_broadcast&view=config");
-		$app 		=& JFactory::getApplication();
+		$app 		= JFactory::getApplication();
 		$sitename	= array();
 		$sitename	= $app->getCfg('sitename');
 		$subject=JText::sprintf('BC_ACCESS_TOKEN_EXPIRE_SUB',$plugin,$sitename);
@@ -603,55 +628,52 @@ class techjoomlaHelperLogs
 		}
 
 	}
-	function simpleLog($comment,$userid='',$type,$filename,$path="", $display=1,$params=array())
-    {
-    		 
-    		if($path=="" and $type="plugin")
-    		{
-		  		if(JVERSION >='1.6.0')
-					$path=JPATH_SITE.DS.'plugins'.DS.$params['group'].DS.$params['name'].DS.$params['name'].DS.'error_log';
-					else
-					$path=JPATH_SITE.DS.'plugins'.DS.$params['group'].DS.$params['name'].DS.'error_log';    		
-    		}
-    		
-    		if($path=="" and $type="component")
-    			$path=JPATH_JPATH_COMPONENT.DS.'error_log';  
-    			   	
-        // Include the library dependancies
-        jimport('joomla.error.log');
-        
-        if($userid)
-        $my = &JFactory::getUser($userid);
-        else
-        $my = &JFactory::getUser();
-       
-        
-        $options = array('format' => "{DATE}\t{TIME}\t{USER}\t{DESC}\t{HTTP_CODE}\t{COMMENT}");
-        
-        if(isset($params['http_code']))
-        $http_code=$params['http_code'];
-        else
-        $http_code='';
-        
-        if(isset($params['desc']))
-        $desc=$params['desc'];
-        else
-        $desc='';
-        
-        
-        // Create the instance of the log file in case we use it later
-       	$log = &JLog::getInstance($filename, $options, $path);       	
-        $log->addEntry(array('user' => $my->name .'('.$my->id.')','desc'=>$desc,'http_code'=>$http_code, 'comment' => $comment));
-        
-        if(isset($params['desc']) and $display==1)
-        echo $my->name .'('.$my->id.')'.$comment.$params['desc']."]"."HTTP CODE:".$http_code."<BR>";   
-                     
-       	if(!isset($params['desc']))
-      	JError::raiseWarning(500, $comment);
-       
+	function simpleLog($comment,$userid='',$type,$name,$path="", $display=1,$params=array())
+	{
+		jimport('joomla.error.log');
+		$options = "{DATE}\t{TIME}\t{USER}\t{DESC}";
+		if(JVERSION >='1.6.0')
+			$path=JPATH_SITE.'/plugins/techjoomlaAPI/logs';
+		$my = JFactory::getUser();     
+	
+		JLog::addLogger(
+			array(
+				'text_file' => 'broadcast_'.$name.'.log',
+				'text_entry_format' => $options ,
+				'text_file_path' => $path
+			),
+			JLog::INFO,
+			'broadcast'
+		);
 
-        
-    }
+		$logEntry = new JLogEntry('', JLog::INFO, 'broadcast');
+		$logEntry->user= $my->name.'('.$my->id.')';
+		$logEntry->desc=json_encode($comment);
+
+		JLog::add($logEntry);
+		
+		/*if (is_dir($path)) 
+		{
+			$objects = @scandir($path);
+			foreach ($objects as $object) 
+			{
+				if ($object != "." && $object != "..") 
+				{
+					if (filemtime($path."/".$object) <= time()-60*60*24*30)
+				   @unlink($path."/".$object);
+				}
+			}
+			//rmdir($dir);
+		}*/
+		
+			
+		if(isset($params['desc']) and $display==1)
+		echo $my->name .'('.$my->id.')'.$comment.$params['desc']."]"."HTTP CODE:".$params['http_code']."<BR>";   
+					 
+		if(!isset($params['desc']))
+		JError::raiseWarning(500, $comment);
+		
+	}
     
     function xml2array($contents, $get_attributes=1, $priority = 'tag') {
     if(!$contents) return array();
@@ -780,6 +802,4 @@ class techjoomlaHelperLogs
 
 
 }
-
 ?>
-

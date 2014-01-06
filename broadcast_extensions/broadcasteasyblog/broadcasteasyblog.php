@@ -1,21 +1,20 @@
 <?php
 /**
- * @package		EasyBlog
- * @copyright	Copyright (C) 2010 Stack Ideas Private Limited. All rights reserved.
- * @license		GNU/GPL, see LICENSE.php
- *
- * EasyBlog is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
- * See COPYRIGHT.php for copyright notices and details.
- */
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 jimport( 'joomla.filesystem.file' );
 jimport( 'joomla.plugin.plugin' );
-
+if(!defined('DS')){
+define('DS',DIRECTORY_SEPARATOR);
+}
 
 class plgEasyblogbroadcasteasyblog extends JPlugin
 {
@@ -46,8 +45,8 @@ class plgEasyblogbroadcasteasyblog extends JPlugin
 	 
 		function onAfterEasyBlogSave ( $param, $isNew )
 		{		
-			$plugin			=& JPluginHelper::getPlugin('easyblog', 'broadcasteasyblog');
-			$pluginParams	= new JParameter( $plugin->params );  
+			$plugin			=JPluginHelper::getPlugin('easyblog', 'broadcasteasyblog');
+			$pluginParams	= new JRegistry( $plugin->params );  
 								
 			if(is_array($this->params->get('category')) )
 				$categorys = ($this->params->get('category'));
@@ -60,13 +59,15 @@ class plgEasyblogbroadcasteasyblog extends JPlugin
 			{	
 				if($isNew)  
 				{ 
-					$user =& JFactory::getUser();
+					$user =JFactory::getUser();
 					$userid = $user->id;
-					require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+					//require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+					$com_params=JComponentHelper::getParams('com_broadcast');
 					$userid_arr = array();
-					if(isset($broadcast_config['user_ids']) || $broadcast_config['user_ids'] != '' || ($broadcast_config['user_ids']) )
-					{ 
-						$userids = $broadcast_config['user_ids'];
+					$userids=$com_params->get('user_ids');
+					if(isset($userids))
+					{
+						$userids = $com_params->get('user_ids');
 						$userid_arr = explode(',', $userids);
 					}
 					if(! ( in_array($userid, $userid_arr) )  )					

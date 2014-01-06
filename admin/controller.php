@@ -1,16 +1,23 @@
 <?php
+/**
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 // no direct access
 defined( '_JEXEC' ) or die( ';)' );
 
 jimport('joomla.application.component.controller');
 
-class broadcastController extends JController
+class broadcastController extends JControllerLegacy
 {
-	function display()
+	function display($cachable = false, $urlparams = false)
 	{
 		$vName = JRequest::getCmd('view', 'cp');
 		$controllerName = JRequest::getCmd( 'controller', 'cp' );
-		$settings		=	'';
 		$importfields	=	'';
 		$approveads	=	'';
 		$adorders	=	'';
@@ -24,10 +31,6 @@ class broadcastController extends JController
 				case 'cp':
 				   $cp = true;
 				break;
-			
-				case 'settings':
-					$settings	=	true;
-				break;
 			}
 		}
 		else
@@ -36,29 +39,25 @@ class broadcastController extends JController
 			$queue	= true;
 		}	
 
-		JSubMenuHelper::addEntry(JText::_('BC_CP'), 'index.php?option=com_broadcast&view=cp',$cp);
-		JSubMenuHelper::addEntry(JText::_('BC_SETTINGS'), 'index.php?option=com_broadcast&view=settings',$settings);
-		JSubMenuHelper::addEntry(JText::_('BC_QUEUE'), 'index.php?option=com_broadcast&view=cp&layout=queue',$queue);			
+		JSubMenuHelper::addEntry(JText::_('COM_BROADCAST_BC_CP'), 'index.php?option=com_broadcast&view=cp',$cp);
+		JSubMenuHelper::addEntry(JText::_('COM_BROADCAST_BC_QUEUE'), 'index.php?option=com_broadcast&view=cp&layout=queue',$queue);			
 		switch ($vName)
 		{
 			case 'cp':
 				$mName = 'cp';
 				$vLayout = JRequest::getCmd( 'layout', $layout );
 			break;
-						
-			case 'settings':
+
 			default:
-				$vName = 'settings';
 				$vLayout = JRequest::getCmd( 'layout', $layout );
-				$mName = 'settings';
 			break;						
 		}
 	
-		$document = &JFactory::getDocument();
+		$document = JFactory::getDocument();
 		$vType	  = $document->getType();
-		$view = &$this->getView( $vName, $vType);
+		$view = $this->getView( $vName, $vType);
 		
-		if ($model = &$this->getModel($mName)) 
+		if ($model =$this->getModel($mName)) 
 		{
 			$view->setModel($model, true);
 		}

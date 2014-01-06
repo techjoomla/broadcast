@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <install version="1.5" type="plugin" group="content" method="upgrade">
+  <extension version="3.0" type="plugin" group="content" method="upgrade">
    <name>Broadcast content</name>
    <author>Techjoomla</author>
 	<creationDate>Feb 2012</creationDate>
@@ -30,4 +30,4 @@
 	</fields>
 	</config>
   
-</install>
+</extension>

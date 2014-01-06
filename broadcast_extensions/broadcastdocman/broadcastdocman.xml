@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<install version="1.5" type="plugin" group="docman" method="upgrade">
+<extension version="3.0" type="plugin" group="docman" method="upgrade">
     <name>Broadcast DOCman</name>
     <author>Techjoomla</author>
 	<creationDate>Feb 2012</creationDate>
@@ -33,4 +33,4 @@
 			</fieldset>
 		</fields>
 	</config>
-</install>
+</extension>

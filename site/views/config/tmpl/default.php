@@ -1,31 +1,30 @@
 <?php
-
+/**
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 defined('_JEXEC') or die( 'Restricted access' );
 
-require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+$params=JComponentHelper::getParams('com_broadcast');
 
-$document = &JFactory::getDocument();
+$document=JFactory::getDocument();
 if(JVERSION>=3.0)
 jimport('joomla.html.html.bootstrap'); // get bootstrap 
-else
-{
-$document=JFactory::getDocument();
-$document->addScript(JURI::base().'components/com_broadcast/assets/javascript/jquery-1.8.0.min.js');
-$document->addScript(JURI::base().'components/com_broadcast/assets/javascript/jquery.validate.js');
-//load bootstrap
-$document->addStyleSheet(JURI::base().'components/com_broadcast/bootstrap/css/bootstrap.min.css');
-}
 $document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css' );
 $rsslists='';
 if(!empty($this->subscribedlists->broadcast_rss))
 $rsslists = $this->subscribedlists->broadcast_rss;
 							
 
-$session =& JFactory::getSession();
+$session = JFactory::getSession();
 
 $itemid = JRequest::getVar('Itemid', '','GET');
 $session->set('itemid_session',$itemid);	
-$u =& JURI::getInstance();
+$u = JUri::getInstance();
 $currentMenu= $u->toString();
 $session->set('currentMenu', $currentMenu);
 if(isset($this->subscribedlists->broadcast_rss) )
@@ -45,7 +44,7 @@ if(!$user->id){
 </script>
  
 <script type="text/javascript">
-	 var limit="<?php echo $broadcast_config['rss_link_limit']; ?>";
+	 var limit="<?php echo $params->get('rss_link_limit'); ?>";
 	 <?php
 	 if(isset($this->subscribedlists->broadcast_rss))
 	 {
@@ -73,16 +72,25 @@ if(!$user->id){
 	
 </script>
 
-	<h1 class="contentheading">											
+	<h1 class="componentheading">
 			 <?php echo JText::_('BC_SETT');?>
 	</h1>
-	<div class="akeeba-bootstrap">
+	<?php
+	if(JVERSION<3.0)
+	{
+	?>
+
+	<div class="techjoomla-bootstrap">
+	<?php
+}?>	
+			<div id="messagesave" ></div>
+
 	<div class="bc_connect">
 		<div class="box-container-t">
 			<div class="box-tl"></div>
 			<div class="box-tr"></div>
 			<div class="box-t"></div>
-		</div>									
+		</div>
 		<div class="content_cover">	
 				<div id="broadcast_connect" onclick="divhide(this);" > <b> <?php echo JText::_('CONN_SER')?> </b></div>	
 			
@@ -90,21 +98,22 @@ if(!$user->id){
 			<div> <?php echo JText::_('BC_SER_MSG')?>	</div>	
 				<?php 
 				include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
-				$lang = & JFactory::getLanguage();
+				$lang=JFactory::getLanguage();
 				$lang->load('mod_broadcast', JPATH_SITE);
-				$apidata = combroadcastHelper::getapistatus();
-				$align=1;			
+				$combroadcastHelper=new combroadcastHelper();
+				$apidata = $combroadcastHelper->getapistatus();
+				$align=1;
 				ob_start();
 					include(JModuleHelper::getLayoutPath('mod_broadcast'));
 					$html = ob_get_contents();
 				ob_end_clean();
-				echo $html ;	
+				echo $html ;
 				?>
 			
 					<?php
 						$link = JRoute::_('index.php?option=com_broadcast&view=config&tmpl=component&layout=otheraccounts');
 					?>
-					<br/><a rel="{handler: 'iframe', size: {x: 800, y: 500}}" href="<?php echo $link; ?>" class="modal">
+					<br/><a rel="{handler: 'iframe', size: {x: 800, y: 500}}" href="<?php echo $link; ?>" class="modal tj">
 						<span class="editlinktip hasTip" title="<?php echo JText::_('OTHER_ACCNT');?>" ><?php echo JText::_('OTHER_ACCNT');?></span>
 					</a>
 					
@@ -130,9 +139,9 @@ if(!$user->id){
 			<div id="broadcast_activity1"  class="broadcast-expands">
 				<div style="padding-left: 8px;">		
 					<?php
-					if($broadcast_config['integration']==0)
+					if($params->get('integration')=='js')
 						$brodfile 	= JPATH_SITE."/components/com_broadcast/jomsocial.ini";
-						else if($broadcast_config['integration']==1)
+						else if($params->get('integration')=='jwall')
 						$brodfile 	= JPATH_SITE."/components/com_broadcast/jomwall.ini";
 						$activities = parse_ini_file($brodfile);
 						$lists 	= array();	
@@ -151,7 +160,7 @@ if(!$user->id){
 					?>
 				</div>	
 				<?php
-					if($broadcast_config['integration']==0){
+					if($params->get('integration')=='js'){
 				?>
 				<div style="padding-left: 8px;"><?php echo JText::_('JS_BC_ACT_MSG')?></div>
 				<?php
@@ -178,7 +187,7 @@ if(!$user->id){
 			var latestId = counter+1;
 			function addNewItem() {
 				if(parseInt(counter)>parseInt(limit)){
-	        	    alert("<?php echo JText::sprintf('LIMIT_RSS',$broadcast_config['rss_link_limit']);?>");
+	        	    alert("<?php echo JText::sprintf('LIMIT_RSS',$params->get('rss_link_limit'));?>");
 				}
 				else{
 					appendElement("container1", "element" + latestId, "Title <input size='50' type='text' class='inputbox' name='rss_title[]' value='' /><br>Link <input size='50' type='text' class='inputbox' name='rss_link[]' value='' /><a href=\"javascript:removeItem(" + latestId + ")\"><?php echo JText::_('REM_RSS');?></a>");		
@@ -237,7 +246,7 @@ if(!$user->id){
 							
 
 
-									echo '<div id="element'.$i.'">';													
+									echo '<div id="element'.$i.'">';
 									echo JText::_('Title').' <input size="50" type="text" class="inputbox" name="rss_title['.$i.']" 
 									value="'.$rss['title'].'" /><br/>'.JText::_('Link').' <input size="50" type="text" class="inputbox" name="rss_link['.$i.']" value="'.$rss['link'].'" />';
 									echo '<a href="javascript:removeItem('.$i.');" > '.JText::_('REM_RSS').'</a>'."<br />";
@@ -258,7 +267,6 @@ if(!$user->id){
 			<div class="box-b"></div>
 		</div>
 	</div>
-	<!-- **** End Added & Modified By Deepak -->
 
 
 		<div class="form-actions">
@@ -268,4 +276,12 @@ if(!$user->id){
 	</div>
 		
  </form>
- </div>
+<?php
+if(JVERSION<3.0)
+{
+?>
+</div>
+
+<?php
+}
+?>

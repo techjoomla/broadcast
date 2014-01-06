@@ -1,9 +1,17 @@
 <?php
+/**
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 defined('_JEXEC') or die();
 
 jimport( 'joomla.application.component.model' );
 
-class BroadcastModelconfig extends JModel
+class BroadcastModelconfig extends JModelLegacy
 {
 
 	function getlist()
@@ -24,7 +32,7 @@ class BroadcastModelconfig extends JModel
 	}
 	function renderHTML_other()
 	{
-		$dispatcher = &JDispatcher::getInstance();
+		$dispatcher =JDispatcher::getInstance();
 		JPluginHelper::importPlugin('techjoomlaAPI');
 		$grt_response = $dispatcher->trigger('get_otherAccountData');
 		return $grt_response['0'];	
@@ -33,8 +41,9 @@ class BroadcastModelconfig extends JModel
 
 	function save()
 	{	
-		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
-		$integration=$broadcast_config['integration'];
+		//require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$params=JComponentHelper::getParams('com_broadcast');
+		$integration=$params->get('integration');
 		$user = JFactory::getUser();
 		$row = new stdClass;
 		$data = JRequest::get('post');

@@ -1,15 +1,18 @@
 <?php
 /**
- * @version		2.0
- * @package		Example K2 Plugin (K2 plugin)
- * @author    JoomlaWorks - http://www.joomlaworks.gr
- * @copyright	Copyright (c) 2006 - 2011 JoomlaWorks Ltd. All rights reserved.
- * @license		GNU/GPL license: http://www.gnu.org/copyleft/gpl.html
- */
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 
 // no direct access
 defined('_JEXEC') or die ('Restricted access');
-
+if(!defined('DS')){
+define('DS',DIRECTORY_SEPARATOR);
+}
 // Load the K2 Plugin API
 JLoader::register('K2Plugin', JPATH_ADMINISTRATOR.DS.'components'.DS.'com_k2'.DS.'lib'.DS.'k2plugin.php');
 
@@ -46,11 +49,12 @@ class plgK2Broadcastk2 extends K2Plugin {
 				{
 				$user =& JFactory::getUser();
 				$userid = $user->id;
-				require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 				$userid_arr = array();
-				if(isset($broadcast_config['user_ids']) || $broadcast_config['user_ids'] != '' || ($broadcast_config['user_ids']) )
-				{ 
-					$userids = $broadcast_config['user_ids'];
+				$com_params=JComponentHelper::getParams('com_broadcast');
+				$useids=$com_params->get('user_ids');
+				if(isset($useids))
+				{
+					$userids = $com_params->get('user_ids');
 					$userid_arr = explode(',', $userids);
 				}
 				if(! ( in_array($userid, $userid_arr) )  )
@@ -59,9 +63,9 @@ class plgK2Broadcastk2 extends K2Plugin {
 		/*construct the msg to push into the queue*/
 				$username = $user->username;
 				$app = JFactory::getApplication();
+				require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 				if($app->isAdmin())
 				{
-					require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 					$path = JRoute::_(JURI::root()."index.php?option=com_k2&view=item&id=".$item->id.":".$item->alias);
 				}
 				else

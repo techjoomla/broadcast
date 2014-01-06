@@ -1,21 +1,21 @@
 <?php
-
+/**
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 defined('_JEXEC') or die( 'Restricted access' );
 
-require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+$params=JComponentHelper::getParams('com_broadcast');
 
 $document = &JFactory::getDocument();
 $document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css' );
 if(JVERSION>=3.0)
 jimport('joomla.html.html.bootstrap'); // get bootstrap 
-else
-{
-$document=JFactory::getDocument();
-$document->addScript(JURI::base().'components/com_broadcast/assets/javascript/jquery-1.8.0.min.js');
-$document->addScript(JURI::base().'components/com_broadcast/assets/javascript/jquery.validate.js');
-//load bootstrap
-$document->addStyleSheet(JURI::base().'components/com_broadcast/bootstrap/css/bootstrap.min.css');
-}
+
 $document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css' );
 $rsslists = $this->subscribedlists->broadcast_rss;
 $model	= $this->getModel( 'config' );					
@@ -59,11 +59,19 @@ thischk.id
 	
 	
 </script>
+<?php
+	if(JVERSION<3.0)
+	{
+	?>
+
+	<div class="techjoomla-bootstrap">
+	<?php
+}?>	
 <form action=""  method="POST" name="manualform1" >
-	<h3 class="contentheading">											
+	<h3 class="componentheading">											
 			 <?php echo JText::_('BC_SETT');?>
 	</h3>
-		<div class="akeeba-bootstrap">
+		<div >
 	<?php 
 
 	if(empty($this->otherdataArr))
@@ -157,4 +165,12 @@ thischk.id
 		
 
  </form>
- </div>
+<?php
+if(JVERSION<3.0)
+{
+?>
+</div>
+
+<?php
+}
+?>

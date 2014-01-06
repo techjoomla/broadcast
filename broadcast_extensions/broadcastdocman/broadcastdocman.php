@@ -1,18 +1,20 @@
 <?php
 /**
- * DOCman 1.5.x - Joomla! Document Manager
- * @version $Id: dmtestplugin.php 1014 2009-12-05 14:43:24Z mathias $
- * @package dmtestplugin
- * @author Mathias Verraes
- * @copyright (C) 2003-2007 The DOCman Development Team
- * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * @link http://www.joomlatools.eu/ Official website
- **/
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
+
 defined('_JEXEC') or die('Restricted access');
 
 // Import library dependencies
 jimport('joomla.event.plugin');
-
+if(!defined('DS')){
+define('DS',DIRECTORY_SEPARATOR);
+}
 class plgDocmanBroadcastdocman extends JPlugin
 {  
    /**
@@ -41,11 +43,13 @@ class plgDocmanBroadcastdocman extends JPlugin
 				{
 					$user =& JFactory::getUser();
 					$userid = $user->id;
-					require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+					//require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+					$com_params=JComponentHelper::getParams('com_broadcast');
 					$userid_arr = array();
-					if(isset($broadcast_config['user_ids']) || $broadcast_config['user_ids'] != '' || ($broadcast_config['user_ids']) )
-					{ 
-						$userids = $broadcast_config['user_ids'];
+					$useids=$com_params->get('user_ids');
+					if(isset($useids))
+					{
+						$userids = $com_params->get('user_ids');
 						$userid_arr = explode(',', $userids);
 					}
 					if(! ( in_array($userid, $userid_arr) )  )

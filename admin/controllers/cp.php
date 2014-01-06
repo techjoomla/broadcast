@@ -1,4 +1,12 @@
 <?php
+/**
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 defined('_JEXEC') or die();
 
 class broadcastControllercp extends broadcastController
@@ -17,9 +25,9 @@ class broadcastControllercp extends broadcastController
 			break;
 			case 'save':
 				if($this->getModel('cp')->store(JRequest::get('post')))
-					$msg = JText::_('QUEUE_SAVED');
+					$msg = JText::_('COM_BROADCAST_QUEUE_SAVED');
 				else 
-					$msg = JText::_('QUEUE_SAVE_PROBLEM');			
+					$msg = JText::_('COM_BROADCAST_QUEUE_SAVE_PROBLEM');			
 				$this->setRedirect( "index.php?option=com_broadcast&view=cp&layout=queue", $msg );
 			break;
 		}

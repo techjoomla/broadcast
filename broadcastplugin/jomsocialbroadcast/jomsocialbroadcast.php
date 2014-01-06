@@ -1,6 +1,16 @@
 <?php
+/**
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 defined('_JEXEC') or die('Restricted access');
-
+if(!defined('DS')){
+define('DS',DIRECTORY_SEPARATOR);
+}
 require_once( JPATH_SITE . DS . 'components' . DS . 'com_community' . DS . 'libraries' . DS . 'core.php'); 
 require_once( JPATH_SITE . DS . 'components' . DS . 'com_community' . DS . 'helpers' . DS . 'time.php'); 
 include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
@@ -14,18 +24,18 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	
 	function onProfileDisplay() 
 	{
-		$show 		= $this->params->get('show_plugin', '');	
+		$show 		= $this->params->get('show_plugin', '');
 		if(!$show)
 			return;	
 		$user 				= CFactory::getUser();
-		$activeProfile 	=& CFactory::getActiveProfile();
+		$activeProfile 	=CFactory::getActiveProfile();
 		$target = $activeProfile->id;
 		if($target==$user->id)
 		{
-			$lang = & JFactory::getLanguage();
+			$lang = JFactory::getLanguage();
 			$lang->load('mod_broadcast', JPATH_SITE);
 			$apidata = combroadcastHelper::getapistatus();			
-			$align=$this->params->get('show_horizontal', 0);
+			$align=$this->params->get('show_horizontal', 'vr');
 			ob_start();
 				require(JModuleHelper::getLayoutPath('mod_broadcast'));
 				$html .= ob_get_contents();
@@ -35,13 +45,15 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	}
 	
 	
-	function onBeforeStreamCreate($activity) ///trigger present in SOME versions of joomla
-	{ 
-		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+	function onBeforeStreamCreate($activity) ///trigger present in SOME versions of jomsocial
+	{
 		$bc_activity = clone $activity;
+		$com_params=JComponentHelper::getParams('com_broadcast');
 		
+					
+
 		//if only to broadcast public events 
-		if($broadcast_config['push_only_public_acts']==1)
+		if($com_params->get('push_only_public_acts')==1)
 		{
 			//if access is public then only add to queue
 			if($bc_activity->access!=0)
@@ -60,22 +72,23 @@ class plgCommunityjomsocialbroadcast extends CApplications
 				return;
 			}
 		}
+		$combroadcastHelper=new combroadcastHelper();
 		if(in_array($bc_activity->app,$subscribedapp))
 		{
 			$title=$this->tag_replace($bc_activity->actor,$bc_activity->target,$bc_activity->created,$bc_activity);
-			
-
-			if(isset($broadcast_config['user_ids']) || $broadcast_config['user_ids'] != '' || ($broadcast_config['user_ids']) )
+			$use_ids=$com_params->get('user_ids');
+			if(isset($use_ids))
 			{
-				$userids = $broadcast_config['user_ids'];
+				$userids = $com_params->get('user_ids');
 				$userid_arr = explode(',', $userids);
 				if( !( in_array($user->id, $userid_arr) )  )
 					array_push($userid_arr, $user->id);
-					
-				combroadcastHelper::addtoQueue($userid_arr, $title, date('Y-m-d H:i:s',time()),1,0,'','com_community',1);
+				
+				
+				$combroadcastHelper->addtoQueue($userid_arr, $title, date('Y-m-d H:i:s',time()),1,0,'','com_community',1);
 			}
 			else
-				combroadcastHelper::addtoQueue($user->id, $title, date('Y-m-d H:i:s',time()),1,0,'','com_community',1);
+				$combroadcastHelper->addtoQueue($user->id, $title, date('Y-m-d H:i:s',time()),1,0,'','com_community',1);
 		}
 
 	return true;
@@ -84,8 +97,9 @@ class plgCommunityjomsocialbroadcast extends CApplications
 	function tag_replace($actor, $target, $date = null, $activity )
 	{
 		require(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'googlshorturl.php');
-		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
-		$api_key=$broadcast_config['url_apikey'];
+	
+		$com_params=JComponentHelper::getParams('com_broadcast');
+		$api_key=$com_params->get('url_apikey');
 		$goo = new Googl($api_key);//if you have an api key
 
 		$my			= CFactory::getUser();
@@ -145,15 +159,16 @@ class plgCommunityjomsocialbroadcast extends CApplications
 				else
 				$url = $paramarray->get('photo_url', null);
 		}
-//		echo $url; die;
+
 		return $url;
 	}
 	
 	function getusersetting($userid)
 	{
-		require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
-		$integration=$broadcast_config['integration'];
-		$db        = & JFactory::getDBO();
+		//require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+		$com_params=JComponentHelper::getParams('com_broadcast');
+		$integration=$com_params->get('integration');
+		$db        = JFactory::getDBO();
 		$qry       = "SELECT broadcast_activity_config  FROM #__broadcast_config WHERE user_id  = {$userid}";
 		$db->setQuery($qry);
 		$sub_list  = $db->loadResult();

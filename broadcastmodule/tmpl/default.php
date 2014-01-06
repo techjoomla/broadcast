@@ -1,23 +1,42 @@
 <?php 
+/**
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 defined( '_JEXEC' ) or die( 'Restricted access' );
-JHTML::_('behavior.tooltip');
-JHTML::_('behavior.modal', 'a.modal');
-$u =& JURI::getInstance();
+
+$lang =JFactory::getLanguage();
+$extension = 'mod_broadcast';
+$base_dir = JPATH_SITE;
+$language_tag = 'en-GB';
+$reload = true;
+$lang->load($extension, $base_dir, $language_tag, $reload);
+
+JHtml::_('behavior.tooltip');
+JHtml::_('behavior.modal','a.modal');
+$u = JUri::getInstance();
 $currentMenu= $u->toString();
 if(!stristr($currentMenu, 'index.php'))
-	$currentMenu= JURI::base();	
+	$currentMenu= JUri::base();	
 
-$session =& JFactory::getSession();
+$session = JFactory::getSession();
 $session->set('currentMenu', $currentMenu); 
-
-$rss_link=JRoute::_('index.php?option=com_broadcast&view=config');
+require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'helper.php');
+$combroadcastHelper=new combroadcastHelper();
+//pass the link for which you want the ItemId.	
+$in_itemid	= $combroadcastHelper->getitemid('index.php?option=com_broadcast&view=config');
+$rss_link=JRoute::_(JUri::base().'index.php?option=com_broadcast&view=config&Itemid='.$in_itemid);
 $pretext = $posttext = '';
 if(isset($data['pretext']))
 	$pretext = $data['pretext'];
 if(isset($data['posttext']))
 	$posttext = $data['posttext'];
 
-if($align==1){	//horizontal orientation
+if($align=='hr'){	//horizontal orientation
 	$outclass='broadcast_hori';
 	$inclass='inbroadcast_hori';
 }
@@ -26,9 +45,9 @@ else{	//vertical orientation
 	$inclass='inbroadcast_ver';
 }
 
-$doc =& JFactory::getDocument();
-$base=JURI::base()."modules/mod_broadcast/";
-$doc->addStyleSheet( $base.'mod_broadcast.css' );
+$doc = JFactory::getDocument();
+$base=JUri::base()."modules/mod_broadcast/";
+$doc->addStyleSheet($base.'mod_broadcast.css');
 ?>
 
 <?php if($pretext){?>
@@ -38,14 +57,9 @@ if(empty($apidata))
 {
 	echo JText::_('NO_API_PLUG');
 }
-if($pretext){?>
-	<div class="broadcast_foot" style="width:100%"><?php echo $pretext; ?></div>
-<?php
-}
-
 for($i=0; $i<count($apidata); $i++)
 {
-	if(!isset( $apidata[$i]['error_message']) )
+	if(!isset( $apidata[$i]['error_message']))
 	{
 		$getTokenURL = JRoute::_("index.php?option=com_broadcast&controller=broadcast&task=get_request_token&api=".$apidata[$i]['api_used']);
 		$removeTokenURL= JRoute::_('index.php?option=com_broadcast&controller=broadcast&task=remove_token&api='.$apidata[$i]['api_used']);
@@ -75,11 +89,12 @@ for($i=0; $i<count($apidata); $i++)
 ?>
 
 <?php 
-$view= JRequest::getVar('view');
-$option= JRequest::getVar('option');
-
-	if($option!='com_broadcast' and $view!='config')
+$jinput=JFactory::getApplication()->input;
+$view=$jinput->get('view','','STRING');
+$option=$jinput->get('option','','STRING');
+	if($option!='com_broadcast' AND $view!='config')
 	{
+		
 ?>
 	<div class="<?php echo $outclass ?>" >
 		<div class="<?php echo $inclass ?>">
@@ -96,14 +111,16 @@ $option= JRequest::getVar('option');
 		</div>	
 		</div>
 		<?php
-		}
-		?>
+	}
+	?>
 		
 
 	
 	<div style="clear:left;"></div>
-<?php
+
 	
- if($posttext){?>
+
+	
+	<?php if($posttext){?>
 	<div class="broadcast_foot" style="width:100%"><?php echo $posttext; ?></div>
 	<?php }?>

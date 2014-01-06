@@ -1,7 +1,15 @@
 <?php 
+/**
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
-class broadcastModelcp extends JModel
+class broadcastModelcp extends JModelLegacy
 {	
 	
 	 
@@ -20,7 +28,8 @@ class broadcastModelcp extends JModel
 			$apis = $post['api_status'];
 		else
 			$apis = '';
-		return combroadcastHelper::addtoQueue($post['userid'], $post['status'], date('Y-m-d H:i:s',time()),$post['count'],$post['interval'],$apis,'com_broadcast',1);
+		$combroadcastHelper=new combroadcastHelper();
+		return $combroadcastHelper->addtoQueue($post['userid'], $post['status'], date('Y-m-d H:i:s',time()),$post['count'],$post['interval'],$apis,'com_broadcast',1);
 	}
 }
 

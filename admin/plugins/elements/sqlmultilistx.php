@@ -1,7 +1,11 @@
 <?php
 /**
-* @copyright    Copyright (C) 2009 Open Source Matters. All rights reserved.
-* @license      GNU/GPL
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
 */
  
 // Check to ensure this file is within the rest of the framework

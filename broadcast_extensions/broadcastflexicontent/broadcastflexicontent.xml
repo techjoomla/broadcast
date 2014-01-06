@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<install version="1.5" type="plugin" group="flexicontent_fields" method="upgrade">
+<extension version="3.0" type="plugin" group="flexicontent" method="upgrade">
 	<name>Broadcast FLEXIcontent</name>
     <author>Techjoomla</author>
 	<creationDate>Feb 2012</creationDate>
@@ -25,10 +25,11 @@
 	<config name="params">
   		<fields name="params" >
     		<fieldset name="basic" label="Plugin Parameters">
-    	 		<field name="category" type="category" default="1" label="Select categories to add item" query="SELECT id ,title FROM #__categories WHERE published = 1 AND section BETWEEN 1 AND 9" element="Broadcast_API" multiple="multiple" description="Select categories to add item" key_field='id' value_field='title'  extension="com_flexicontent"/>
+    			  <field name="category" type="category" default="1" label="Select categories to add article" element="Broadcast_API" multiple="multiple" description="Select categories to add article" key_field='id' value_field='title'  extension="com_content"/>
+
     			<field name="msg" type="text" default="{username} added item {item_name} {path}" label="Message" description="Use this to define the message you want to broadcast, you can use the placeholders to dynamically change the message" size="50"/>
 		  </fieldset>
 	</fields>
 	</config>
 	
-</install>
+</extension>

@@ -1,14 +1,24 @@
 <?php
+/**
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
 // No direct access allowed to this file
 defined( '_JEXEC' ) or die( 'Restricted access' );
- 
+ if(!defined('DS')){
+define('DS',DIRECTORY_SEPARATOR);
+}
+
 // Import Joomla! Plugin library file
 jimport('joomla.plugin.plugin');
 
 class plgContentBroadcast_content extends JPlugin
 {
 
-     
 	function plgContentBroadcast_content(& $subject, $config)
 		{
 			parent::__construct($subject, $config);
@@ -23,14 +33,15 @@ class plgContentBroadcast_content extends JPlugin
 	}		
 	
 	// for 1.7	
-	public function onContentAfterSave($context, &$article, $isNew)
+	public function onContentAfterSave($context, $article, $isNew)
 	{
 		$this->_newcontentsave($article, $isNew);
 		return true;
 	}	
 	
-	protected function _newcontentsave(&$article, $isNew) 
+	protected function _newcontentsave($article, $isNew) 
 	{
+		
 		$categorys = ($this->params->get('category'));
 		if(is_array($this->params->get('category')) )
 			$categorys = ($this->params->get('category'));
@@ -38,17 +49,21 @@ class plgContentBroadcast_content extends JPlugin
 			$categorys = array();
 			$categorys[] = ($this->params->get('category'));
 		}
+
 		if(in_array($article->catid,$categorys))
 		{	
 			if($isNew)
-			{ 
-				$user =& JFactory::getUser();
+			{
+				$user =JFactory::getUser();
 				$userid = $user->id;
-				require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
+				
+				$com_params=JComponentHelper::getParams('com_broadcast');
+				
 				$userid_arr = array();
-				if(isset($broadcast_config['user_ids']) || $broadcast_config['user_ids'] != '' || ($broadcast_config['user_ids']) )
-				{ 
-					$userids = $broadcast_config['user_ids'];
+				$useids=$com_params->get('user_ids');
+				if(isset($useids))
+				{
+					$userids = $com_params->get('user_ids');
 					$userid_arr = explode(',', $userids);
 				}
 				if(! ( in_array($userid, $userid_arr) )  )
@@ -56,10 +71,11 @@ class plgContentBroadcast_content extends JPlugin
 				
 				/*construct the msg to push into the queue*/
 				$username = $user->username; 
-							$app = JFactory::getApplication();
+				$app = JFactory::getApplication();
+				require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 				if($app->isAdmin())
 				{
-					require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
+
 					$path = JRoute::_(JURI::root()."index.php?option=com_content&view=article&id=".$article->id.":".$article->alias."&catid=".$article->catid.":general");
 				}
 				else
@@ -76,6 +92,7 @@ class plgContentBroadcast_content extends JPlugin
 				$supplier = 'Content_plugin';
 				$shorten_url = 1;
 				combroadcastHelper::addtoQueue($userid_arr,$msg_str,$date,$count,$interval,'',$supplier,$shorten_url);
+				
 			}
 		} 
 	}

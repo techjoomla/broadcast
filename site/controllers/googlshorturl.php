@@ -1,24 +1,14 @@
 <?php
-
-//$goo = new Googl();
-//$goo = new Googl("APIKey");//if you have an api key
-//$r = $goo->set_short("http://yahoo.com");
-//print_r($r);
-
-//send true to get analytics about the short URL 
-//$r = $goo->get_long("http://goo.gl/pTgKg",true);
-//print_r($r);
-
-
 /**
- * Googl
- *
- * @author Eslam Mahmoud
- * @url http://eslam.me/
- * @copyright Creative Commons Attribution-ShareAlike 3.0 Unported License.
- * @version 0.2
- * @access public
- */
+* @package		Broadcast
+* @copyright	Copyright © 2012 - All rights reserved.
+* @license		GNU/GPL
+* @author		TechJoomla
+* @author mail	extensions@techjoomla.com
+* @website		http://techjoomla.com
+*/
+ defined( '_JEXEC' ) or die( 'Direct Access to this location is not allowed.' );
+
 class Googl{
 	//application key
 	private $APIKey;
