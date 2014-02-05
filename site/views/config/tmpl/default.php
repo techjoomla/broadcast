@@ -143,6 +143,8 @@ if(!$user->id){
 						$brodfile 	= JPATH_SITE."/components/com_broadcast/jomsocial.ini";
 						else if($params->get('integration')=='jwall')
 						$brodfile 	= JPATH_SITE."/components/com_broadcast/jomwall.ini";
+						else if($params->get('integration')=='easysocial')
+						$brodfile 	= JPATH_SITE."/components/com_broadcast/easysocial.ini";
 						$activities = parse_ini_file($brodfile);
 						$lists 	= array();	
 						if (isset($this->subscribedlists->broadcast_activity_config))

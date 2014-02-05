@@ -149,6 +149,34 @@ function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm
 		CActivityStream::add($act);
 	}
 	
+	function inEasysocialact($actor,$target,$title,$content,$api,$cid,$date)
+	{
+		require_once( JPATH_ROOT . '/administrator/components/com_easysocial/includes/foundry.php' );
+		
+		$linkHTML='<a href="'.$content.'">'.$title.'</a>';	
+		if($actor!=0)
+		$myUser = Foundry::user( $actor );
+		$stream = Foundry::stream();
+		$template = $stream->getTemplate();
+		$template->setActor( $actor, SOCIAL_TYPE_USER );
+		$template->setContext( $actor, SOCIAL_TYPE_USERS );
+		$template->setVerb( 'broadcast' );
+		$template->setType( 'full' );
+		if($actor!=0)
+		{
+			$title 	 = $userProfileLink = '<a href="'. $myUser->getPermalink() .'">' . $myUser->getName() . '</a>';
+		}
+		else
+		$title 	 = ("A guest ".$act_description);
+		$template->setTitle( $title );
+		$template->setContent($content );
+
+		$template->setAggregate( false );
+
+		$template->setPublicStream( 'core.view' );
+		$stream->add( $template );
+		return true;
+	}
 	
 	#set the current Jomsocial status, called from broadcast & rss models 
 	function updateJSstatus($userid,$status,$date)

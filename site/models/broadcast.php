@@ -123,10 +123,7 @@ class BroadcastModelbroadcast extends JModelLegacy
 				if((!combroadcastHelper::checkexist($status['comment'],$userid,$api)))
 				{
 					$obj = new StdClass();
-					if($params->get('show_name'))
-						$actor='{actor} ';
-					else
-						$actor='';
+					
 					if($params->get('status_skip'))
 					{
 						$search=explode(',', trim($params->get('status_skip')) );
@@ -142,7 +139,11 @@ class BroadcastModelbroadcast extends JModelLegacy
 
 						//if Jomsocial
 						if($params->get('integration')=='js')
-						{		
+						{	
+							if($params->get('show_name'))
+						$actor='{actor} ';
+					else
+						$actor='';	
 							$status_content = combroadcastHelper::makelink($status_content,$api_name);	
 							$today_date	= JFactory::getDate($status['timestamp']);
 							combroadcastHelper::inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toSql() );
@@ -158,13 +159,20 @@ class BroadcastModelbroadcast extends JModelLegacy
 							combroadcastHelper::inJomwallact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
 							combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toSql(),$api);
 						}
-                        //if Superactivity  
-						if($params->get('integration')==2)
+                        //if community builder  
+						if($params->get('integration')=='cb')
 						{
 							$today_date=JFactory::getDate($status['timestamp']);
 							$today=JFactory::getDate();
 							combroadcastHelper::inSuperaact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
 							combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toSql(),$api);
+						}
+						 //if easysocial  
+						if($params->get('integration')=='easysocial')
+						{
+							$today_date	= JFactory::getDate($status['timestamp']);
+							combroadcastHelper::inEasysocialact($userid,$userid,'broadcast',$status_content, $api_name,$userid,$today_date->toSql() );
+							combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toSql(),$api );
 						}
 				}
 			}

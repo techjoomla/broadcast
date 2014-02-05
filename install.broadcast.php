@@ -36,7 +36,13 @@ class com_broadcastInstallerScript
 			'administrator/components/com_broadcast/views/settings',
 		)
 	);
-	
+	private $installation_queue = array(
+	'applications'=>array(
+			'easysocial'=>array(
+					'easysocial_broadcast'=>0,
+				)
+		);
+		
 	/**
 	 * method to run before an install/update/uninstall method
 	 *
@@ -57,7 +63,9 @@ class com_broadcastInstallerScript
 	{
 		// Remove obsolete files and folders
 		echo '<p><a href="http://techjoomla.com/table/documentation-for-broadcast/">' . JText::_('Read Documentation And FAQs Here') . '</a></p>';
-
+		// Install subextensions		
+		$status = $this->_installSubextensions($parent);
+		
 		$removeFilesAndFolders = $this->removeFilesAndFolders;
 		$this->_removeObsoleteFilesAndFolders($removeFilesAndFolders);
 		// Install FOF

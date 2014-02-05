@@ -19,6 +19,36 @@ class BroadcastControllerbroadcast extends JControllerLegacy
 	{
 		parent::display();
 	}
+	
+	function inEasysocialact($actor,$target,$title,$content,$api,$cid,$date)
+	{
+		require_once( JPATH_ROOT . '/administrator/components/com_easysocial/includes/foundry.php' );
+		
+		$linkHTML='<a href="'.$content.'">'.$title.'</a>';	
+		if($actor!=0)
+		$myUser = Foundry::user( $actor );
+		$stream = Foundry::stream();
+		$template = $stream->getTemplate();
+		$template->setActor( $actor, SOCIAL_TYPE_USER );
+		$template->setContext( $actor, SOCIAL_TYPE_USERS );
+		$template->setVerb( 'broadcast' );
+		$template->setType( 'full' );
+		if($actor!=0)
+		{
+			$userProfileLink = '<a href="'. $myUser->getPermalink() .'">' . $myUser->getName() . '</a>';
+			$title 	 = ($userProfileLink." ".$linkHTML);
+		}
+		else
+		$title 	 = ("A guest ".$act_description);
+		$template->setTitle( $title );
+		$template->setContent($content );
+
+		$template->setAggregate( false );
+
+		$template->setPublicStream( 'core.view' );
+		$stream->add( $template );
+		return true;
+	}
 		//START apis
 	/*call model for request token*/
 	function get_request_token()

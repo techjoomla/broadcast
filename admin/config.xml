@@ -4,6 +4,7 @@
 		<field name="integration" class="btn-group" default="js" type="radio" label="COM_BROADCAST_INTERATION" description="COM_BROADCAST_INTERATION_DESC">
 			<option value="js">COM_BROADCAST_JOMSOCIAL</option>
 			<option value="jwall">COM_BROADCAST_JOMWALL</option>
+			<option value="easysocial">COM_BROADCAST_EASYSOCIAL</option>
 		</field>
 
 		<field name="show_name" class="btn-group" default="1" type="radio"  label="COM_BROADCAST_SHOW_NAME" description="COM_BROADCAST_SHOW_NAME_DESC">

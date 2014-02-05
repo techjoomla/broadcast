@@ -53,5 +53,8 @@ class BroadcastController extends JControllerLegacy
  
 
 	}
+	
+	
+	
 }		
 ?>
