@@ -31,5 +31,25 @@ class broadcastModelcp extends JModelLegacy
 		$combroadcastHelper=new combroadcastHelper();
 		return $combroadcastHelper->addtoQueue($post['userid'], $post['status'], date('Y-m-d H:i:s',time()),$post['count'],$post['interval'],$apis,'com_broadcast',1);
 	}
+	
+	function remove($cid){
+				
+				
+		$db=JFactory::getDBO();
+
+		if(is_array($cid))
+		{
+			// get data to for email
+			$ids=implode("','",$cid);
+			//DELETE ENTRY FROM QUEUE	
+			$query="DELETE 	FROM #__broadcast_queue WHERE id IN('".$ids."')";
+
+			$db->setQuery($query);
+				if(!$db->execute()){
+				}
+		}
+				
+
+	}
 }
 

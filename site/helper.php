@@ -43,31 +43,27 @@ class combroadcastHelper
  
 	return $url;
 }
-	function seperateurl($url) {
-	
-	$newurl='';
-  $U = explode(' ',$url);
-
-  $W =array();
-  foreach ($U as $k => $u) {
-    if (stristr($u,'http') || (count(explode('.',$u)) > 1)) {
-      $newurl=$U[$k];
-      
-      $count=1;
-
-    }
-  }
-  return $newurl;
-}
+	function seperateurl($url) {	
+		$newurl='';
+		$U = explode(' ',$url);
+		$W =array();
+		foreach ($U as $k => $u) {
+			if (stristr($u,'http') || (count(explode('.',$u)) > 1)) {
+				$newurl=$U[$k];      
+				$count=1;
+			}
+		}
+		return $newurl;
+	}
 
 function inSuperaact($userid,$comment,$status_content,$today,$timestamp,$api_nm)
 	{
 			if (file_exists(JPATH_SITE . DS . 'components' . DS . 'com_cbactivity' . DS . 'onyourmind' . DS . 'shareBroadcast.php')) {
-        require_once( JPATH_SITE . DS . 'components' . DS . 'com_cbactivity' . DS . 'onyourmind' . DS . 'shareBroadcast.php');
-      } 
+				require_once( JPATH_SITE . DS . 'components' . DS . 'com_cbactivity' . DS . 'onyourmind' . DS . 'shareBroadcast.php');
+			} 
 			elseif (file_exists(JPATH_SITE . DS . 'components' . DS . 'com_cbsuperwall' . DS . 'onyourmind' . DS . 'shareBroadcast.php')) {
-        require_once( JPATH_SITE . DS . 'components' . DS . 'com_cbsuperwall' . DS . 'onyourmind' . DS . 'shareBroadcast.php');
-      } 
+			require_once( JPATH_SITE . DS . 'components' . DS . 'com_cbsuperwall' . DS . 'onyourmind' . DS . 'shareBroadcast.php');
+		} 
 
 			$attachment='';
 
@@ -128,9 +124,7 @@ function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm
 	#populate the Jomsocial activity table called from broadcast & rss models 
 	function inJSAct($actor,$target,$title,$content,$api,$cid,$date)
 	{
-
-
-			require_once( JPATH_SITE . DS . 'components' . DS . 'com_community' . DS . 'libraries' . DS . 'core.php'); 
+		require_once( JPATH_SITE . DS . 'components' . DS . 'com_community' . DS . 'libraries' . DS . 'core.php'); 
 		$act = new stdClass();
 		$act->cmd 	= 'wall.write';
 		$act->actor 	= $actor;
@@ -152,7 +146,6 @@ function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm
 	function inEasysocialact($actor,$target,$title,$content,$api,$cid,$date)
 	{
 		require_once( JPATH_ROOT . '/administrator/components/com_easysocial/includes/foundry.php' );
-		
 		$linkHTML='<a href="'.$content.'">'.$title.'</a>';	
 		if($actor!=0)
 		$myUser = Foundry::user( $actor );
@@ -317,33 +310,33 @@ function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm
  function stripUrl($url)
 	{
 
-  $U = explode(' ',$url);
+	  $U = explode(' ',$url);
 
-  $W =array();
-  foreach ($U as $k => $u) {
-    if (stristr($u,'http') || (count(explode('.',$u)) > 1)) {
-      unset($U[$k]);
-      return combroadcastHelper::stripUrl(implode(' ',$U));
-    }
-  }
-  return implode(' ',$U);
+	  $W =array();
+	  foreach ($U as $k => $u) {
+		if (stristr($u,'http') || (count(explode('.',$u)) > 1)) {
+		  unset($U[$k]);
+		  return combroadcastHelper::stripUrl(implode(' ',$U));
+		}
+	  }
+	  return implode(' ',$U);
 	}
 
  function checkexistparams($allparams,$column,$id)
 	{
-if($allparams)
-{
-		foreach($allparams as  $multipledatas)
+		if($allparams)
 		{
-		foreach($multipledatas as  $multipledata)
-		{
-	
-				if($multipledata['id']==$id)
-				return 1;
-			}
+				foreach($allparams as  $multipledatas)
+				{
+				foreach($multipledatas as  $multipledata)
+				{
+			
+						if($multipledata['id']==$id)
+						return 1;
+					}
+				}
 		}
-}
-					return 0;
+		return 0;
 	}
 	 function getallparamsforOtherAccounts($userid,$column)
 	 {
@@ -369,6 +362,7 @@ if($allparams)
 		{	
 			$newstatus 	=$originalstatus;
 		}
+		$newstatus=trim($newstatus);
 		$newstatus	=$db->escape($newstatus);
 		$where = '';
 		if($api)

@@ -112,18 +112,17 @@ class BroadcastModelbroadcast extends JModelLegacy
 		$params=JComponentHelper::getParams('com_broadcast');
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 		
-		
 				$api_name = str_replace('plug_techjoomlaAPI_', '', $api);
 		foreach($apistatuses as $apistatus){
 			$userid = $apistatus['user_id'];
 			$apistatus['status'] = array_reverse($apistatus['status']);
 			foreach ($apistatus['status'] as $status )
 			{	
-			
-				if((!combroadcastHelper::checkexist($status['comment'],$userid,$api)))
+				$stats_exist=0;
+				$stats_exist=$this->broadcasthelperObj->checkexist($status['comment'],$userid,$api);				
+				if(!$stats_exist)
 				{
 					$obj = new StdClass();
-					
 					if($params->get('status_skip'))
 					{
 						$search=explode(',', trim($params->get('status_skip')) );
@@ -144,35 +143,35 @@ class BroadcastModelbroadcast extends JModelLegacy
 						$actor='{actor} ';
 					else
 						$actor='';	
-							$status_content = combroadcastHelper::makelink($status_content,$api_name);	
+							$status_content = $this->broadcasthelperObj->makelink($status_content,$api_name);	
 							$today_date	= JFactory::getDate($status['timestamp']);
-							combroadcastHelper::inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toSql() );
-							combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toSql(),$api );
+							$this->broadcasthelperObj->inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toSql() );
+							$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api );
 							$today=JFactory::getDate();
-							combroadcastHelper::updateJSstatus($userid, $status['comment'],$today->toSql() );
+							$this->broadcasthelperObj->updateJSstatus($userid, $status['comment'],$today->toSql() );
 						}
 						//if Jomwall
 						if($params->get('integration')=='jwall')
 						{
 							$today_date=JFactory::getDate($status['timestamp']);
 							$today=JFactory::getDate();
-							combroadcastHelper::inJomwallact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
-							combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toSql(),$api);
+							$this->broadcasthelperObj->inJomwallact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
+							$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api);
 						}
                         //if community builder  
 						if($params->get('integration')=='cb')
 						{
 							$today_date=JFactory::getDate($status['timestamp']);
 							$today=JFactory::getDate();
-							combroadcastHelper::inSuperaact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
-							combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toSql(),$api);
+							$this->broadcasthelperObj->inSuperaact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
+							$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api);
 						}
 						 //if easysocial  
 						if($params->get('integration')=='easysocial')
 						{
 							$today_date	= JFactory::getDate($status['timestamp']);
-							combroadcastHelper::inEasysocialact($userid,$userid,'broadcast',$status_content, $api_name,$userid,$today_date->toSql() );
-							combroadcastHelper::intempAct($userid, $status['comment'],$today_date->toSql(),$api );
+							$this->broadcasthelperObj->inEasysocialact($userid,$userid,'broadcast',$status_content, $api_name,$userid,$today_date->toSql() );
+							$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api );
 						}
 				}
 			}
@@ -195,7 +194,7 @@ class BroadcastModelbroadcast extends JModelLegacy
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
 		
 		$comment=$status;
-		$link=combroadcastHelper::makelink($comment,'');
+		$link=$this->broadcasthelperObj->makelink($comment,'');
 			$link=trim($link);
 			$comment=trim($comment);
 			if($api_used!='rss')
@@ -203,7 +202,7 @@ class BroadcastModelbroadcast extends JModelLegacy
 				if($link!=$comment)
 				{
 					$type='link';
-					 $attachment=combroadcastHelper::seperateurl($comment);
+					 $attachment=$this->broadcasthelperObj->seperateurl($comment);
 						$comment=str_replace($attachment,'',$comment);
 				}
 			}

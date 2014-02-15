@@ -10,6 +10,8 @@
 defined('_JEXEC') or die('Restricted access');
 JHTML::_('behavior.tooltip');
 JHTML::_('behavior.formvalidation');
+JToolBarHelper::DeleteList(JText::_('COM_BROADCAST_DELETE_QUEUE_CONFRIM'),'remove','JTOOLBAR_DELETE');
+JHtml::_('behavior.modal', 'a.modal');
 
 //require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 $params=JComponentHelper::getParams('com_broadcast');
@@ -23,8 +25,11 @@ else
 	function submitbutton( task ){";
 
 	$js_key.="
-		if (task == 'cancel')
-		{";
+		if (task == 'cancel'  || task == 'remove')
+		{
+			if(task == 'remove')
+			document.adminForm.task='remove';
+		";
 	        if(JVERSION >= '1.6.0')
 				$js_key.="Joomla.submitform(task);";
 			else		
@@ -54,6 +59,20 @@ else
 			
 		}
 	}
+	
+	function jSelectUser_jform_created_by(id, title) {
+
+		var old_id = document.getElementById('userid').value;
+		if (old_id != id) {
+			document.getElementById('userid').value = id;
+			document.getElementById('user_name').value = title;
+			
+		}
+	SqueezeBox.close();
+		
+			
+		
+	}
 ";
 
 	$document->addScriptDeclaration($js_key);
@@ -65,7 +84,21 @@ else
 			<table width="100%">
 				<tr>
 					<td><?php echo JHTML::tooltip(JText::_('COM_BROADCAST_TOOLTIPUSER'), JText::_('COM_BROADCAST_BC_USER'), '', JText::_('COM_BROADCAST_BC_USER'));?></td>
-					<td><input type="text" class="inputbox required validate-numeric" name="userid" value="" id="userid" size="30" /></td>
+					<td>
+						
+							<input type="text" id="user_name" name="user_name" class="required" disabled="disabled"
+							placeholder="<?php echo JText::_('COM_BROADCAST_BC_SELECT_USER');?>" value="<?php echo JFactory::getUser()->name; ?>">	
+							
+							<input type="hidden" id="userid" name="userid" class="required"
+							 value="<?php echo JFactory::getUser()->id ?>">						
+							
+								<a class="modal  button btn btn-info btn-small" rel="{handler: 'iframe', size: {x: 800, y: 500}}" href="index.php?option=com_users&amp;view=users&amp;layout=modal&amp;tmpl=component&amp;field=jform_created_by" title="Select User" class="modal_jform_created_by">
+									<?php echo JText::_('COM_BROADCAST_BC_SELECT_USER');?></a>
+
+						<!--<input type="text" class="inputbox required validate-numeric" name="userid" value="" id="userid" size="30" />-->
+						
+						
+						</td>
 				</tr>
 				<tr>
 					<td><?php echo JHTML::tooltip(JText::_('COM_BROADCAST_TOOLTIPSTATUS'), JText::_('COM_BROADCAST_BC_MSG'), '', JText::_('COM_BROADCAST_BC_MSG'));?></td>
@@ -81,7 +114,7 @@ else
 						foreach($api_plgs as $api){
 						?>
 						<span syle="vertical-align:text-top;"> 
-							<input style="float:none;" type="checkbox" name="api_status[]" value="<?php echo $api; ?>" /><span><?php echo ucfirst(str_replace('plug_techjoomlaAPI_','', $api)); ?></span>
+							<input class="btn-group" style="float:none;" type="checkbox" name="api_status[]" value="<?php echo $api; ?>" /><span><?php echo ucfirst(str_replace('plug_techjoomlaAPI_','', $api)); ?></span>
 						</span>
 						<?php 
 						}
@@ -108,6 +141,9 @@ else
 			<table class="adminlist" width="100%">
 			<thead>
 				<tr>
+					<th width="1%" >
+					<input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this);" />
+				</th>
 				<th><?php echo JText::_('COM_BROADCAST_BC_ID');?></th>
 					<th><?php echo JHTML::tooltip(JText::_('COM_BROADCAST_DESC_BC__MSG'), JText::_('COM_BROADCAST_BC_MSG'), '', JText::_('COM_BROADCAST_BC_MSG'));?></th>
 					<th><?php echo JHTML::tooltip(JText::_('COM_BROADCAST_DESC_BC_USER'), JText::_('COM_BROADCAST_BC_USER'), '', JText::_('COM_BROADCAST_BC_USER'));?></th>
@@ -122,6 +158,9 @@ else
 			foreach($this->queues as $queue){
 		?>
 			<tr>
+				<td align="center">
+						     <?php echo JHtml::_('grid.id',$queue->id,$queue->id);?>
+						</td>
 				<td align="center"><?php echo $queue->id;?></td>
 				<td align="center"><?php echo $queue->status;?></td>
 				<td align="center"><?php echo JFactory::getUser($queue->userid)->name;?></td>
@@ -137,6 +176,8 @@ else
 	</div>
 	<input type="hidden" name="option" value="com_broadcast" />		
 	<input type="hidden" name="task" value="save" />
+	<input type="hidden" name="boxchecked" value="0" />
+
 	<input type="hidden" name="controller" value="cp" />
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>

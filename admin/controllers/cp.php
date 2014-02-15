@@ -36,5 +36,13 @@ class broadcastControllercp extends broadcastController
 	{
 	$this->setRedirect( 'index.php?option=com_broadcast');
 	}
+	
+	function remove(){
+		$input=JFactory::getApplication()->input;
+		$cid=$input->get('cid','', 'array');
+		JArrayHelper::toInteger($cid);
+		$this->getModel('cp')->remove($cid);
+		$this->setRedirect( "index.php?option=com_broadcast&view=cp&layout=queue");
+	}
 }
 ?>

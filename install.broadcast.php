@@ -83,6 +83,258 @@ class com_broadcastInstallerScript
 	}
 	
 	
+	/**
+	 * Installs subextensions (modules, plugins) bundled with the main extension
+	 *
+	 * @param JInstaller $parent
+	 * @return JObject The subextension installation status
+	 */
+	private function _installSubextensions($parent)
+	{
+		$src = $parent->getParent()->getPath('source');
+
+		$db = JFactory::getDbo();
+
+		$status = new JObject();
+		$status->modules = array();
+		$status->plugins = array();
+
+		// Modules installation
+		
+		if(count($this->installation_queue['modules'])) {
+			foreach($this->installation_queue['modules'] as $folder => $modules) {
+				if(count($modules)) 
+					foreach($modules as $module => $modulePreferences)
+					{
+						// Install the module
+						if(empty($folder)) 
+							$folder = 'site';
+						$path = "$src/modules/$folder/$module";
+						if(!is_dir($path))// if not dir
+						{
+							$path = "$src/modules/$folder/mod_$module";
+						}
+						if(!is_dir($path)) {
+							$path = "$src/modules/$module";
+						}
+					
+						if(!is_dir($path)) {
+							$path = "$src/modules/mod_$module";
+						}
+						if(!is_dir($path)) 
+						{
+								
+							$fortest='';
+							//continue;
+						}
+							
+						// Was the module already installed?
+						$sql = $db->getQuery(true)
+							->select('COUNT(*)')
+							->from('#__modules')
+							->where($db->qn('module').' = '.$db->q('mod_'.$module));
+						$db->setQuery($sql);
+						
+						$count = $db->loadResult();
+						$installer = new JInstaller;
+						$result = $installer->install($path);
+						$status->modules[] = array(
+							'name'=>$module,
+							'client'=>$folder,
+							'result'=>$result,
+							'status'=>$modulePreferences[1]
+						);
+						// Modify where it's published and its published state
+						if(!$count) {
+							// A. Position and state
+							list($modulePosition, $modulePublished) = $modulePreferences;
+							if($modulePosition == 'cpanel') {
+								$modulePosition = 'icon';
+							}
+							$sql = $db->getQuery(true)
+								->update($db->qn('#__modules'))
+								->set($db->qn('position').' = '.$db->q($modulePosition))
+								->where($db->qn('module').' = '.$db->q('mod_'.$module));
+							if($modulePublished) {
+								$sql->set($db->qn('published').' = '.$db->q('1'));
+							}
+							$db->setQuery($sql);
+							$db->query();
+
+							// B. Change the ordering of back-end modules to 1 + max ordering
+							if($folder == 'admin') {
+								$query = $db->getQuery(true);
+								$query->select('MAX('.$db->qn('ordering').')')
+									->from($db->qn('#__modules'))
+									->where($db->qn('position').'='.$db->q($modulePosition));
+								$db->setQuery($query);
+								$position = $db->loadResult();
+								$position++;
+
+								$query = $db->getQuery(true);
+								$query->update($db->qn('#__modules'))
+									->set($db->qn('ordering').' = '.$db->q($position))
+									->where($db->qn('module').' = '.$db->q('mod_'.$module));
+								$db->setQuery($query);
+								$db->query();
+							}
+
+							// C. Link to all pages
+							$query = $db->getQuery(true);
+							$query->select('id')->from($db->qn('#__modules'))
+								->where($db->qn('module').' = '.$db->q('mod_'.$module));
+							$db->setQuery($query);
+							$moduleid = $db->loadResult();
+
+							$query = $db->getQuery(true);
+							$query->select('*')->from($db->qn('#__modules_menu'))
+								->where($db->qn('moduleid').' = '.$db->q($moduleid));
+							$db->setQuery($query);
+							$assignments = $db->loadObjectList();
+							$isAssigned = !empty($assignments);
+							if(!$isAssigned) {
+								$o = (object)array(
+									'moduleid'	=> $moduleid,
+									'menuid'	=> 0
+								);
+								$db->insertObject('#__modules_menu', $o);
+							}
+						}
+					}
+			}
+		}
+		
+		// Plugins installation
+		if(count($this->installation_queue['plugins'])) {
+			foreach($this->installation_queue['plugins'] as $folder => $plugins) {
+				if(count($plugins)) 
+				foreach($plugins as $plugin => $published) {
+					$path = "$src/plugins/$folder/$plugin";
+					if(!is_dir($path)) {
+						$path = "$src/plugins/$folder/plg_$plugin";
+					}
+					if(!is_dir($path)) {
+						$path = "$src/plugins/$plugin";
+					}
+					if(!is_dir($path)) {
+						$path = "$src/plugins/plg_$plugin";
+					}
+					if(!is_dir($path)) continue;
+
+					// Was the plugin already installed?
+					$query = $db->getQuery(true)
+						->select('COUNT(*)')
+						->from($db->qn('#__extensions'))
+						->where('( '.($db->qn('name').' = '.$db->q($plugin)) .' OR '. ($db->qn('element').' = '.$db->q($plugin)) .' )')
+						->where($db->qn('folder').' = '.$db->q($folder));
+					$db->setQuery($query);
+					$count = $db->loadResult();
+
+					$installer = new JInstaller;
+					$result = $installer->install($path);
+
+					$status->plugins[] = array('name'=>$plugin,'group'=>$folder, 'result'=>$result,'status'=>$published);
+					
+
+					if($published && !$count) {
+						$query = $db->getQuery(true)
+							->update($db->qn('#__extensions'))
+							->set($db->qn('enabled').' = '.$db->q('1'))							
+							->where('( '.($db->qn('name').' = '.$db->q($plugin)) .' OR '. ($db->qn('element').' = '.$db->q($plugin)) .' )')
+							->where($db->qn('folder').' = '.$db->q($folder));
+						$db->setQuery($query);
+						$db->query();
+					}
+				}
+			}
+		}
+		
+		// library installation
+		if(count($this->installation_queue['libraries'])) {
+			foreach($this->installation_queue['libraries']  as $folder=>$status1) {
+				
+					$path = "$src/libraries/$folder";
+					
+					$query = $db->getQuery(true)
+						->select('COUNT(*)')
+						->from($db->qn('#__extensions'))
+						->where('( '.($db->qn('name').' = '.$db->q($folder)) .' OR '. ($db->qn('element').' = '.$db->q($folder)) .' )')
+						->where($db->qn('folder').' = '.$db->q($folder));
+					$db->setQuery($query);
+					$count = $db->loadResult();
+					
+					$installer = new JInstaller;
+					$result = $installer->install($path);
+
+					$status->libraries[] = array('name'=>$folder,'group'=>$folder, 'result'=>$result,'status'=>$status1);
+					//print"<pre>"; print_r($status->plugins); die;
+
+					if($published && !$count) {
+						$query = $db->getQuery(true)
+							->update($db->qn('#__extensions'))
+							->set($db->qn('enabled').' = '.$db->q('1'))	
+							->where('( '.($db->qn('name').' = '.$db->q($folder)) .' OR '. ($db->qn('element').' = '.$db->q($folder)) .' )')
+							->where($db->qn('folder').' = '.$db->q($folder));
+						$db->setQuery($query);
+						$db->query();
+					}
+			}
+		}
+		/*
+		 * 'applications'=>array(
+			'easysocial'array(
+					'quick2cartproducts'=>0,
+					'quick2cartstores'=>0
+				
+			),
+		 * */
+		//Application Installations
+		if(count($this->installation_queue['applications'])) {
+			foreach($this->installation_queue['applications'] as $folder => $applications) {
+				if(count($applications)) {
+					foreach($applications as $app => $published) {
+						$path = "$src/applications/$folder/$app";
+						if(!is_dir($path)) {
+							$path = "$src/applications/$folder/plg_$app";
+						}
+						if(!is_dir($path)) {
+							$path = "$src/applications/$app";
+						}
+						if(!is_dir($path)) {
+							$path = "$src/applications/plg_$app";
+						}
+
+						if(!is_dir($path)) continue;
+
+						
+						if(file_exists(JPATH_ADMINISTRATOR . '/components/com_easysocial/includes/foundry.php')) {
+							require_once( JPATH_ADMINISTRATOR . '/components/com_easysocial/includes/foundry.php' );
+							
+							// Was the app already installed?
+							/*$query = $db->getQuery(true)
+								->select('COUNT(*)')
+								->from($db->qn('#__extensions'))
+								->where('( '.($db->qn('name').' = '.$db->q($app)) .' OR '. ($db->qn('element').' = '.$db->q($app)) .' )')
+								->where($db->qn('folder').' = '.$db->q($folder));
+							$db->setQuery($query);
+							$count = $db->loadResult();*/
+							
+							
+							$installer     = Foundry::get( 'Installer' );
+							// The $path here refers to your application path
+							$installer->load( $path );
+							$plg_install=$installer->install();
+							//$status->app_install[] = array('name'=>'easysocial_camp_plg','group'=>'easysocial_camp_plg', 'result'=>$plg_install,'status'=>'1');
+							$status->applications[] = array('name'=>$app,'group'=>$folder, 'result'=>$result,'status'=>$published);
+						}
+					}
+				}
+			}
+		}
+
+		return $status;
+	}
+	
 
 	/**
 	 * Removes obsolete files and folders
@@ -773,8 +1025,7 @@ function getformattedarray($result){
 	 */
 	function uninstall($parent) 
 	{
-		// $parent is the class calling this method
-		//echo '<p>' . JText::_('COM_BROADCASST_UNINSTALL_TEXT') . '</p>';
+	
 	}
  
 	/**
@@ -784,9 +1035,9 @@ function getformattedarray($result){
 	 */
 	function update($parent) 
 	{
-			$this->com_install();
-		// $parent is the class calling this method
-		//echo '<p>' . JText::_('COM_OLA_UPDATE_TEXT') . '</p>';
+		$this->com_install();
+		
+		
 	}
  
 
