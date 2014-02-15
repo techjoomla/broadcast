@@ -1,0 +1,9 @@
+@CHARSET "UTF-8";
+
+.broadcast_foot{float:left; width:100%}
+
+
+.inbroadcast_ver{float:left; width:29%;padding-top: 10px;}
+.broadcast_ver{}
+.broadcast_hori{float:left; width:83px;}
+.inbroadcast_hori{padding-left: 10px;}
