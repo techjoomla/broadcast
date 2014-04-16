@@ -11,20 +11,20 @@ defined('_JEXEC') or die( 'Restricted access' );
 
 $params=JComponentHelper::getParams('com_broadcast');
 
-$document = &JFactory::getDocument();
+$document =JFactory::getDocument();
 $document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css' );
 if(JVERSION>=3.0)
-jimport('joomla.html.html.bootstrap'); // get bootstrap 
+jimport('joomla.html.html.bootstrap'); // get bootstrap
 
 $document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css' );
 $rsslists = $this->subscribedlists->broadcast_rss;
-$model	= $this->getModel( 'config' );					
-$session =& JFactory::getSession();
-$cache = & JFactory::getCache();
+$model	= $this->getModel( 'config' );
+$session =JFactory::getSession();
+$cache =JFactory::getCache();
 $cache->clean();
 $itemid = JRequest::getVar('Itemid', '','GET');
-$session->set('itemid_session',$itemid);	
-$u =& JURI::getInstance();
+$session->set('itemid_session',$itemid);
+$u =JURI::getInstance();
 $currentMenu= $u->toString();
 $user=JFactory::getUser();
 $session->set('currentMenu', $currentMenu);
@@ -43,10 +43,10 @@ if(!$user->id){
 <script type="text/javascript">
 
 </script>
- 
+
 <script type="text/javascript">
 	 var limit="5";
-		var counter=1;	
+		var counter=1;
 	function divhide(thischk){
 thischk.id
 		if(document.getElementById(thischk.id+'1').style.display == "none" ){
@@ -56,8 +56,8 @@ thischk.id
 			document.getElementById(thischk.id+'1').style.display="none";
 		}
 	}
-	
-	
+
+
 </script>
 <?php
 	if(JVERSION<3.0)
@@ -66,25 +66,41 @@ thischk.id
 
 	<div class="techjoomla-bootstrap">
 	<?php
-}?>	
+}?>
 <form action=""  method="POST" name="manualform1" >
-	<h3 class="componentheading">											
+	<h3 class="componentheading">
 			 <?php echo JText::_('BC_SETT');?>
 	</h3>
 		<div >
-	<?php 
+	<?php
 
 	if(empty($this->otherdataArr))
 	{
 		echo "No Other Account Data</div></div>";
 		return;
 	}
-	
+	//print_r($this->post_to);
+
+	?>
+	<div class="">
+		<div class="">
+			<input class="api_checkbox" type="checkbox"
+			<?php if(!empty($this->post_to['Facebook']) and $this->post_to['Facebook']==1)
+			{
+
+			echo 'checked="checked"';
+
+			} ?>  name="post_to[Facebook]"  id="post_to['Facebook']" value="1" />
+			Post to My personal profile on facebook</br>
+		</div>
+	</div>
+<?php
 	$jj=0;
 	$session->set("API_otherAccountData",$this->otherdataArr);
+
 	foreach($this->otherdataArr as $otherdata)
 		{
-		
+
 			foreach($otherdata as $dts)
 			{
 
@@ -95,23 +111,23 @@ thischk.id
 						<div class="box-tl"></div>
 						<div class="box-tr"></div>
 						<div class="box-t"></div>
-					</div>									
-					<div class="content_cover">	
-					<div id="<?php echo $dts[0]['displayname'];?>" onclick="divhide(this);" ><b><?php echo $dts[0]['displayname'];?></b></div>	      
+					</div>
+					<div class="content_cover">
+					<div id="<?php echo $dts[0]['displayname'];?>" onclick="divhide(this);" ><b><?php echo $dts[0]['displayname'];?></b></div>
 						<div id="<?php echo $dts[0]['displayname'].'1';?>"  class="broadcast-expands">
 							<?php
 									$i=1;
 									$jj++;
 									foreach($dts as $singledata)
 									{
-							
-				
-										if($singledata['connectionstatus']==1)						
+
+
+										if($singledata['connectionstatus']==1)
 										$checked=" checked='checked'";
 										else
-										$checked='';			
+										$checked='';
 										$sessiondata[]=$singledata;
-										$image=$singledata['image'];
+										$image=str_replace('http://','https://',$singledata['image']);
 										$title=$singledata['name'];
 										$connectionstatus=0;
 										$action="connect";
@@ -128,18 +144,10 @@ thischk.id
 										$float="";
 										$i++;
 				 						$data.='<div class="page_status_config_inner" style="'.$float.'padding-left:30px">
-				 							<input class="api_checkbox" type="checkbox"  id="'.$singledata['fieldname'].'[]" name="'.$singledata['fieldname'].'[]" "'.$checked.'" value="'.$singledata['id'].'" />';
+											<input class="api_checkbox" type="checkbox"  id="'.$singledata['fieldname'].'[]" name="'.$singledata['fieldname'].'[]" "'.$checked.'" value="'.$singledata['id'].'" />';
 										$data.='<img class="bcapi_img"  src="'.$image.'"  >'.$title.'</div>';
-
-
 										echo $data;
-
-										?>
-							
-
-										<?php
-				
-									}
+																			}
 									?>
 
 								</div><!--content-cover-->
@@ -149,20 +157,20 @@ thischk.id
 								<div class="box-br"></div>
 								<div class="box-b"></div>
 							</div>
-				</div><!--bc-connect-->		
+				</div><!--bc-connect-->
 
 			<?php
 			}
-		
+
 	}
 ?>
 
 		<div class="form-actions">
-					<input type="hidden" name="option" value="com_broadcast">		
-					<input type="hidden" id="task" name="task" value="saveotheraccounts">
-					<div align="center"><input class="btn btn-primary" type="button" value="<?php echo JText::_('BC_SAVE')?>" onclick="submit(this.form);"></div>
-				</div>
-		
+			<input type="hidden" name="option" value="com_broadcast">
+			<input type="hidden" id="task" name="task" value="saveotheraccounts">
+			<div align="center"><input class="btn btn-primary" type="button" value="<?php echo JText::_('BC_SAVE')?>" onclick="submit(this.form);"></div>
+		</div>
+
 
  </form>
 <?php

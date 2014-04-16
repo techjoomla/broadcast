@@ -21,6 +21,12 @@ if (!defined('FOF_INCLUDED'))
 	}
 
 	// Register the FOF autoloader
-    require_once __DIR__ . "/autoloader/fof.php";
+	if(phpversion() <= 5.3){
+		include dirname(__FILE__) . '/autoloader/fof.php';
+	}
+	else
+	{ 
+		require_once __DIR__ . '/autoloader/fof.php';
+	}
 	FOFAutloaderFof::init();
 }

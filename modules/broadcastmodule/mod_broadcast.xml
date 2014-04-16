@@ -7,7 +7,7 @@
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
 	<authorEmail>extensions@techjoomla.com</authorEmail>
 	<authorUrl>http://www.techjoomla.com</authorUrl>
-	<version>1.3.5</version>
+	<version>1.5</version>
 	<description>Broadcast Module to connect Facebook, Twitter, Linkedin</description>
   <files>
       <filename module="mod_broadcast">mod_broadcast.php</filename>
@@ -22,19 +22,19 @@
 		<language tag="zh-TW">zh-TW/zh-TW.mod_broadcast.ini</language>
 		<language tag="sv-SE">sv-SE/sv-SE.mod_broadcast.ini</language>
 		<language tag="th-TH">th-TH/th-TH.mod_broadcast.ini</language>
-  </languages>   
+  </languages>
 	<!-- Fields for Joomla 1.6.x and onwards -->
 	<config>
-	<fields name="params">			
+	<fields name="params">
 		<fieldset name="basic">
-								<field name="moduleclass_sfx" type="text" default="" label="MOD_SUFIX" description="MOD_SUFIX_DES" />	
+								<field name="moduleclass_sfx" type="text" default="" label="MOD_SUFIX" description="MOD_SUFIX_DES" />
 			<field name="show_horizontal" class="btn-group" type="radio" default="hr" label="MOD_ORIENT" description="MOD_ORIENT_DESC">
 				<option value="hr">MOD_ORIENT_HR</option>
 				<option value="vr">MOD_ORIENT_VR</option>
 			</field>
 			<field name="pretext" type="textarea" default="" rows="2" cols="40" label="MOD_PRE_TEXT" description="MOD_PRE_TEXT_DESC" />
 			<field name="posttext" type="textarea" default="" rows="2" cols="40" label="MOD_POS_TEXT" description="MOD_POS_TEXT_DESC" />
-			
+
 			<field name="show_rss" class="btn-group" type="radio" default="1" label="MOD_BCRSS" description="MOD_BCRSS_DESC">
 				<option value="1">MOD_BCYES</option>
 				<option value="0">MOD_BCNO</option>

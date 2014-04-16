@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS `#__broadcast_tmp_activities` (
 CREATE TABLE IF NOT EXISTS `#__broadcast_config` (
   `user_id` int(11) NOT NULL,
   `broadcast_activity_config` varchar(500) NOT NULL,
-  `broadcast_rss_url` text NOT NULL
+  `broadcast_rss` text NOT NULL,
+  `params` text NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 		
 

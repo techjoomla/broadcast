@@ -21,11 +21,11 @@ class BroadcastControllerrss extends JControllerLegacy
 
 	function BroadcastControllerrss()
 	{
-		parent::__construct(); 
+		parent::__construct();
 	}
 
 	function getrssdata()
-	{	
+	{
 		$com_params=JComponentHelper::getParams('com_broadcast');
 		$pkey = JRequest::getVar('pkey', '');
 		$integration=$com_params->get('integration');
@@ -40,13 +40,13 @@ class BroadcastControllerrss extends JControllerLegacy
 		$database->setQuery($fbquery);
 		$this->uaccess = $database->loadObjectlist();
     	$model = $this->getModel('rss');
-		
+
 		$arrFeeds = array();
 		foreach($this->uaccess as $k=>$v)
 		{
 			echo '<h3>User: ' . JFactory::getUser($v->user_id)->name.'</h3>';
 			echo '<br>';
-			
+
 			$userid = $v->user_id;
 			$fbquery = "SELECT user_id,broadcast_rss
 			FROM #__broadcast_config where broadcast_rss <> ''  AND user_id=".$v->user_id;
@@ -70,7 +70,7 @@ class BroadcastControllerrss extends JControllerLegacy
 			{
 				$link=$rss['link'];
 				$title=$rss['title'];
-			
+
 				if(empty($link) || $link=='')
 				    continue;
 				jimport( 'joomla.html.parameter' );
@@ -78,28 +78,26 @@ class BroadcastControllerrss extends JControllerLegacy
 				$params->set('rssurl', trim($link));
 				try{
 						$feed = modFeedHelper::getFeed($params);
-						
-						if(!$feed) 
-						 continue;   
-								  
+
+						if(!$feed)
+						 continue;
+
 						for ($j = 0; $j < $rss_limit_per_user; $j ++)
 						{
 							if(JVERSION<3.0)
 							{
 								if(!empty($feed->items[$j]))
-								{		
-									$currItem = & $feed->items[$j];      
-   																					
+								{
+									$currItem = & $feed->items[$j];
 
-									if ( !is_null( $currItem->get_link() ) ) 
-									{       
+
+									if ( !is_null( $currItem->get_link() ) )
+									{
 										$statuslog=$currItem->get_title();
 									 	if($statuslog!="" and !empty($statuslog))
-									 	{                
-											if(!$combroadcastHelper->checkexist($statuslog,$userid,'rss'))
-											{
-												$model->rssstore($userid,$currItem,$title);
-											}
+									 	{
+											$model->rssstore($userid,$currItem,$title);
+
 										 }
 											echo $statuslog."<br/>";
 									}
@@ -111,28 +109,25 @@ class BroadcastControllerrss extends JControllerLegacy
 								$uri='';
 								$uri = (!empty($feed[$j]->guid) || !is_null($feed[$j]->guid)) ? $feed[$j]->guid : $feed[$j]->uri;
 
-								$uri = substr($uri, 0, 4) != 'http' ? $params->get('rsslink') : $uri;						
+								$uri = substr($uri, 0, 4) != 'http' ? $params->get('rsslink') : $uri;
 								$currItem->title=$feed[$j]->title;
 								$currItem->uri=$uri;
 								$currItem1=$feed[$j]->updatedDate;
 								$feedDatearray=JArrayHelper::fromObject($currItem1,true);
 								$currItem->updatedDate=$feedDatearray['date'];
-								
+
 								$statuslog=$currItem->title;
 								if($statuslog!="" and !empty($statuslog))
-								{ 
-									if(!$combroadcastHelper->checkexist($statuslog,$userid,'rss'))
-									{
-										$model->rssstore($userid,$currItem,$title);
-									}
+								{
+									$model->rssstore($userid,$currItem,$title);
 								}
 
 							}
 						}
 				}catch(Exception $e){echo 'Caught exception: '.$e->getMessage(); "\n";}
-	
+
 			}//for each link
-			
+
 		}//foreach
 	}
 

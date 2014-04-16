@@ -13,79 +13,110 @@ include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 
 class BroadcastModelrss extends JModelLegacy
 {
-		
-	 function rssstore($uid,$rssobj,$title)
-	 {
-		 		$params=JComponentHelper::getParams('com_broadcast');
 
-	 		require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'googlshorturl.php');
-	 		$combroadcastHelper=new combroadcastHelper();
-			$db	 	=$this->getDBO();	
-			$config =JFactory::getConfig();
-			if(JVERSION<3.0)
-			{
-				$offset = $config->getValue('config.offset'); 
-				$rsstitle=$rssobj->get_title();
-				$rsslink=$rssobj->get_link();
-				$rssdate=$rssobj->get_date();
+	function rssstore($uid,$rssobj,$title)
+	{
+		$params=JComponentHelper::getParams('com_broadcast');
 
-			}
-			else
-			{
-				$offset=$config->get( 'offset' );
-				$rsstitle=$rssobj->title;
-			 	$rsslink=$rssobj->uri;
-			 	$rssdate=$rssobj->updatedDate;
-			}	
-			
-			
-			$get_date= JFactory::getDate($rssdate,$offset);	//convert the time into UTC	time
-   			$date=$get_date->toSql();
-						
-			$api_key =$params->get('url_apikey');
-			$goo = new Googl($api_key);
-			$shortURL = $goo->set_short($rsslink);
-	 		$combroadcastHelper->inQueue($uid,$rsstitle.' '.$shortURL['id'], 1, 0, '','');
-		 	$str_title_link = $rsstitle." <a href=".$shortURL['id']." target='_blank'>".$shortURL['id']."</a>";
+		require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'controllers'.DS.'googlshorturl.php');
+		$combroadcastHelper=new combroadcastHelper();
+		$db	 	=$this->getDBO();
+		$config =JFactory::getConfig();
 
-		 		//if Jomsocial
-				if($params->get('integration')=='js')
-				{		
 
-					if($params->get('status_via'))
-					{
-						if($title)
-						$str_title_link	.= " (via RSS)->".$title;
-						else
-						$str_title_link	.= " (via RSS)";
+		if(JVERSION<3.0)
+		{
+			$offset = $config->getValue('config.offset');
+			$originaltitle=$rsstitle=$rssobj->get_title();
+			$rsslink=$rssobj->get_link();
+			$rssdate=$rssobj->get_date();
 
-					}
-					$str_title_link .= "<img style='height: 16px;width: 16px;' src=".JURI::base().'modules'.DS.'mod_broadcast'.DS.'images'.DS.'rss.png'."> ";
-			
-					$combroadcastHelper->inJSAct($uid,$uid,$str_title_link,'', 'rss',$uid, $date);
-					$combroadcastHelper->intempAct($uid, $rsstitle, $date,'' );
-					
-					if($params->get('show_status_rss'))
-					combroadcastHelper::updateJSstatus($uid, $rsstitle,$date );
-				}
-				//if Jomwall
-				if($params->get('integration')=='jwall')
-				{
+		}
+		else
+		{
+			$offset=$config->get( 'offset' );
+			$originaltitle=$rsstitle=$rssobj->title;
+			$rsslink=$rssobj->uri;
+			$rssdate=$rssobj->updatedDate;
+		}
 
-					$combroadcastHelper->inJomwallact($uid, $str_title_link,$rsstitle,'',$get_date,'rss');
-					$combroadcastHelper->intempAct($uid, $rsstitle, $date,'' );
-				}
-				//if Superactivity  
-				if($params->get('integration')=='supact')
-				{
-					$today_date=JFactory::getDate($status['timestamp']);
-					$today=JFactory::getDate();
-					$combroadcastHelper->inSuperaact($userid, $status['comment'],$status_content,$get_date,$status['timestamp'],$api);
-					$combroadcastHelper->intempAct($userid, $status['comment'],$date->toSql(),$api);
-				}
-				
-			
-	  }
+		//If Data already exists in queue
+		if($combroadcastHelper->checkexist($originaltitle,$uid,''))
+		{
+			return;
+		}
 
-		
+		$get_date= JFactory::getDate($rssdate,$offset);	//convert the time into UTC	time
+		$date=$get_date->toSql();
+
+		$goo = new Googl();
+		$shortURL = $goo->set_short($rsslink);
+
+		//If params has set to post rss data to social network as well
+		if($params->get('show_status_rss'))
+		{
+			$combroadcastHelper->inQueue($uid,$rsstitle.' '.$shortURL['id'], 1, 0, '','');
+		}
+
+		$str_title_link = $rsstitle." <a href=".$shortURL['id']." target='_blank'>".$shortURL['id']."</a>";
+
+		$contentdata = array();
+		$contentdata['act_access']=0;
+		$contentdata['act_description']='';
+		$contentdata['act_type']='';
+		$contentdata['act_subtype']='';
+
+		if($params->get('status_via'))
+		{
+			$rsstitle .= " (via RSS)";
+		}
+
+		$contentdata['act_originalcontent']=$rsstitle." ".$rsslink;
+		$contentdata['act_title']='';
+		$contentdata['actor_id']= $uid;
+		$contentdata['api_name']= 'rss';
+
+		//if Jomsocial
+		if($params->get('integration')=='js')
+		{
+			//$combroadcastHelper->inJSAct($uid,$uid,$str_title_link,'', 'rss',$uid, $date);
+			$contentdata['integration_option']= 'JomSocial';
+			$combroadcastHelper->pushtoSocialActivitystream($contentdata,'rss');
+			$combroadcastHelper->updateJSstatus($uid, $rsstitle,$date );
+		}
+
+		//if Jomwall
+		if($params->get('integration')=='jwall')
+		{
+
+			//$combroadcastHelper->inJomwallact($uid, $str_title_link,$rsstitle,'',$get_date,'rss');
+			$contentdata['integration_option']= 'Jomwall';
+			$combroadcastHelper->pushtoSocialActivitystream($contentdata,'rss');
+		}
+
+		//if CB
+		if($params->get('integration')=='cb')
+		{
+			$today_date=JFactory::getDate($status['timestamp']);
+			$today=JFactory::getDate();
+			//$combroadcastHelper->inSuperaact($userid, $status['comment'],$status_content,$get_date,$status['timestamp'],$api);
+			$contentdata['integration_option']= 'Community Builder';
+			$combroadcastHelper->pushtoSocialActivitystream($contentdata,'rss');
+		}
+
+		//if Easysocial
+		if($params->get('integration')=='easysocial')
+		{
+			$contentdata['integration_option']= 'EasySocial';
+			$today_date	= JFactory::getDate($status['timestamp']);
+			$combroadcastHelper->pushtoSocialActivitystream($contentdata,'rss');
+			//$combroadcastHelper->inEasysocialact($userid,$userid,'broadcast',$status_content, $api_name,$userid,$today_date->toSql() );
+		}
+
+		$combroadcastHelper->intempAct($uid, $rssobj->title, $date,'' );
+
+
 	}
+
+
+}

@@ -49,8 +49,11 @@ class FOFAutloaderFof
 	 */
 	public function __construct()
 	{
+		if(phpversion() <= 5.3){
+		self::$fofPath = realpath(dirname(__FILE__) . '/../');
+		}else{
 		self::$fofPath = realpath(__DIR__ . '/../');
-
+	}
 		spl_autoload_register(array($this,'autoload_fof_core'));
 	}
 

@@ -13,20 +13,20 @@ jimport( 'joomla.application.component.model' );
 
 class BroadcastModelbroadcast extends JModelLegacy
 {
-	
+
 	function __construct ()
 	{
-			parent::__construct();
-			$this->broadcasthelperObj=new combroadcastHelper();
+		parent::__construct();
+		$this->broadcasthelperObj=new combroadcastHelper();
 
-			$mainframe = JFactory::getApplication();		
-			// Get the pagination request variables
-			$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
-			$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
-			// In case limit has been changed, adjust limitstart accordingly
-			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
-			$this->setState('limit', $limit);
-			$this->setState('limitstart', $limitstart);
+		$mainframe = JFactory::getApplication();
+		// Get the pagination request variables
+		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
+		$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+		// In case limit has been changed, adjust limitstart accordingly
+		$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+		$this->setState('limit', $limit);
+		$this->setState('limitstart', $limitstart);
 	}
 	/*trigger plugin to get the api data required for display*/
 	function getapistatus(){
@@ -38,34 +38,34 @@ class BroadcastModelbroadcast extends JModelLegacy
 			$broadcast_config=array();
 			$dispatcher = JDispatcher::getInstance();
 			JPluginHelper::importPlugin('techjoomlaAPI');
-			
+
 			$broadcast_config['api']=$params->get('api');
 			$broadcast_config['api']['client']='broadcast';
 			$api_response=$dispatcher->trigger('renderPluginHTML',array($broadcast_config['api']));
 		}
 		return $api_response;
 	}
-	
+
 	/*trigger the api for request token */
 	function getRequestToken($api_used)
-	{ 
-		$in_itemid	= $this->broadcasthelperObj->getitemid('index.php?option=com_broadcast&view=config');//pass the link for which you want the ItemId.	
+	{
+		$in_itemid	= $this->broadcasthelperObj->getitemid('index.php?option=com_broadcast&view=config');//pass the link for which you want the ItemId.
 		$callback=JUri::root().substr(JRoute::_('index.php?option=com_broadcast&controller=broadcast&task=get_access_token&Itemid='.$in_itemid,false),strlen(JURI::base(true))+1);
 		$grt_response = array();
 		$dispatcher = JDispatcher::getInstance();
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
 		$grt_response=$dispatcher->trigger('get_request_token',array($callback));
-		
+
 		if(!$grt_response[0])	{
 			return FALSE;
 		}
 	}
-	
+
 	/*trigger the api for access token */
 	function getAccessToken($get)
 	{
-		$session=JFactory::getSession();	
-		$in_itemid	= $this->broadcasthelperObj->getitemid('index.php?option=com_broadcast&view=config');//pass the link for which you want the ItemId.	
+		$session=JFactory::getSession();
+		$in_itemid	= $this->broadcasthelperObj->getitemid('index.php?option=com_broadcast&view=config');//pass the link for which you want the ItemId.
 		$callback =JUri::root().substr(JRoute::_("index.php?option=com_broadcast&controller=broadcast&task=get_access_token&Itemid=".$in_itemid,false),strlen(JURI::base(true))+1);
 		$dispatcher=JDispatcher::getInstance();
 		JPluginHelper::importPlugin('techjoomlaAPI',$session->get('api_used',''));
@@ -73,7 +73,7 @@ class BroadcastModelbroadcast extends JModelLegacy
 		if(!$grt_response[0])	{
 			return FALSE;
 		}
-		else{ 
+		else{
 			return TRUE;
 		}
 	}
@@ -92,34 +92,36 @@ class BroadcastModelbroadcast extends JModelLegacy
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
 		$grt_response=$dispatcher->trigger('remove_token',array('broadcast'));
 	}
-	
-	function getStatus($api_used){
+
+	function getStatus($api_used)
+	{
 		$statuses = array();
 
 		$dispatcher=JDispatcher::getInstance();
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
 
-		$statuses = $dispatcher->trigger($api_used.'getstatus'); 
+		$statuses = $dispatcher->trigger($api_used.'getstatus');
 		$api_name = str_replace('plug_techjoomlaAPI_', '', $api_used);
 
 		if(isset($statuses[0]) && !empty($statuses[0]))
-			$this->storestatus($statuses[0],$api_used); 		
+			$this->storestatus($statuses[0],$api_used);
 	}
 
-	function storestatus($apistatuses,$api){
-
+	function storestatus($apistatuses,$api)
+	{
 		jimport('joomla.utilities.date');
 		$params=JComponentHelper::getParams('com_broadcast');
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
-		
-				$api_name = str_replace('plug_techjoomlaAPI_', '', $api);
-		foreach($apistatuses as $apistatus){
+		$api_name = str_replace('plug_techjoomlaAPI_', '', $api);
+
+		foreach($apistatuses as $apistatus)
+		{
 			$userid = $apistatus['user_id'];
 			$apistatus['status'] = array_reverse($apistatus['status']);
 			foreach ($apistatus['status'] as $status )
-			{	
+			{
 				$stats_exist=0;
-				$stats_exist=$this->broadcasthelperObj->checkexist($status['comment'],$userid,$api);				
+				$stats_exist=$this->broadcasthelperObj->checkexist($status['comment'],$userid);
 				if(!$stats_exist)
 				{
 					$obj = new StdClass();
@@ -130,56 +132,78 @@ class BroadcastModelbroadcast extends JModelLegacy
 					}
 					else
 						$status_content= $status['comment'];
-					
+
 					if($params->get('status_via'))
 						$status_content = $status_content.' (via '.ucfirst($api_name).')';
 
+					//echo "<br/>".$status_content;
 
 
-						//if Jomsocial
-						if($params->get('integration')=='js')
-						{	
-							if($params->get('show_name'))
-						$actor='{actor} ';
-					else
-						$actor='';	
-							$status_content = $this->broadcasthelperObj->makelink($status_content,$api_name);	
-							$today_date	= JFactory::getDate($status['timestamp']);
-							$this->broadcasthelperObj->inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toSql() );
-							$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api );
-							$today=JFactory::getDate();
-							$this->broadcasthelperObj->updateJSstatus($userid, $status['comment'],$today->toSql() );
-						}
-						//if Jomwall
-						if($params->get('integration')=='jwall')
-						{
-							$today_date=JFactory::getDate($status['timestamp']);
-							$today=JFactory::getDate();
-							$this->broadcasthelperObj->inJomwallact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
-							$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api);
-						}
-                        //if community builder  
-						if($params->get('integration')=='cb')
-						{
-							$today_date=JFactory::getDate($status['timestamp']);
-							$today=JFactory::getDate();
-							$this->broadcasthelperObj->inSuperaact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
-							$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api);
-						}
-						 //if easysocial  
-						if($params->get('integration')=='easysocial')
-						{
-							$today_date	= JFactory::getDate($status['timestamp']);
-							$this->broadcasthelperObj->inEasysocialact($userid,$userid,'broadcast',$status_content, $api_name,$userid,$today_date->toSql() );
-							$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api );
-						}
+					$contentdata = array();
+					$contentdata['act_access']=0;
+					$contentdata['act_description']='';
+					$contentdata['act_type']='';
+					$contentdata['act_subtype']='';
+					$contentdata['act_originalcontent']=$status_content;
+					$contentdata['act_title']='';
+					$contentdata['actor_id']= $userid;
+					$contentdata['api_name']= $api_name;
+
+					//if Jomsocial
+					if($params->get('integration')=='js')
+					{
+						$contentdata['integration_option']= 'JomSocial';
+
+						/*if($params->get('show_name'))
+							$actor='{actor} ';
+						else
+							$actor='';*/
+
+						//$status_content = $this->broadcasthelperObj->makelink($status_content,$api_name);
+						$today_date	= JFactory::getDate($status['timestamp']);
+						//$this->broadcasthelperObj->inJSAct($userid,$userid,$actor.$status_content,'', $api_name,$userid,$today_date->toSql() );
+						$this->broadcasthelperObj->pushtoSocialActivitystream($contentdata,$api_name);
+						echo "status===".$status['comment'];
+						$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api );
+						$today=JFactory::getDate();
+						$this->broadcasthelperObj->updateJSstatus($userid, $status['comment'],$today->toSql() );
+					}
+					//if Jomwall
+					if($params->get('integration')=='jwall')
+					{
+						$contentdata['integration_option']= 'Jomwall';
+						$today_date=JFactory::getDate($status['timestamp']);
+						$today=JFactory::getDate();
+						$this->broadcasthelperObj->pushtoSocialActivitystream($contentdata,$api_name);
+						//$this->broadcasthelperObj->inJomwallact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
+						$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api);
+					}
+					//if community builder
+					if($params->get('integration')=='cb')
+					{
+						$contentdata['integration_option']= 'Community Builder';
+						$today_date=JFactory::getDate($status['timestamp']);
+						$today=JFactory::getDate();
+						//$this->broadcasthelperObj->inSuperaact($userid, $status['comment'],$status_content,$today,$status['timestamp'],$api);
+						$this->broadcasthelperObj->pushtoSocialActivitystream($contentdata,$api_name);
+						$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api);
+					}
+					 //if easysocial
+					if($params->get('integration')=='easysocial')
+					{
+						$contentdata['integration_option']= 'EasySocial';
+						$today_date	= JFactory::getDate($status['timestamp']);
+						$this->broadcasthelperObj->pushtoSocialActivitystream($contentdata,$api_name);
+						//$this->broadcasthelperObj->inEasysocialact($userid,$userid,'broadcast',$status_content, $api_name,$userid,$today_date->toSql() );
+						$this->broadcasthelperObj->intempAct($userid, $status['comment'],$today_date->toSql(),$api );
+					}
 				}
 			}
 		}
 	}
-	
 
-	
+
+
 	function getqueue(){
 		$params=JComponentHelper::getParams('com_broadcast');
 		$integration=$params->get('integration');
@@ -187,12 +211,13 @@ class BroadcastModelbroadcast extends JModelLegacy
 		$this->_db->setQuery($query);
 	 	return $this->_db->loadObjectList();
 	}
+
 	function setStatus($api_used,$userid,$status){
-	$attachment='';
+		$attachment='';
 		$dispatcher = JDispatcher::getInstance();
 		include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 		JPluginHelper::importPlugin('techjoomlaAPI',$api_used);
-		
+
 		$comment=$status;
 		$link=$this->broadcasthelperObj->makelink($comment,'');
 			$link=trim($link);
@@ -212,18 +237,18 @@ class BroadcastModelbroadcast extends JModelLegacy
 	function purgequeue(){
 		$params=JComponentHelper::getParams('com_broadcast');
 		$integration=$params->get('integration');
-		
-		$query = "SELECT id 
-					FROM #__broadcast_queue 
+
+		$query = "SELECT id
+					FROM #__broadcast_queue
 					WHERE count=0  ORDER BY date desc LIMIT ".$params->get('purgelimit');
 		$this->_db->setQuery($query);
 	 	$queue = $this->_db->loadColumn();
-	 	
+
 	 	if(!empty($queue))
 	 	{
 			$query = "DELETE FROM #__broadcast_queue	WHERE id IN(".implode(',',$queue).") AND count=0 AND flag=1";
-		
-			$this->_db->setQuery($query); 
+
+			$this->_db->setQuery($query);
 			if (!$this->_db->query()) {
 				$this->setError( $this->_db->getErrorMsg() );
 				return false;

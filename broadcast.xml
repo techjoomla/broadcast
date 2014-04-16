@@ -7,7 +7,7 @@
 	<authorEmail>TechJoomla</authorEmail>
 	<authorUrl>contact@techjoomla.com</authorUrl>
 	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
-	<version>1.4</version>
+	<version>1.5</version>
 	<description>Social Broadcast - Social sync for your Joomla website ! </description>
 	<!-- installation part -->
 
@@ -23,23 +23,24 @@
 			<folder>models</folder>
 			<folder>views</folder>
 			<folder>images</folder>
-						<folder>sef_ext</folder>
+			<folder>sef_ext</folder>
 
 			<file>broadcast.php</file>
 			<file>jomwall.ini</file>
 			<file>supera.ini</file>
+			<file>easysocial.ini</file>
 			<file>broadcast.ini</file>
 			<file>jomsocial.ini</file>
 			<file>controller.php</file>
 			<file>helper.php</file>
-			<file>index.html</file>	
+			<file>index.html</file>
 	</files>
 	<languages folder="site/language">
 		<language tag="en-GB">en-GB/en-GB.com_broadcast.ini</language>
 		<language tag="pt-BR">pt-BR/pt-BR.com_broadcast.ini</language>
-		<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.ini</language>	
+		<language tag="zh-TW">zh-TW/zh-TW.com_broadcast.ini</language>
 		<language tag="sv-SE">sv-SE/sv-SE.com_broadcast.ini</language>
-		<language tag="th-TH">th-TH/th-TH.com_broadcast.ini</language>			
+		<language tag="th-TH">th-TH/th-TH.com_broadcast.ini</language>
 	</languages>
 
 	<administration>
@@ -56,7 +57,7 @@
 			<file>broadcast.php</file>
 			<file>controller.php</file>
 			<file>config.xml</file>
-			<file>index.html</file>	
+			<file>index.html</file>
 		</files>
 		<languages folder="admin/language">
 			<language tag="en-GB">en-GB/en-GB.com_broadcast.ini</language>

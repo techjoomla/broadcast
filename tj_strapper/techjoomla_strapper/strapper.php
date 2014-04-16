@@ -9,6 +9,10 @@ defined('_JEXEC') or die();
 
 if(!defined('FOF_INCLUDED'))
 {
+ if(phpversion() <= 5.3){
+	include_once JPATH_SITE . '/libraries/fof/template/utils.php';
+	include_once JPATH_SITE . '/libraries/fof/dispatcher/dispatcher.php';	
+	}	
   include_once JPATH_SITE . '/libraries/fof/include.php';
 }
 

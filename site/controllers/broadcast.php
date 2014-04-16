@@ -19,12 +19,12 @@ class BroadcastControllerbroadcast extends JControllerLegacy
 	{
 		parent::display();
 	}
-	
+
 	function inEasysocialact($actor,$target,$title,$content,$api,$cid,$date)
 	{
 		require_once( JPATH_ROOT . '/administrator/components/com_easysocial/includes/foundry.php' );
-		
-		$linkHTML='<a href="'.$content.'">'.$title.'</a>';	
+
+		$linkHTML='<a href="'.$content.'">'.$title.'</a>';
 		if($actor!=0)
 		$myUser = Foundry::user( $actor );
 		$stream = Foundry::stream();
@@ -54,78 +54,78 @@ class BroadcastControllerbroadcast extends JControllerLegacy
 	function get_request_token()
 	{
 		$mainframe = JFactory::getApplication();
-		$session = JFactory::getSession();	
+		$session = JFactory::getSession();
 		$model=$this->getModel('broadcast');
-		$api_used =JRequest::getVar('api'); 
+		$api_used =JRequest::getVar('api');
 		$session->set('api_used',$api_used);
 		$grt_response=$model->getRequestToken($api_used);
 	}
-	
+
 	/*single cron URL for running all the functions*/
 	function br_allfunc_cron(){
 		//require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
 		$params=JComponentHelper::getParams('com_broadcast');
 		$pkey = JRequest::getVar('pkey', '');
-		if($pkey!=$params->get('private_key_cronjob'))		
+		if($pkey!=$params->get('private_key_cronjob'))
 		{
 			echo JText::_("CRON_KEY_MSG");
 			return;
 		}
-		
+
 		$func = JRequest::getVar('func');
 		if($func)
 			$this->$func();
-		else{	
+		else{
 			$funcs = array ('get_status','set_status');	 /*add the function names you need to add here*/
 			foreach ($funcs as $func){
 			echo '<br>***************************************<br>';
 				$this->$func();
-			echo '<br>***************************************<br>';			
+			echo '<br>***************************************<br>';
 			}
 		}
-		
+
 		require_once(JPATH_SITE.DS."components".DS."com_broadcast".DS."controllers".DS."rss.php");
 		$rssobj=new BroadcastControllerrss;
 		$rssobj->getrssdata();
-	}		
-	
+	}
+
 	/*call model for access token*/
 	function get_access_token()
 	{
 		$mainframe = JFactory::getApplication();
-		$session = JFactory::getSession();	
+		$session = JFactory::getSession();
 		$msg = '';
-		$get=JRequest::get('get'); 
+		$get=JRequest::get('get');
 		$model=$this->getModel('broadcast');
 		$response=$model->getAccessToken($get);
 		if($response){
 			$user	= JFactory::getUser();
 			$msg = JText::sprintf("BC_CONN_TO",$user->name,ucfirst(str_replace('plug_techjoomlaAPI_', '', $session->get('api_used',''))), $mainframe->getCfg('sitename') );
 			$userconfig = $model->checkuserconfig($user->id);
-			if(!$userconfig){ 
+			if(!$userconfig){
 				$mainframe->redirect(JURI::base()."index.php?option=com_broadcast&view=config", $msg."<br>".JText::_("BC_USER_SET_MSG") );
 			}
 		}
-	 	$currentMenu = $session->get('currentMenu'); 
+	 	$currentMenu = $session->get('currentMenu');
 		$mainframe->redirect(JURI::base()."index.php?option=com_broadcast&view=config", $msg."<br>".JText::_("BC_USER_SET_MSG") );
 	}
 	/*call to destroy the token of a user*/
 	function remove_token()
-	{ 
+	{
 		$mainframe = JFactory::getApplication();
-		$session =JFactory::getSession();	
+		$session =JFactory::getSession();
 		$api_used =JRequest::getVar('api');
 		$model = $this->getModel('broadcast');
 		$model->removeToken($api_used);
 
-		$currentMenu = $session->get('currentMenu'); 
+		$currentMenu = $session->get('currentMenu');
 		$mainframe->redirect(JURI::base()."index.php?option=com_broadcast&view=config");
 	}
 	function get_status()
 	{
 		$params=JComponentHelper::getParams('com_broadcast');
 		$pkey = JRequest::getVar('pkey', '');
-		if($pkey!=$params->get('private_key_cronjob'))		
+		if($pkey!=$params->get('private_key_cronjob'))
 		{
 			echo JText::_("NOT_AUTH_KEY"); //This Private Cron Key Doesnot Exist
 			return;
@@ -143,23 +143,24 @@ class BroadcastControllerbroadcast extends JControllerLegacy
 		$integration=$params->get('integration');
 
 		$pkey = JRequest::getVar('pkey', '');
-		if($pkey!=$params->get('private_key_cronjob'))		
+		if($pkey!=$params->get('private_key_cronjob'))
 		{
 			echo JText::_("NOT_AUTH_KEY"); //This Private Cron Key Doesnot Exist
 			return;
 		}
 		$response = array();
 		$model = $this->getModel('broadcast');
-		$queues = $model->getqueue();		
+		$queues = $model->getqueue();
 		$model->purgequeue();
 		if(empty($queues))
 		echo "No Data in Queue";
-		foreach($queues as $queue) 
+		foreach($queues as $queue)
 		{
 			$updtinterval=strtotime($queue->date)+($queue->flag+1)+$queue->interval;
 		   	$curttime=time();
 		  	if ( ($updtinterval<$curttime || $queue->flag==0)  && $queue->count >0)
 		  	{
+				echo "<br/>".$queue->status;
 				$response = $model->setStatus($queue->api,$queue->userid,$queue->status);
 				if( !in_array(0,$response) ){
 					$qtime = date('Y-m-d H:i:s',$curttime);

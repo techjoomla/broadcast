@@ -26,7 +26,7 @@
 
 		<field name="status_skip" default="#,@" type="text" label="COM_BROADCAST_STATUS_SKIP_CHARACTER" description="COM_BROADCAST_STATUS_SKIP_CHARACTER_DES"/>
 
-		<field name="url_apikey" default="" type="text" label="COM_BROADCAST_URL_API" description="COM_BROADCAST_URL_API_DES"/>
+		<!--<field name="url_apikey" default="" type="text" label="COM_BROADCAST_URL_API" description="COM_BROADCAST_URL_API_DES"/>-->
 
 		<field name="purgelimit" default="50" type="text" label="COM_BROADCAST_PURG_QUEUE" description="COM_BROADCAST_PURG_QUEUE_DESC"/>
 

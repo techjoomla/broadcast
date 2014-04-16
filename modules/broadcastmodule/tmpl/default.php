@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
 * @package		Broadcast
 * @copyright	Copyright © 2012 - All rights reserved.
@@ -21,13 +21,13 @@ JHtml::_('behavior.modal','a.modal');
 $u = JUri::getInstance();
 $currentMenu= $u->toString();
 if(!stristr($currentMenu, 'index.php'))
-	$currentMenu= JUri::base();	
+	$currentMenu= JUri::base();
 
 $session = JFactory::getSession();
-$session->set('currentMenu', $currentMenu); 
+$session->set('currentMenu', $currentMenu);
 require_once(JPATH_SITE.DS.'components'.DS.'com_broadcast'.DS.'helper.php');
 $combroadcastHelper=new combroadcastHelper();
-//pass the link for which you want the ItemId.	
+//pass the link for which you want the ItemId.
 $in_itemid	= $combroadcastHelper->getitemid('index.php?option=com_broadcast&view=config');
 $rss_link=JRoute::_(JUri::base().'index.php?option=com_broadcast&view=config&Itemid='.$in_itemid);
 $pretext = $posttext = '';
@@ -70,31 +70,44 @@ for($i=0; $i<count($apidata); $i++)
 			</div>
 			<div>
 			<?php
-			if ($apidata[$i]['apistatus']){
-			?>
-				<a href="<?php echo $removeTokenURL; ?>" ><img src="<?php echo $base;?>images/disconn.png" /></a>
+			if ($apidata[$i]['apistatus'])
+			{
+
+				$link = JRoute::_('index.php?option=com_broadcast&view=config&tmpl=component&layout=otheraccounts');
+				?>
+				<a href="<?php echo $removeTokenURL; ?>" class="btn btn-danger btn-small"><i class="icon-minus"></i>&nbsp;Disconnect</a>
+				<?php
+
+				if($apidata[$i]['name']=='Facebook')
+				{
+				?>
+				<a rel="{handler: 'iframe', size: {x: 800, y: 500}}" href="<?php echo $link; ?>" class="modal tj">
+					<span class="editlinktip hasTip" title="<?php echo JText::_('OTHER_ACCNT');?>" ><?php echo JText::_('OTHER_ACCNT');?></span>
+				</a>
 			<?php
+				}
 			}
-			else{?>
-				<a href="<?php echo $getTokenURL; ?>" ><img src="<?php echo $base;?>images/conn.png" /></a>
+			else
+			{?>
+				<a href="<?php echo $getTokenURL; ?>" class="btn btn-success btn-small"><i class="icon-plus"></i>Connect</a>
 			<?php
 			}
 			?>
 			</div>
 			<div style="clear:both;"></div>
 		</div>
-<?php 
+<?php
 	}
 }
 ?>
 
-<?php 
+<?php
 $jinput=JFactory::getApplication()->input;
 $view=$jinput->get('view','','STRING');
 $option=$jinput->get('option','','STRING');
 	if($option!='com_broadcast' AND $view!='config')
 	{
-		
+
 ?>
 	<div class="<?php echo $outclass ?>" >
 		<div class="<?php echo $inclass ?>">
@@ -108,19 +121,12 @@ $option=$jinput->get('option','','STRING');
 			?>
 			</b></a>
 			</div>
-		</div>	
+		</div>
 		</div>
 		<?php
 	}
 	?>
-		
-
-	
 	<div style="clear:left;"></div>
-
-	
-
-	
 	<?php if($posttext){?>
 	<div class="broadcast_foot" style="width:100%"><?php echo $posttext; ?></div>
 	<?php }?>

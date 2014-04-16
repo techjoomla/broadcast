@@ -17,10 +17,19 @@ class broadcastViewconfig extends JViewLegacy
 	{
 		$model	= $this->getModel( 'config' );
 		$otherdataArr=$model->renderHTML_other();
+
 		$subscribedlists	= $model->getsubscribedlist();
-				
-		$this->assignRef('otherdataArr' , $otherdataArr);
-		$this->assignRef('subscribedlists' , $subscribedlists);
+		$paramsdata	= $model->checkparamexist();
+
+		if(!empty($paramsdata))
+		{
+			$post_to=$paramsdata['paramsdata']['post_to'];
+		}
+
+		$this->otherdataArr=$otherdataArr;
+		$this->subscribedlists= $subscribedlists;
+		$this->post_to= $post_to;
+
 		$cache = JFactory::getCache('mod_menu');
 		$cache->clean();
 		parent::display($tpl);
