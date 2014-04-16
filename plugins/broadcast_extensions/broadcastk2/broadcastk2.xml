@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.0" type="plugin" group="k2" method="upgrade">
+	<name>Broadcast K2</name>
+    <author>Techjoomla</author>
+	<creationDate>Feb 2012</creationDate>
+	<copyright>(C)techjoomla.com</copyright>
+	<license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+	<authorEmail>contact@techjoomla.com</authorEmail>
+	<authorUrl>www.techjoomla.com</authorUrl>
+	<version>1.5</version>
+	<isapplication>false</isapplication>
+	<isbrowsable>false</isbrowsable>
+	<description>
+		K2 plugin allows developers to push updates to Social Networks via Broadcast
+	</description>
+	<files>
+		<filename plugin="broadcastk2">broadcastk2.php</filename>
+	</files>
+
+	<!-- parameters for Joomla 1.5.x -->
+	<params addpath="/administrator/components/com_broadcast/plugins/elements">
+		<param name="category" type="sqlmultilistx" default="1" label="Select categoies to add item" sql="SELECT id , name FROM #__k2_categories WHERE published = 1 " key_field='id' value_field='name' multiple="multiple" description="Select categories to add item" size="auto"/>
+		<param name="msg" type="text" default="{username} added item {item_name} {path}" label="Message" description="Use this to define the message you want to broadcast, you can use the placeholders to dynamically change the message" size="50"/>
+	</params>
+
+	<!-- Standard plugin parameters for Joomla! 1.6+ -->
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="category" type="sql" default="1" label="Allowed Category of K2" query="SELECT id , name FROM #__k2_categories WHERE published = 1" key_field='id' value_field='name' multiple="multiple" description="Allowed Category of K2" />
+				<field name="msg" type="text" default="{username} added item {item_name} {path}" label="Message" description="Use this to define the message you want to broadcast, you can use the placeholders to dynamically change the message" size="50"/>
+			</fieldset>
+		</fields>
+	</config>
+
+	</extension>
