@@ -97,7 +97,7 @@ if(!$user->id){
 			<div id="broadcast_connect1"  class="broadcast-expands">
 			<div> <?php echo JText::_('BC_SER_MSG')?>	</div><br/>
 				<?php
-
+				$called_from_component=1;
 				include_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 				$lang=JFactory::getLanguage();
 				$lang->load('mod_broadcast', JPATH_SITE);

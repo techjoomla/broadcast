@@ -482,9 +482,10 @@ class combroadcastHelper
 		$newstatus=trim($newstatus);
 		$html_decoded_newstatus=html_entity_decode($newstatus);
 
-		foreach($statuses AS $status)
+		foreach($statuses AS $statusobj)
 		{
-			$ostatus=$status = trim($status->status);
+			$html_decoded_status=$status = $ostatus='';
+			$ostatus=$status = trim($statusobj->status);
 			//Remove all urls in statuses to compare
 			$status = combroadcastHelper::stripUrl($status);
 
@@ -494,6 +495,7 @@ class combroadcastHelper
 			}
 
 			$html_decoded_status=html_entity_decode($status);
+			$html_decoded_status=trim($html_decoded_status);
 
 			if($html_decoded_newstatus==$html_decoded_status)
 			{
@@ -516,8 +518,7 @@ class combroadcastHelper
 
 
 		}
-		//echo "1===========".$html_decoded_newstatus;
-		//echo "==2===========".$html_decoded_status;
+
 		return 0;
 
 

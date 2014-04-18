@@ -68,17 +68,17 @@ for($i=0; $i<count($apidata); $i++)
 			<div class="<?php echo $inclass ?>" >
 				<img src="<?php echo $base; ?>images/<?php echo $apidata[$i]['img_file_name'] ?>"  >
 			</div>
-			<div>
+			<div class="<?php echo $inclass ?>">
 			<?php
 			if ($apidata[$i]['apistatus'])
 			{
 
 				$link = JRoute::_('index.php?option=com_broadcast&view=config&tmpl=component&layout=otheraccounts');
 				?>
-				<a href="<?php echo $removeTokenURL; ?>" class="btn btn-danger btn-small"><i class="icon-minus"></i>&nbsp;Disconnect</a>
+				<a href="<?php echo $removeTokenURL; ?>" class="btn btn-danger btn-small"><i class="icon-minus"></i>&nbsp;<?php echo JText::_('COM_BROADCAST_DISCONNECT');?></a>
 				<?php
 
-				if($apidata[$i]['name']=='Facebook')
+				if($apidata[$i]['name']=='Facebook' and !empty($called_from_component))
 				{
 				?>
 				<a rel="{handler: 'iframe', size: {x: 800, y: 500}}" href="<?php echo $link; ?>" class="modal tj">
@@ -89,7 +89,7 @@ for($i=0; $i<count($apidata); $i++)
 			}
 			else
 			{?>
-				<a href="<?php echo $getTokenURL; ?>" class="btn btn-success btn-small"><i class="icon-plus"></i>Connect</a>
+				<a href="<?php echo $getTokenURL; ?>" class="btn btn-success btn-small"><i class="icon-plus"></i>&nbsp;<?php echo JText::_('COM_BROADCAST_CONNECT');?></a>
 			<?php
 			}
 			?>
@@ -105,28 +105,26 @@ for($i=0; $i<count($apidata); $i++)
 $jinput=JFactory::getApplication()->input;
 $view=$jinput->get('view','','STRING');
 $option=$jinput->get('option','','STRING');
-	if($option!='com_broadcast' AND $view!='config')
-	{
+
+if($option!='com_broadcast' AND $view!='config')
+{
 
 ?>
 	<div class="<?php echo $outclass ?>" >
 		<div class="<?php echo $inclass ?>">
-			<a href="<?php echo $rss_link; ?>" style="color:black; text-decoration:none;">
-				<img src="<?php echo $base; ?>images/setting.png" height="20">
+			<a href="<?php echo $rss_link; ?>" <a href="<?php echo $rss_link; ?>" class="btn btn-info">
+			<i class="icon-wrench"></i>&nbsp;
+				<?php echo JText::_('COM_BROADCAST_SETUP');?>
 			</a>
-			<div><a href="<?php echo $rss_link; ?>" style="color:black; text-decoration:none;">
-			<b style="vertical-align:middle; padding-bottom:25px;">
-			<?php
-			echo JText::_('BC_RSS');
-			?>
-			</b></a>
-			</div>
+
 		</div>
-		</div>
+	</div>
+
 		<?php
-	}
-	?>
+}
+?>
 	<div style="clear:left;"></div>
+	<!-- Post text -->
 	<?php if($posttext){?>
 	<div class="broadcast_foot" style="width:100%"><?php echo $posttext; ?></div>
 	<?php }?>
