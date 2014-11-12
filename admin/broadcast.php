@@ -9,16 +9,22 @@
 */
 defined( '_JEXEC' ) or die( ';)' );
 
-if(!defined('DS')){
-define('DS',DIRECTORY_SEPARATOR);
-}
- 
-// require helper file
-JLoader::register('OlaHelper', dirname(__FILE__) . DS . 'helpers' . DS . 'ola.php');
-require_once( JPATH_COMPONENT.DS.'controller.php' );
-//require_once( JPATH_COMPONENT.DS.'config'.DS.'config.php' ); 
+	if(!defined('DS'))
+	{
+		define('DS',DIRECTORY_SEPARATOR);
+	}
 
-if( $controller = JRequest::getWord('controller'))
+	if (!JFactory::getUser()->authorise('core.manage', 'com_broadcast'))
+	{
+		return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+	}
+
+	// require helper file
+	JLoader::register('OlaHelper', dirname(__FILE__) . DS . 'helpers' . DS . 'ola.php');
+	require_once( JPATH_COMPONENT.DS.'controller.php' );
+	//require_once( JPATH_COMPONENT.DS.'config'.DS.'config.php' );
+
+	if( $controller = JRequest::getWord('controller'))
 	{
 		$path = JPATH_COMPONENT.DS.'controllers'.DS.$controller.'.php';
 		if( file_exists($path))
@@ -26,12 +32,13 @@ if( $controller = JRequest::getWord('controller'))
 		else
 			$controller = '';
 	}
-// Create the controller
-$classname    = 'broadcastController'.$controller;
-$controller   = new $classname( );
 
-// Perform the Request task
-$controller->execute( JRequest::getVar( 'task' ) );
+	// Create the controller
+	$classname    = 'broadcastController'.$controller;
+	$controller   = new $classname( );
 
-// Redirect if set by the controller
-$controller->redirect();
+	// Perform the Request task
+	$controller->execute( JRequest::getVar( 'task' ) );
+
+	// Redirect if set by the controller
+	$controller->redirect();

@@ -24,16 +24,14 @@ class plgK2Broadcastk2 extends K2Plugin {
 	var $pluginNameHumanReadable = 'Broadcast K2 Plugin';
 
 	function plgK2Broadcastk2( & $subject, $params)
-	 { 
+	 {
 		parent::__construct($subject, $params);
 	}
 
-	
+
 	function onAfterK2Save(& $item, $isNew)
 	{
 		$plugin			=& JPluginHelper::getPlugin('K2', 'broadcastk2');
-		$pluginParams	= new JParameter( $plugin->params );
-
 		if(is_array($this->params->get('category')) )
 			$categorys = ($this->params->get('category'));
 		else{
@@ -41,11 +39,11 @@ class plgK2Broadcastk2 extends K2Plugin {
 			$categorys[] = ($this->params->get('category'));
 		}
 		$cid = JRequest::getInt('catid', 0, 'post');
-	    	
+
 		if(in_array($cid,$categorys))
 			{
-				 	    	
-			if($isNew) 
+
+			if($isNew)
 				{
 				$user =& JFactory::getUser();
 				$userid = $user->id;
@@ -58,7 +56,7 @@ class plgK2Broadcastk2 extends K2Plugin {
 					$userid_arr = explode(',', $userids);
 				}
 				if(! ( in_array($userid, $userid_arr) )  )
-					array_push($userid_arr, $userid); 
+					array_push($userid_arr, $userid);
 
 		/*construct the msg to push into the queue*/
 				$username = $user->username;
@@ -69,14 +67,14 @@ class plgK2Broadcastk2 extends K2Plugin {
 					$path = JRoute::_(JURI::root()."index.php?option=com_k2&view=item&id=".$item->id.":".$item->alias);
 				}
 				else
-					$path = JURI::root().substr(JRoute::_("index.php?option=com_k2&view=item&id=".$item->id.":".$item->alias),strlen(JURI::base(true))+1);	
-		
+					$path = JURI::root().substr(JRoute::_("index.php?option=com_k2&view=item&id=".$item->id.":".$item->alias),strlen(JURI::base(true))+1);
+
 				$title = $item->title;
 				$msg_str = $this->params->get('msg');
 				$msg_str= str_replace( '{username}',$username ,$msg_str);
 				$msg_str= str_replace( '{item_name}',$title,$msg_str);
 				$msg_str= str_replace( '{path}',$path,$msg_str);
-				
+
 				$date = $item->publish_up;
 				$count = 1;
 				$interval = 0;
@@ -88,7 +86,7 @@ class plgK2Broadcastk2 extends K2Plugin {
 		}
 
 	}
-	
+
 } // END CLASS
 
 ?>

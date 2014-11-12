@@ -9,13 +9,6 @@
 */
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
-$lang =JFactory::getLanguage();
-$extension = 'mod_broadcast';
-$base_dir = JPATH_SITE;
-$language_tag = 'en-GB';
-$reload = true;
-$lang->load($extension, $base_dir, $language_tag, $reload);
-
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.modal','a.modal');
 $u = JUri::getInstance();

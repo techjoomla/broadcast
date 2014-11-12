@@ -29,9 +29,6 @@ class broadcastViewconfig extends JViewLegacy
 		$this->otherdataArr=$otherdataArr;
 		$this->subscribedlists= $subscribedlists;
 		$this->post_to= $post_to;
-
-		$cache = JFactory::getCache('mod_menu');
-		$cache->clean();
 		parent::display($tpl);
 	}
 }

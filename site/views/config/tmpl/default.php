@@ -71,7 +71,7 @@ if(!$user->id){
 
 
 </script>
-
+<div class="broadcaast_container">
 	<h1 class="componentheading">
 			 <?php echo JText::_('BC_SETT');?>
 	</h1>
@@ -83,7 +83,7 @@ if(!$user->id){
 	<div class="techjoomla-bootstrap">
 	<?php
 }?>
-			<div id="messagesave" ></div>
+	<div id="messagesave" ></div>
 
 	<div class="bc_connect">
 		<div class="box-container-t">
@@ -122,7 +122,7 @@ if(!$user->id){
 			<div class="box-b"></div>
 		</div>
 	</div>
-
+</div>
 <form action=""  method="POST" name="manualform" >
 	<!-- **** Start Added & Modified By Deepak -->
 	<div class="bc_connect">
@@ -272,7 +272,7 @@ if(!$user->id){
 				<input type="hidden" name="option" value="com_broadcast">
 				<input type="hidden" id="task" name="task" value="save">
 				<div align="center"><input type="button" class="btn btn-primary" value="<?php echo JText::_('BC_SAVE')?>" onclick="submit(this.form);"></div>
-	</div>
+		</div>
 
  </form>
 <?php
@@ -284,3 +284,4 @@ if(JVERSION<3.0)
 <?php
 }
 ?>
+</div>

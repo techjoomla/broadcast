@@ -134,126 +134,18 @@ class combroadcastHelper
 
 		return true;
 	}
-	/*function inSuperaact($userid,$comment,$status_content,$today,$timestamp,$api_nm)
+
+	function logfile($content="Log For Setting Statuses from site to SOCIAL API(eg facebook)")
 	{
-		if (file_exists(JPATH_SITE . DS . 'components' . DS . 'com_cbactivity' . DS . 'onyourmind' . DS . 'shareBroadcast.php')) {
-			require_once( JPATH_SITE . DS . 'components' . DS . 'com_cbactivity' . DS . 'onyourmind' . DS . 'shareBroadcast.php');
-		}
-		elseif (file_exists(JPATH_SITE . DS . 'components' . DS . 'com_cbsuperwall' . DS . 'onyourmind' . DS . 'shareBroadcast.php')) {
-		require_once( JPATH_SITE . DS . 'components' . DS . 'com_cbsuperwall' . DS . 'onyourmind' . DS . 'shareBroadcast.php');
-		}
-
-		$attachment='';
-
-		$type='text';
-		$original=$comment;
-		$link=combroadcastHelper::makelink($comment,$api_nm);
-		$link=trim($link);
-		$comment=trim($comment);
-		if($link!=$comment)
-		{
-			$type='link';
-			$attachment=combroadcastHelper::seperateurl($comment);
-			//expand url $attachment
-
-			$comment=str_replace($attachment,'',$comment);
-			$attachment=combroadcastHelper::expandShortUrl($attachment);
-		}
-
-		$api=str_replace('plug_techjoomlaAPI_','',$api_nm);
-
-		$imgpath=JURI::base().'/components/com_broadcast/images/'.$api.'.png';
-
-		SuperaBroadcastHelper::addtostream($comment,$attachment,$type,$userid,$imgpath,$original);
+		$logfile_path	= JPATH_SITE."/components/com_broadcast/log.txt";
+		$old_content	= JFile::read($logfile_path);
+		$this->log[]    = JText::sprintf($today);
+		//START:write to log file - moved out of loop BY MANOJ
+		$file_log = implode("\n",  $this->log);
+		$file_log = $old_content ."\n".$file_log ;
+		JFile::write($logfile_path,$file_log);
+		//END:write to log file - moved out of loop BY MANOJ
 	}
-
-	function inJomwallact($userid,$comment,$status_content,$today,$timestamp,$api_nm)
-	{
-			require_once( JPATH_SITE . DS . 'components' . DS . 'com_awdwall' . DS . 'helpers' . DS . 'user.php');
-
-			$attachment='';
-
-			$type='text';
-			$urlpresent='';
-			$params=array();
-			$link=combroadcastHelper::makelink($comment,$api_nm);
-			$link=trim($link);
-			$comment=trim($comment);
-			if($api_nm!='rss')
-			{
-				if($link!=$comment)
-				{
-					$type='link';
-					 $attachment=combroadcastHelper::seperateurl($comment);
-					//expand url $attachment
-
-						$comment=str_replace($attachment,'',$comment);
-					$attachment=combroadcastHelper::expandShortUrl($attachment);
-				}
-			}
-			$api=str_replace('plug_techjoomlaAPI_','',$api_nm);
-
-			$imgpath=JURI::base().'/components/com_broadcast/images/'.$api.'.png';
-			AwdwallHelperUser::addtostream($comment,$attachment,$type,$userid,$imgpath,$params);
-
-
-
-	}
-
-	#populate the Jomsocial activity table called from broadcast & rss models
-	function inJSAct($actor,$target,$title,$content,$api,$cid,$date)
-	{
-		require_once( JPATH_SITE . DS . 'components' . DS . 'com_community' . DS . 'libraries' . DS . 'core.php');
-		$act = new stdClass();
-		$act->cmd 	= 'wall.write';
-		$act->actor 	= $actor;
-		$act->target 	= 0; // no target
-		$act->title 	= '';
-		$content=trim();
-
-		if(empty($content))
-		{
-			$content=$title;
-		}
-
-		$act->content 	= $content;
-		$act->app 	= $api;
-		$act->cid 	= $cid;
-		CFactory::load('libraries', 'activities');
-		$command = $api.'.myaction';
-		$act->comment_type  = $command;
-		$act->comment_id    = CActivities::COMMENT_SELF;
-		$act->like_type     = $command;
-		$act->like_id     = CActivities::LIKE_SELF;
-		CActivityStream::add($act);
-	}
-
-	function inEasysocialact($actor,$target,$title,$content,$api,$cid,$date)
-	{
-		require_once( JPATH_ROOT . '/administrator/components/com_easysocial/includes/foundry.php' );
-		$linkHTML='<a href="'.$content.'">'.$title.'</a>';
-		if($actor!=0)
-		$myUser = Foundry::user( $actor );
-		$stream = Foundry::stream();
-		$template = $stream->getTemplate();
-		$template->setActor( $actor, SOCIAL_TYPE_USER );
-		$template->setContext( $actor, SOCIAL_TYPE_USERS);
-		$template->setVerb( 'broadcast' );
-		if($actor!=0)
-		{
-			$title 	 = $userProfileLink = '<a href="'. $myUser->getPermalink() .'">' . $myUser->getName() . '</a>';
-		}
-		else
-		$title 	 = ("A guest ".$act_description);
-		$template->setTitle( $title );
-		$template->setContent($content );
-
-		$template->setAggregate( false );
-
-		$template->setPublicStream( 'core.view' );
-		$stream->add( $template );
-		return true;
-	}*/
 
 	#set the current Jomsocial status, called from broadcast & rss models
 	function updateJSstatus($userid,$status,$date)
@@ -322,23 +214,6 @@ class combroadcastHelper
       		return false;
   		}
 		return true;
-	}
-
-	function http_parse_headers( $header )
-	{
-	        $retVal = array();
-	        $fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
-	        foreach( $fields as $field ) {
-            if( preg_match('/([^:]+): (.+)/m', $field, $match) ) {
-	                $match[1] = preg_replace('/(\?< =^|[\x09\x20\x2D])./e', 'strtoupper("")', strtolower(trim($match[1])));
-	                if( isset($retVal[$match[1]]) ) {
-	                    $retVal[$match[1]] = array($retVal[$match[1]], $match[2]);
-	                } else {
-	                    $retVal[$match[1]] = trim($match[2]);
-	                }
-	            }
-	        }
-	        return $retVal;
 	}
 
 	#strips the long urls to short url with Google shortening
@@ -460,15 +335,6 @@ class combroadcastHelper
 		$where = '';
 		if($api)
 			$where = ' AND (type="'.$api.'" OR type="") ';
-		/*$query = "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid} AND status = '{$newstatus}' ".$where;
-		$db->setQuery($query);
-		if($db->loadResult())
-			return 1;
-		else
-		{
-			return 0;
-		}*/
-
 		//From Broadcast rev 1.5 this is changed to
 		$query = "SELECT status FROM #__broadcast_tmp_activities WHERE uid = {$uid} ".$where;
 		$db->setQuery($query);
@@ -509,8 +375,15 @@ class combroadcastHelper
 				$originalstatus=str_replace('http://','',$originalstatus);
 				$originalstatus=str_replace('https://','',$originalstatus);
 
+				//Remove all urls in statuses to compare
+				$ostatus = combroadcastHelper::cleanStatus($ostatus);
+				$originalstatus = combroadcastHelper::cleanStatus($originalstatus);
+
 				if($ostatus==$originalstatus)
 				{
+					echo  "======".$ostatus;
+					echo  "======".$originalstatus;
+
 					return 1;
 				}
 
@@ -522,6 +395,26 @@ class combroadcastHelper
 		return 0;
 
 
+	}
+
+	function cleanStatus($string)
+	{
+
+		$clean_text = "";
+
+	    // Match Emoticons
+	    $regexEmoticons = '/[\x{1F600}-\x{1F64F}]/u';
+	    $clean_text = preg_replace($regexEmoticons, '', $string);
+
+	    // Match Miscellaneous Symbols and Pictographs
+	    $regexSymbols = '/[\x{1F300}-\x{1F5FF}]/u';
+	    $clean_text = preg_replace($regexSymbols, '', $clean_text);
+
+	    // Match Transport And Map Symbols
+	    $regexTransport = '/[\x{1F680}-\x{1F6FF}]/u';
+	    $clean_text = preg_replace($regexTransport, '', $clean_text);
+
+	    return $clean_text;
 	}
 
 	/**
@@ -1076,4 +969,4 @@ if (!class_exists('techjoomlaHelperLogs'))
 
 	}//End techjoomlaHelperLogs class
 }//End if
-?>
+

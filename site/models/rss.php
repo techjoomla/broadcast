@@ -55,7 +55,7 @@ class BroadcastModelrss extends JModelLegacy
 		//If params has set to post rss data to social network as well
 		if($params->get('show_status_rss'))
 		{
-			$combroadcastHelper->inQueue($uid,$rsstitle.' '.$shortURL['id'], 1, 0, '','');
+			$combroadcastHelper->inQueue($uid,$rsstitle." ".$rsslink, 1, 0, '','');
 		}
 
 		$str_title_link = $rsstitle." <a href=".$shortURL['id']." target='_blank'>".$shortURL['id']."</a>";

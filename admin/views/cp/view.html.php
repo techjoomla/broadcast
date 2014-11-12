@@ -23,20 +23,22 @@ class broadcastViewcp extends JViewLegacy
 		}
 		parent::display($tpl);
 	}
-	
+
 	function _setToolBar()
-	{	
+	{
 		$document =JFactory::getDocument();
-		$document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css'); 
+		$document->addStyleSheet(JURI::base().'components/com_broadcast/css/broadcast.css');
 		$bar =JToolBar::getInstance('toolbar');
 		JToolBarHelper::title( JText::_( 'COM_BROADCAST_BC_SOCIAL' ), 'icon-48-broadcast.png' );
-		
+
 		if(JRequest::getVar('layout'))
 		{
 			JToolBarHelper::save('save',JText::_('COM_BROADCAST_BC_TOOL_QUEUE') );
 			JToolBarHelper::cancel( 'cancel', JText::_('COM_BROADCAST_BC_CLOSE') );
 		}
-		JToolBarHelper::preferences('com_broadcast');
+		if (JFactory::getUser()->authorise('core.admin', 'com_broadcast')) {
+			JToolBarHelper::preferences('com_broadcast');
+		}
 	}
 }
 ?>

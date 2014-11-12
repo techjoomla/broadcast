@@ -18,17 +18,15 @@ class plgFlexicontentBroadcastflexicontent extends JPlugin
 {
 	function plgFlexicontentBroadcastflexicontent( &$subject, $params )
 	{
-	   
+
 		parent::__construct( $subject, $params );
 		//JPlugin::loadLanguage('plg_flexicontent_fields_core', JPATH_ADMINISTRATOR);
-		
+
 	}
 
 	function onCompleteSaveItem(  &$item, &$fields)
 	{
 		$plugin			=& JPluginHelper::getPlugin('flexicontent', 'broadcastflexicontent');
-		$pluginParams	= new JParameter( $plugin->params );
-
 		if(is_array($this->params->get('category')) )
 			$categorys = ($this->params->get('category'));
 		else{
@@ -37,8 +35,8 @@ class plgFlexicontentBroadcastflexicontent extends JPlugin
 		}
 		$cid = $item->catid;
 		if(in_array($cid,$categorys))
-		{	 
-			if(!$id = JRequest::getInt('id', 0, 'post')) 
+		{
+			if(!$id = JRequest::getInt('id', 0, 'post'))
 			{
 				$user =& JFactory::getUser();
 				$userid = $user->id;
@@ -51,11 +49,11 @@ class plgFlexicontentBroadcastflexicontent extends JPlugin
 					$userid_arr = explode(',', $userids);
 				}
 				if(! ( in_array($userid, $userid_arr) )  )
-					array_push($userid_arr, $userid);   	
-		
-				$id = $item->id; 
+					array_push($userid_arr, $userid);
 
-				$title = $item->title; 
+				$id = $item->id;
+
+				$title = $item->title;
 					require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 				$app = JFactory::getApplication();
 				if($app->isAdmin())
@@ -67,8 +65,8 @@ class plgFlexicontentBroadcastflexicontent extends JPlugin
 					$path = JURI::root().substr(JRoute::_("index.php?option=com_flexicontent&view=item&cid=".$cid."&id=".$id),strlen(JURI::base(true))+1);
 
 				$username = $user->username;
-				 
-				$msg_str= $pluginParams->get('msg', '');
+
+				$msg_str= $this->params->get('msg');
 				$msg_str= str_replace( '{username}',$username ,$msg_str);
 				$msg_str= str_replace( '{item_name}',$title,$msg_str);
 				$msg_str= str_replace( '{path}',$path,$msg_str);
@@ -80,9 +78,9 @@ class plgFlexicontentBroadcastflexicontent extends JPlugin
 				$shorten_url = 1;
 				combroadcastHelper::addtoQueue($userid_arr,$msg_str,$date,$count,$interval,'',$supplier,$shorten_url);
 
- 	
-			} 		
-		}  
-		
+
+			}
+		}
+
    }
 }

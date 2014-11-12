@@ -14,9 +14,9 @@ $path = dirname(__FILE__).DS.'helper.php';
 if(!defined('DS')){
 define('DS',DIRECTORY_SEPARATOR);
 }
- 
-// require helper file
 
+// require helper file
+$path=JPATH_SITE.DS.'components/com_broadcast/helper.php';
 #@TODO check this imp for version 1.0.1
 if(!class_exists('techjoomlaHelperLogs'))
 {

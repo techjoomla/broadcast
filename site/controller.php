@@ -15,46 +15,40 @@ class BroadcastController extends JControllerLegacy
 	{
 		parent::display();
 	}
-		
-	function save() 
-	{	 
+
+	function save()
+	{
 		$model	= $this->getModel( 'config' );
 		if($model->save())
 			$msg = JText::_( 'CONFIG_SAV' );
 		else
 			$msg = JText::_( 'ERR_CONFIG_SAV' );
-			
+
 		$this->setRedirect( JURI::base()."index.php?option=com_broadcast&view=config", $msg );
 	}
-	
+
 	function saveotheraccounts()
 	{
-		 
+
 		$model	= $this->getModel( 'config' );
 		$res=$model->saveotheraccounts();
-		//if($res)
-			$msg = JText::_( 'CONFIG_SAV' );
-		//else
-		//	$msg = JText::_( 'ERR_CONFIG_SAV' );
-			
-		//$this->setRedirect( JURI::base()."index.php?option=com_broadcast&view=config&tmpl=component&layout=otheraccounts", $msg );
-		//$this->setRedirect( JRoute::_("index.php?option=com_broadcast&view=config&tmpl=component&layout=otheraccounts"), $msg );
+		$msg = JText::_( 'CONFIG_SAV' );
+
+		$this->setRedirect( JURI::base()."index.php?option=com_broadcast&view=config", $msg );
 	echo '<script type="text/javascript">
-               window.setTimeout("closeme();", 300);
+               window.setTimeout("closeme();");
                function closeme()
                {
-               window.parent.document.getElementById("messagesave").innerHTML="<span><font color=\"blue\"><b>';
-               echo $msg;
-               echo '</b></font></span>"
-               window.parent.document.getElementById("messagesave").style.display="block";
-               parent.SqueezeBox.close();
+
+
+                    parent.SqueezeBox.close();
                }
                </script>';
- 
+
 
 	}
-	
-	
-	
-}		
+
+
+
+}
 ?>

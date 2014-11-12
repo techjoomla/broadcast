@@ -83,4 +83,7 @@ div.bc_connect{margin-bottom:15px;}
 width: 100% !important;
 }
 
+.broadcaast_container .modal {
+display:block !important;
+}
 

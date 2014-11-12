@@ -24,24 +24,24 @@ class plgContentBroadcast_content extends JPlugin
 			parent::__construct($subject, $config);
 		}
 
-	// for 1.5	
-		
+	// for 1.5
+
 	public function onAfterContentSave( &$article, $isNew )
 	{
 		$this->_newcontentsave($article, $isNew);
 		return true;
-	}		
-	
-	// for 1.7	
+	}
+
+	// for 1.7
 	public function onContentAfterSave($context, $article, $isNew)
 	{
 		$this->_newcontentsave($article, $isNew);
 		return true;
-	}	
-	
-	protected function _newcontentsave($article, $isNew) 
+	}
+
+	protected function _newcontentsave($article, $isNew)
 	{
-		
+
 		$categorys = ($this->params->get('category'));
 		if(is_array($this->params->get('category')) )
 			$categorys = ($this->params->get('category'));
@@ -51,14 +51,14 @@ class plgContentBroadcast_content extends JPlugin
 		}
 
 		if(in_array($article->catid,$categorys))
-		{	
+		{
 			if($isNew)
 			{
-				$user =JFactory::getUser();
+				$user =JFactory::getUser($article->created_by);
 				$userid = $user->id;
-				
+
 				$com_params=JComponentHelper::getParams('com_broadcast');
-				
+
 				$userid_arr = array();
 				$useids=$com_params->get('user_ids');
 				if(isset($useids))
@@ -67,10 +67,10 @@ class plgContentBroadcast_content extends JPlugin
 					$userid_arr = explode(',', $userids);
 				}
 				if(! ( in_array($userid, $userid_arr) )  )
-					array_push($userid_arr, $userid);  
-				
+					array_push($userid_arr, $userid);
+
 				/*construct the msg to push into the queue*/
-				$username = $user->username; 
+				$username = $user->username;
 				$app = JFactory::getApplication();
 				require_once(JPATH_SITE .DS. 'components'.DS.'com_broadcast'.DS.'helper.php');
 				if($app->isAdmin())
@@ -92,9 +92,9 @@ class plgContentBroadcast_content extends JPlugin
 				$supplier = 'Content_plugin';
 				$shorten_url = 1;
 				combroadcastHelper::addtoQueue($userid_arr,$msg_str,$date,$count,$interval,'',$supplier,$shorten_url);
-				
+
 			}
-		} 
+		}
 	}
-	
+
 }

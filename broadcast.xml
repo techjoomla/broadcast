@@ -46,6 +46,7 @@
 	<administration>
 		<menu link="option=com_broadcast" img="components/com_broadcast/images/broadcast16x16.png">COM_BROADCAST</menu>
 		<files folder="admin">
+			<file>access.xml</file>
 			<folder>sql</folder>
 			<folder>plugins</folder>
 			<folder>controllers</folder>

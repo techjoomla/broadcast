@@ -1,15 +1,15 @@
 <?php
-/*
-	* @package broadcast
+/**
+	* @package Broadcast
 	* @copyright Copyright (C)2010-2011 Techjoomla, Tekdi Web Solutions . All rights reserved.
 	* @license GNU GPLv2 <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
 	* @link http://www.techjoomla.com
 */
 defined('_JEXEC') or die('Restricted access');
 
-jimport( 'joomla.filesystem.folder' );
-jimport('joomla.installer.installer');
-jimport('joomla.filesystem.file');
+jimport ( 'joomla.filesystem.folder');
+jimport ('joomla.installer.installer');
+jimport ('joomla.filesystem.file');
 
 if(!defined('DS')){
 define('DS',DIRECTORY_SEPARATOR);
@@ -38,12 +38,7 @@ class com_broadcastInstallerScript
 		)
 	);
 	private $installation_queue = array(
-	'applications'=>array(
-			'easysocial'=>array(
-					'easysocial_broadcast'=>0,
-				)),
-
-				// modules => { (folder) => { (module) => { (position), (published) } }* }*
+		// modules => { (folder) => { (module) => { (position), (published) } }* }*
 		'modules'=>array(
 			'admin'=>array(
 
@@ -158,6 +153,21 @@ class com_broadcastInstallerScript
 			}
 
 		}
+
+		//since version 1.5
+		//check if column - paypal_email exists
+		$query="SHOW COLUMNS FROM #__broadcast_config WHERE `Field` = 'params'";
+		$db->setQuery($query);
+		$check=$db->loadResult();
+		if(!$check)
+		{
+			$query="ALTER TABLE  `#__broadcast_config` ADD  `params` text NOT NULL  AFTER  `broadcast_rss`";
+			$db->setQuery($query);
+			if ( !$db->execute() ) {
+				JError::raiseError( 500, $db->stderr() );
+			}
+		}
+
 	}
 
 	/**
@@ -335,7 +345,36 @@ class com_broadcastInstallerScript
 					</td>
 				</tr>
 				<?php endforeach;?>
-				<?php endif;?>
+				<?php endif;
+
+
+				if (isset($status->app_install)) :
+					if (count($status->app_install)) : ?>
+					<tr class="row1">
+						<th>EasySocial App: Broadcast</th>
+						<th></th>
+						<th></th>
+						</tr>
+					<?php
+
+						foreach ($status->app_install as $app_install) : ?>
+							<tr class="row2">
+								<td class="key"><?php echo ucfirst($app_install['name']); ?></td>
+								<td class="key"></td>
+								<td><strong style="color: <?php echo ($app_install['result'])? "green" : "red"?>"><?php echo ($app_install['result'])?'Installed':'Not installed'; ?></strong>
+								<?php
+
+									if(!empty($app_install['result'])) // if installed then only show msg
+									{
+										echo $mstat=($app_install['status']? "<span class=\"label label-success\">Enabled</span>" : "<span class=\"label label-important\">Disabled</span>");
+									}
+
+								?>
+								</td>
+							</tr>
+						<?php endforeach;?>
+					<?php endif;
+				endif;?>
 			</tbody>
 		</table>
 		</div> <!-- end akeeba bootstrap -->
@@ -552,47 +591,14 @@ class com_broadcastInstallerScript
 			),
 		 * */
 		//Application Installations
-		if(count($this->installation_queue['applications'])) {
-			foreach($this->installation_queue['applications'] as $folder => $applications) {
-				if(count($applications)) {
-					foreach($applications as $app => $published) {
-						$path = "$src/applications/$folder/$app";
-						if(!is_dir($path)) {
-							$path = "$src/applications/$folder/plg_$app";
-						}
-						if(!is_dir($path)) {
-							$path = "$src/applications/$app";
-						}
-						if(!is_dir($path)) {
-							$path = "$src/applications/plg_$app";
-						}
-
-						if(!is_dir($path)) continue;
-
-
-						if(file_exists(JPATH_ADMINISTRATOR . '/components/com_easysocial/includes/foundry.php')) {
-							require_once( JPATH_ADMINISTRATOR . '/components/com_easysocial/includes/foundry.php' );
-
-							// Was the app already installed?
-							/*$query = $db->getQuery(true)
-								->select('COUNT(*)')
-								->from($db->qn('#__extensions'))
-								->where('( '.($db->qn('name').' = '.$db->q($app)) .' OR '. ($db->qn('element').' = '.$db->q($app)) .' )')
-								->where($db->qn('folder').' = '.$db->q($folder));
-							$db->setQuery($query);
-							$count = $db->loadResult();*/
-
-
-							$installer     = Foundry::get( 'Installer' );
-							// The $path here refers to your application path
-							$installer->load( $path );
-							$plg_install=$installer->install();
-							//$status->app_install[] = array('name'=>'easysocial_camp_plg','group'=>'easysocial_camp_plg', 'result'=>$plg_install,'status'=>'1');
-							$status->applications[] = array('name'=>$app,'group'=>$folder, 'result'=>$result,'status'=>$published);
-						}
-					}
-				}
-			}
+		if(file_exists(JPATH_ADMINISTRATOR . '/components/com_easysocial/includes/foundry.php'))
+		{
+			require_once( JPATH_ADMINISTRATOR . '/components/com_easysocial/includes/foundry.php' );
+			$installer     = Foundry::get( 'Installer' );
+			// The $path here refers to your application path
+			$installer->load( $src."/plugins/easysocial/easysocial_broadcast" );
+			$plg_install=$installer->install();
+			$status->app_install[] = array('name'=>'easysocial_broadcast','group'=>'easysocial_broadcast', 'result'=>$plg_install,'status'=>'1');
 		}
 
 		return $status;
@@ -965,7 +971,6 @@ private function _installFOF($parent)
 		</table>
 		<?php
 	}
-
 
 	/**
 	 * method to uninstall the component

@@ -117,7 +117,6 @@ class BroadcastModelconfig extends JModelLegacy
 		$session = JFactory::getSession();
 		$user=JFactory::getUser();
 		$dataids = JRequest::get('post');
-		//echo "<pre>";
 		$otherdataArr=$session->get("API_otherAccountData");
 		$i=0;
 

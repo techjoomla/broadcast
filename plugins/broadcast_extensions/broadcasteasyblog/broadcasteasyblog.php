@@ -20,34 +20,33 @@ class plgEasyblogbroadcasteasyblog extends JPlugin
 {
     function plgEasyblogbroadcasteasyblog(& $subject, $config)
     {
-    
+
 			if(JFile::exists(JPATH_ROOT.DS.'components'.DS.'com_easyblog'.DS.'helpers'.DS.'helper.php'))
 			{
 				require_once (JPATH_ROOT.DS.'components'.DS.'com_easyblog'.DS.'helpers'.DS.'helper.php');
 			}
-		
+
 			if(JFile::exists(JPATH_ROOT.DS.'components'.DS.'com_easyblog'.DS.'helpers'.DS.'router.php'))
 			{
 				require_once (JPATH_ROOT.DS.'components'.DS.'com_easyblog'.DS.'helpers'.DS.'router.php');
 			}
-		  
+
 			parent::__construct($subject, $config);
     }
 
-		
+
 		function onAfterEasyBlogDelete( $blog )
 		{
-	
+
 			// Get plugin info
-	
-	
+
+
 		}
-	 
+
 		function onAfterEasyBlogSave ( $param, $isNew )
-		{		
+		{
 			$plugin			=JPluginHelper::getPlugin('easyblog', 'broadcasteasyblog');
-			$pluginParams	= new JRegistry( $plugin->params );  
-								
+
 			if(is_array($this->params->get('category')) )
 				$categorys = ($this->params->get('category'));
 			else{
@@ -56,9 +55,9 @@ class plgEasyblogbroadcasteasyblog extends JPlugin
 			}
 
 			if(in_array($param->category_id,$categorys))
-			{	
-				if($isNew)  
-				{ 
+			{
+				if($isNew)
+				{
 					$user =JFactory::getUser();
 					$userid = $user->id;
 					//require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
@@ -70,7 +69,7 @@ class plgEasyblogbroadcasteasyblog extends JPlugin
 						$userids = $com_params->get('user_ids');
 						$userid_arr = explode(',', $userids);
 					}
-					if(! ( in_array($userid, $userid_arr) )  )					
+					if(! ( in_array($userid, $userid_arr) )  )
 						array_push($userid_arr, $userid);
 
 					/*construct the msg to push into the queue*/
@@ -84,7 +83,7 @@ class plgEasyblogbroadcasteasyblog extends JPlugin
 					}
 					else*/
 						$path = JURI::root().substr(JRoute::_('index.php?option=com_easyblog&view=entry&id='.$param->id),strlen(JURI::base(true))+1);
-					
+
 					$title = $param->title;
 					$msg_str = $this->params->get('msg');
 					$msg_str= str_replace( '{username}',$username ,$msg_str);
@@ -96,8 +95,8 @@ class plgEasyblogbroadcasteasyblog extends JPlugin
 					$interval = 0;
 					$supplier = 'EasyBlog_plugin';
 					$shorten_url = 1;
-					combroadcastHelper::addtoQueue($userid_arr,$msg_str,$date,$count,$interval,'',$supplier,$shorten_url); 
+					combroadcastHelper::addtoQueue($userid_arr,$msg_str,$date,$count,$interval,'',$supplier,$shorten_url);
 				}
 			}
-    }   
+    }
 }

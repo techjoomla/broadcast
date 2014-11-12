@@ -15,9 +15,14 @@ class BroadcastControllerbroadcast extends JControllerLegacy
 {
 	var $bconfig = '';
 
+
+
 	function display($cachable = false, $urlparams = false)
 	{
+
 		parent::display();
+		// require helper file
+
 	}
 
 	function inEasysocialact($actor,$target,$title,$content,$api,$cid,$date)
@@ -121,8 +126,28 @@ class BroadcastControllerbroadcast extends JControllerLegacy
 		$currentMenu = $session->get('currentMenu');
 		$mainframe->redirect(JURI::base()."index.php?option=com_broadcast&view=config");
 	}
+
 	function get_status()
 	{
+		$path=JPATH_SITE.DS.'components/com_broadcast/helper.php';
+		#@TODO check this imp for version 1.0.1
+		if(!class_exists('techjoomlaHelperLogs'))
+		{
+		  //require_once $path;
+		   JLoader::register('techjoomlaHelperLogs', $path );
+		   JLoader::load('techjoomlaHelperLogs');
+		}
+		#@TODO check this imp for version 1.0.1
+		if(!class_exists('combroadcastHelper'))
+		{
+		  //require_once $path;
+		   JLoader::register('combroadcastHelper', $path );
+		   JLoader::load('combroadcastHelper');
+		}
+
+		$this->combroadcastHelper=new combroadcastHelper();
+
+		$this->combroadcastHelper->logfile("Log For Getting Statuses from SOCIAL API(eg facebook) to site");
 		$params=JComponentHelper::getParams('com_broadcast');
 		$pkey = JRequest::getVar('pkey', '');
 		if($pkey!=$params->get('private_key_cronjob'))
@@ -135,8 +160,27 @@ class BroadcastControllerbroadcast extends JControllerLegacy
 			$model->getStatus($v);
 		}
 	}
+
 	function set_status()
 	{
+		$path=JPATH_SITE.DS.'components/com_broadcast/helper.php';
+		#@TODO check this imp for version 1.0.1
+		if(!class_exists('techjoomlaHelperLogs'))
+		{
+		  //require_once $path;
+		   JLoader::register('techjoomlaHelperLogs', $path );
+		   JLoader::load('techjoomlaHelperLogs');
+		}
+		#@TODO check this imp for version 1.0.1
+		if(!class_exists('combroadcastHelper'))
+		{
+		  //require_once $path;
+		   JLoader::register('combroadcastHelper', $path );
+		   JLoader::load('combroadcastHelper');
+		}
+
+		$this->combroadcastHelper=new combroadcastHelper();
+
 		$db=JFactory::getDBO();
 		$params=JComponentHelper::getParams('com_broadcast');
 		//require(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_broadcast'.DS.'config'.DS.'config.php');
@@ -150,7 +194,11 @@ class BroadcastControllerbroadcast extends JControllerLegacy
 		}
 		$response = array();
 		$model = $this->getModel('broadcast');
-		$queues = $model->getqueue();
+		$queues = $model->getqueue($limit=5);
+
+		$this->combroadcastHelper->logfile("Log For Setting Statuses from site to SOCIAL API");
+
+
 		$model->purgequeue();
 		if(empty($queues))
 		echo "No Data in Queue";
@@ -178,18 +226,7 @@ class BroadcastControllerbroadcast extends JControllerLegacy
 
 	}
 
+
+
 }
-class BroadcastHelperLog
-{
-  function simpleLog($comment, $level=1)
-  {
-        // Include the library dependancies
-        jimport('joomla.error.log');
-        $my = JFactory::getUser();
-        $options = array('format' => "{DATE}\t{TIME}\t{USER}\t{COMMENT}");
-        // Create the instance of the log file in case we use it later
-        $log = &JLog::getInstance('broadcast.log');
-        $log->addEntry(array('comment' => $comment, 'user' => $my->name .'('.$my->id.')'));
-  }
-}
-?>
+

@@ -204,10 +204,14 @@ class BroadcastModelbroadcast extends JModelLegacy
 
 
 
-	function getqueue(){
+	function getqueue($limit=0){
 		$params=JComponentHelper::getParams('com_broadcast');
 		$integration=$params->get('integration');
 		$query="SELECT * FROM #__broadcast_queue";
+
+		if($limit>0)
+		$query.=" LIMIT 0 , ".$limit;
+
 		$this->_db->setQuery($query);
 	 	return $this->_db->loadObjectList();
 	}
@@ -222,6 +226,7 @@ class BroadcastModelbroadcast extends JModelLegacy
 		$link=$this->broadcasthelperObj->makelink($comment,'');
 			$link=trim($link);
 			$comment=trim($comment);
+
 			if($api_used!='rss')
 			{
 				if($link!=$comment)
@@ -232,7 +237,13 @@ class BroadcastModelbroadcast extends JModelLegacy
 				}
 			}
 
-		return $grt_response = $dispatcher->trigger($api_used.'setstatus',array($userid,$status,$comment,$attachment));
+		$arr_status=explode(" ",$status);
+
+		if((trim($arr_status[0])==trim($arr_status[1])) and (trim($arr_status[0]) and trim($arr_status[1])))
+		{
+			$status=trim($arr_status[0]);
+		}
+		return $grt_response = $dispatcher->trigger($api_used.'setstatus',array($userid,$status,$status,$attachment));
 	}
 	function purgequeue(){
 		$params=JComponentHelper::getParams('com_broadcast');

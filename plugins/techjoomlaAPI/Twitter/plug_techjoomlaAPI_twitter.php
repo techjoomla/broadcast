@@ -336,7 +336,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_twitter extends JPlugin
 			}
 			else
 				$template	=	stripslashes($invitex_settings['twitter_message_body']);
-		//$token = $session->get("['oauth']['twitter']['access']",'');
 
 		$token	=	$post['token'];
 		$token=json_decode($token);

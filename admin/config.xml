@@ -46,6 +46,14 @@
 		<field name="cron_get" type="cron" label="COM_BROADCAST_CRON_URL_GET" description="COM_BROADCAST_CRON_URL_GET_DESC"/>
 		<field name="cron_set" type="cron" label="COM_BROADCAST_CRON_URL_SET" description="COM_BROADCAST_CRON_URL_SET_DESC"/>
 		<field name="cron_rss" type="cron" label="COM_BROADCAST_CRON_URL_RSS" description="COM_BROADCAST_CRON_URL_RSS_DESC"/>
+
+	</fieldset>
+
+	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
+		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" filter="rules" component="com_foobar" section="component">
+			<action name="core.admin" title="JACTION_ADMIN" description="JACTION_ADMIN_COMPONENT_DESC" />
+			<action name="core.manage" title="JACTION_MANAGE" description="JACTION_MANAGE_COMPONENT_DESC" />
+		</field>
 	</fieldset>
 </config>
 <!--COM_BROADCAST_-->

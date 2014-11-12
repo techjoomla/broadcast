@@ -25,8 +25,14 @@ $lang->load('plug_techjoomlaAPI_facebook', JPATH_ADMINISTRATOR);
 
 class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 {
-	function plgTechjoomlaAPIplug_techjoomlaAPI_facebook(& $subject, $config)
+	function __construct(& $subject, $config)
 	{
+		$path=JPATH_SITE.DS.'components/com_broadcast/helper.php';
+		if(file_exists($path))
+		{
+			require_once $path;
+			$this->combroadcastHelper=new combroadcastHelper();
+		}
 
 		parent::__construct($subject, $config);
 		$this->appKey	= $this->params->get('appKey');
@@ -111,7 +117,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		$this->callbackUrl=$callback;
 		$params = array(
 							'redirect_uri' => $callback,
-							'scope' =>'email,read_stream,user_status,user_birthday,user_education_history,user_location,user_website,user_interests,publish_stream,offline_access,manage_pages,user_groups',
+							'scope' =>'email,read_stream,user_status,user_birthday,user_education_history,user_location,user_website,user_interests,publish_stream,offline_access,manage_pages,user_groups,status_update,publish_actions',
 							);
 
 		try	{
@@ -245,6 +251,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		FROM #__techjoomlaAPI_users
 		WHERE token<>'' AND api='{$this->_name}' ".$where ;
 		$this->db->setQuery($query);
+
 		return $this->db->loadObjectlist();
 	}
 
@@ -400,6 +407,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 
   function plug_techjoomlaAPI_facebookgetstatus()
 	{
+
 		$oauth_keys =array();
 	 	$oauth_keys = $this->getToken('','broadcast');
 	 	$returndata=array(array());
@@ -419,6 +427,9 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 
 			if(!$validtoken)
 			{
+				$this->combroadcastHelper->logfile("Log For Getting Statuses from   SOCIAL API(eg facebook) to site Invalid TOken");
+
+				JFactory::getApplication()->enqueueMessage('Facebook-APP-get status Access token expired: warning');
 				//$this->remove_token('broadcast',$oauth_key->user_id);
 				//$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL_FACEBOOK'),'Not Valid Access Token',$oauth_key->user_id,1);
 				continue;
@@ -426,6 +437,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			}
 			try{
 				$json_facebook = $this->facebook->api($token->facebook_uid.'/statuses',array('access_token'=>$token->facebook_secret,'limit'=>5));
+
 				if($this->params->get('pages')==1)
 				$json_pagedata=$this->plug_techjoomlaAPI_facebookget_page_status($token,$oauth_key->user_id,$facebook_profile_limit);
 				if($this->params->get('groups')==1)
@@ -434,9 +446,10 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 			}
 			catch (TjFacebookApiException $e)
 			{
-					$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL_FACEBOOK'),$e->getMessage(),$oauth_key->user_id,1);
-
-		  }
+				$this->combroadcastHelper->logfile("Log For Getting Statuses from   SOCIAL API(eg facebook) to site".$e->getMessage());
+				JFactory::getApplication()->enqueueMessage('Facebook-APP-get status error:'.$e->getMessage(), 'warning');
+				$response=$this->raiseLog(JText::_('LOG_GET_STATUS_FAIL_FACEBOOK'),$e->getMessage(),$oauth_key->user_id,1);
+			}
 
 		  $status=$this->renderstatus($json_facebook['data'])	;
 
@@ -535,7 +548,6 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		$oauth_key = $this->getToken($userid,'broadcast');
 
 
-
 		if(!$oauth_key)
 		return false;
 		else
@@ -543,9 +555,11 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		$token =json_decode($oauth_key[0]->token);
 		//Check if token is valid if not then remove token from database
 		$validtoken=$this->isAccessTokenValid($token->facebook_secret);
-
 		if(!$validtoken)
 		{
+			$this->combroadcastHelper->logfile("Log For Setting Statuses from   SOCIAL API(eg facebook) to site Invalid TOken");
+			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_SET_STATUS'),"Not Valid TOken",$userid,1);
+
 			$this->remove_token('broadcast',$oauth_key[0]->user_id);
 			return false;
 		}
@@ -559,18 +573,23 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 		{
 			if(isset($token))
 			{
-				/*if($attachment)
-					$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $comment,'title'=>$attachment,'link'=>$attachment));
-					else
-					$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $comment));
-				*/
 
+				//Post to personal profile on Facebook
+				/*if($allparams['Facebook'])
+				{
+					$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $originalContent));
+				}*/
 				//Post to personal profile on Facebook
 				if($allparams['Facebook'])
 				{
-					$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $originalContent));
+
+					if($attachment)
+					$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $comment,'link'=>$attachment));
+					else
+					$post = $this->facebook->api($token->facebook_uid.'/feed', 'POST', array('access_token'=>$token->facebook_secret,'message' => $comment));
 				}
 
+				$this->combroadcastHelper->logfile("Log For Setting Statuses from   SOCIAL API(eg facebook) to site Invalid TOken");
 				//Post to Facebook pages
 				if($this->params->get('pages')==1)
 				{
@@ -582,26 +601,26 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 				{
 					$this->plug_techjoomlaAPI_facebookset_group_status($token,$oauth_key[0]->user_id,$originalContent,$comment,$attachment);
 				}
+
 			}
+
+
+		if($response)
+			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_SET_STATUS'),$e->getMessage(),$userid,1);
+		else
+		$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS').JText::_('LOG_SET_STATUS'),$originalContent,$userid,1);
+		return $response;
+
 		}
 		catch (TjFacebookApiException $e)
 		{
+			$this->combroadcastHelper->logfile("Log For Setting Statuses from   SOCIAL API(eg facebook) to site Invalid TOken".$e->getMessage());
+			JFactory::getApplication()->enqueueMessage('Facebook-APP-set status error:'.$e->getMessage(), 'warning');
 			$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_SET_STATUS'),$e->getMessage(),$userid,1);
-			return false;
+			return true;
 		}
 
-		if($response)
-		$response=$this->raiseLog(JText::_('LOG_SET_STATUS_FAIL').JText::_('LOG_SET_STATUS'),$e->getMessage(),$userid,1);
-		else
-		$response=$this->raiseLog(JText::_('LOG_SET_STATUS_SUCCESS').JText::_('LOG_SET_STATUS'),$originalContent,$userid,1);
-
-
-
-		return $response;
-
 	}
-
-
 
 	function get_otherAccountData()
 	{
@@ -877,7 +896,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 				if(!$checkexist)
 				continue;
 				try{
-							$response = $this->facebook->api($grp['gid'].'/feed', 'GET', array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit,));
+						$response = $this->facebook->api($grp['gid'].'/feed', 'GET', array('access_token'=>$token->facebook_secret,'limit'=>$facebook_profile_limit,));
 
 						if(!empty($response))
 					  $statuses[]=$this->renderstatus($response['data']);
@@ -925,19 +944,7 @@ class plgTechjoomlaAPIplug_techjoomlaAPI_facebook extends JPlugin
 					$checkexist=$combroadcastHelper->checkexistparams($allparams,'facebook_page_update',$page['id']);
 					if($checkexist)
 					{
-						/*if($attachment)
-						{
-							$attachmentarr = array(
-							'access_token' => $page['access_token'],
-							'message' => $comment,'title'=>$attachment,'link'=>$attachment
-							);
-						}
-						else{
-							$attachmentarr = array(
-							'access_token' => $page['access_token'],
-							'message'=> $comment,
-							);
-						}*/
+
 						$attachmentarr = array(
 							'access_token' => $page['access_token'],
 							'message'=> $originalContent,
